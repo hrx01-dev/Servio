@@ -33,7 +33,7 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="py-20 md:py-32 bg-white">
+    <section className="py-20 md:py-32 bg-white dark:bg-slate-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -42,16 +42,16 @@ export function FAQ() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <span className="text-indigo-600 font-semibold text-sm uppercase tracking-wider">
+          <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             FAQ
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Frequently Asked{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
-          <p className="text-xl text-gray-600">
+          <p className="text-xl text-gray-600 dark:text-gray-300">
             Everything you need to know before getting started.
           </p>
         </motion.div>
@@ -66,20 +66,20 @@ export function FAQ() {
               transition={{ duration: 0.4, delay: index * 0.05 }}
               className={`border rounded-2xl overflow-hidden transition-all duration-200 ${
                 open === index
-                  ? "border-indigo-200 shadow-md shadow-indigo-50"
-                  : "border-gray-100 hover:border-gray-200"
+                  ? "border-indigo-200 dark:border-indigo-800 shadow-md shadow-indigo-50 dark:shadow-indigo-900/20"
+                  : "border-gray-100 dark:border-slate-800 hover:border-gray-200 dark:hover:border-slate-700"
               }`}
             >
               <button
                 onClick={() => setOpen(open === index ? null : index)}
                 className="w-full flex items-center justify-between px-6 py-5 text-left"
               >
-                <span className={`font-semibold transition-colors ${open === index ? "text-indigo-600" : "text-gray-900"}`}>
+                <span className={`font-semibold transition-colors ${open === index ? "text-indigo-600 dark:text-indigo-400" : "text-gray-900 dark:text-white"}`}>
                   {faq.q}
                 </span>
                 <ChevronDown
                   className={`w-5 h-5 flex-shrink-0 ml-4 transition-all duration-300 ${
-                    open === index ? "rotate-180 text-indigo-500" : "text-gray-400"
+                    open === index ? "rotate-180 text-indigo-500 dark:text-indigo-400" : "text-gray-400 dark:text-gray-500"
                   }`}
                 />
               </button>
@@ -93,7 +93,7 @@ export function FAQ() {
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
                     <div className="px-6 pb-5">
-                      <p className="text-gray-600 leading-relaxed">{faq.a}</p>
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
                     </div>
                   </motion.div>
                 )}
@@ -107,14 +107,14 @@ export function FAQ() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="mt-10 text-center p-6 bg-indigo-50 rounded-2xl border border-indigo-100"
+          className="mt-10 text-center p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800"
         >
-          <p className="text-gray-700 mb-3">
+          <p className="text-gray-700 dark:text-gray-200 mb-3">
             Still have questions? We're happy to help.
           </p>
           <a
             href="#contact"
-            className="inline-flex items-center gap-2 text-indigo-600 font-semibold hover:text-purple-600 transition-colors"
+            className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
           >
             Chat with our team →
           </a>
