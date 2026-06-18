@@ -19,11 +19,11 @@ export function Hero() {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 pt-20">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20">
       {/* Gradient Mesh Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-indigo-400/30 to-purple-400/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-cyan-400/30 to-blue-400/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute -top-1/2 -left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-indigo-400/30 to-purple-400/30 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-cyan-400/30 to-blue-400/30 dark:from-cyan-600/20 dark:to-blue-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
@@ -39,20 +39,20 @@ export function Hero() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-indigo-100 mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-full border border-indigo-100 dark:border-indigo-900 mb-6"
             >
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-sm text-gray-700">Available for new projects</span>
+              <span className="text-sm text-gray-700 dark:text-gray-200">Available for new projects</span>
             </motion.div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Your Business Deserves a Website That{' '}
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                 Converts
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto lg:mx-0">
+            <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">
               We design and develop modern, fast, and scalable websites tailored to your business goals.
             </p>
 
@@ -69,31 +69,31 @@ export function Hero() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => scrollToSection('portfolio')}
-                className="px-8 py-4 bg-white text-gray-700 rounded-xl border-2 border-gray-200 hover:border-indigo-600 hover:text-indigo-600 transition-all duration-300 font-semibold"
+                className="px-8 py-4 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 rounded-xl border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-600 hover:text-indigo-600 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-all duration-300 font-semibold"
               >
                 View Portfolio
               </motion.button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-gray-200">
+            <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-gray-200 dark:border-slate-700">
               <div className="text-center lg:text-left">
                 <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   150+
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Projects Done</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Projects Done</div>
               </div>
               <div className="text-center lg:text-left">
                 <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   98%
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Client Satisfaction</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Client Satisfaction</div>
               </div>
               <div className="text-center lg:text-left">
                 <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   5+
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Years Experience</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Years Experience</div>
               </div>
             </div>
           </motion.div>
@@ -107,13 +107,13 @@ export function Hero() {
           >
             <div className="relative">
               {/* Main Dashboard Image */}
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl dark:shadow-2xl dark:shadow-slate-900/50">
                 <img
                   src={heroImage}
                   alt="Modern Dashboard Design"
-                  className="w-full h-auto"
+                  className="w-full h-auto dark:opacity-80"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 to-purple-600/10" />
+                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 to-purple-600/10 dark:from-indigo-600/20 dark:to-purple-600/20" />
               </div>
 
               {/* Floating Cards */}
@@ -133,11 +133,11 @@ export function Hero() {
                       : 'bottom-8 -right-4 sm:-right-8'
                   } hidden lg:block`}
                 >
-                  <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-gray-100 flex items-center gap-3 hover:scale-110 transition-transform duration-300">
+                  <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center gap-3 hover:scale-110 transition-transform duration-300">
                     <div className={`w-10 h-10 bg-gradient-to-br ${card.color} rounded-lg flex items-center justify-center`}>
                       <card.icon className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-medium text-gray-900 whitespace-nowrap">
+                    <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
                       {card.text}
                     </span>
                   </div>

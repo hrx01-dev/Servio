@@ -60,7 +60,7 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100">
+    <section id="pricing" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -69,16 +69,16 @@ export function Pricing() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-indigo-600 font-semibold text-sm uppercase tracking-wider">
+          <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Pricing
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Simple,{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Transparent Pricing
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Choose the perfect plan for your business. All plans include a 30-day money-back guarantee.
           </p>
         </motion.div>
@@ -91,10 +91,10 @@ export function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className={`relative bg-white rounded-2xl p-8 ${
+              className={`relative bg-white dark:bg-slate-900 rounded-2xl p-8 ${
                 plan.highlighted
-                  ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-500/20 md:-mt-4 md:mb-4'
-                  : 'border-2 border-gray-200 shadow-lg'
+                  ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/30 md:-mt-4 md:mb-4'
+                  : 'border-2 border-gray-200 dark:border-slate-800 shadow-lg dark:shadow-slate-900/50'
               }`}
             >
               {/* Popular Badge */}
@@ -108,16 +108,16 @@ export function Pricing() {
               )}
 
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-gray-600 text-sm mb-6">{plan.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{plan.description}</p>
                 <div className="mb-2">
                   <span className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {plan.price}
                   </span>
                 </div>
-                <p className="text-gray-500 text-sm">One-time payment</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">One-time payment</p>
               </div>
 
               <ul className="space-y-4 mb-8">
@@ -132,7 +132,7 @@ export function Pricing() {
                         plan.highlighted ? 'text-white' : 'text-indigo-600'
                       }`} />
                     </div>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-gray-700 dark:text-gray-200">{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -142,7 +142,7 @@ export function Pricing() {
                 className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
                   plan.highlighted
                     ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/50 hover:scale-105'
-                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                    : 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-700'
                 }`}
               >
                 Get Started
@@ -159,12 +159,12 @@ export function Pricing() {
           transition={{ duration: 0.6 }}
           className="mt-12 text-center"
         >
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
             Need something custom? We can build anything you need.
           </p>
           <button
             onClick={() => scrollToSection('contact')}
-            className="text-indigo-600 font-semibold hover:text-purple-600 transition-colors"
+            className="text-indigo-600 dark:text-indigo-400 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
           >
             Contact us for a custom quote →
           </button>

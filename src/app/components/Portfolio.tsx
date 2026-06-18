@@ -69,7 +69,7 @@ export function Portfolio() {
       : projects.filter((project) => project.category === activeCategory);
 
   return (
-    <section id="portfolio" className="py-20 md:py-32 bg-white">
+    <section id="portfolio" className="py-20 md:py-32 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -78,16 +78,16 @@ export function Portfolio() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <span className="text-indigo-600 font-semibold text-sm uppercase tracking-wider">
+          <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Our Work
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-3 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Portfolio{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Showcase
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Explore our latest projects and see the quality we deliver to our clients.
           </p>
         </motion.div>
@@ -101,7 +101,7 @@ export function Portfolio() {
               className={`px-6 py-2.5 rounded-lg font-medium transition-all duration-300 ${
                 activeCategory === category
                   ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/50'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-700'
               }`}
             >
               {category}
@@ -125,10 +125,10 @@ export function Portfolio() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+                className="group relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden shadow-lg dark:shadow-slate-900/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300"
               >
                 {/* Image */}
-                <div className="relative h-64 overflow-hidden bg-gray-100">
+                <div className="relative h-64 overflow-hidden bg-gray-100 dark:bg-slate-800">
                   <img
                     src={project.image}
                     alt={project.title}
@@ -138,7 +138,7 @@ export function Portfolio() {
 
                   {/* View Project Button */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="px-6 py-3 bg-white text-gray-900 rounded-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform">
+                    <button className="px-6 py-3 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform">
                       View Project
                       <ExternalLink className="w-4 h-4" />
                     </button>
@@ -148,13 +148,13 @@ export function Portfolio() {
                 {/* Content */}
                 <div className="p-6">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="px-3 py-1 bg-indigo-100 text-indigo-600 text-xs font-semibold rounded-full">
+                    <span className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-xs font-semibold rounded-full">
                       {project.category}
                     </span>
-                    <span className="text-sm text-gray-500">{project.industry}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{project.industry}</span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                     {project.title}
                   </h3>
 
@@ -162,7 +162,7 @@ export function Portfolio() {
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg"
+                        className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg"
                       >
                         {tech}
                       </span>
