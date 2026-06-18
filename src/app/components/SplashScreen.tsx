@@ -248,7 +248,7 @@ export function SplashScreen({
                 {/* Rotating conic ring, masked to a thin ring. */}
                 <motion.div
                   aria-hidden="true"
-                  className="absolute inset-0 rounded-[1.4rem]"
+                  className="absolute -inset-2 rounded-full"
                   style={{
                     background:
                       "conic-gradient(from 0deg, transparent 0deg, #4F46E5 110deg, #7C3AED 200deg, #06B6D4 300deg, transparent 360deg)",

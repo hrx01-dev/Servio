@@ -77,7 +77,7 @@ const AURORA_FRAG = /* glsl */ `
     col = mix(col, uD, smoothstep(0.7, 1.0, q.y) * 0.5);
     float band = smoothstep(0.18, 0.95, n + uv.y * 0.22);
     float vig = smoothstep(1.25, 0.12, length(uv - 0.5) * 1.7);
-    gl_FragColor = vec4(col * 1.2, band * vig * 0.45);
+    gl_FragColor = vec4(col, band * vig * 0.3);
   }
 `;
 
@@ -219,18 +219,20 @@ function GlassOrb({
   useFrame((state: RootState) => {
     const t = state.clock.elapsedTime;
     if (orb.current) {
-      orb.current.position.y = Math.sin(t * 0.6) * 0.12;
+      // Sit behind the logo (upper card), not the wordmark, so glow never
+      // washes out the text.
+      orb.current.position.y = 0.55 + Math.sin(t * 0.6) * 0.12;
       orb.current.rotation.y = t * 0.12;
       orb.current.rotation.x = Math.sin(t * 0.4) * 0.08;
     }
     const p = progress / 100;
     if (core.current) {
-      core.current.opacity = Math.min(1, 0.12 + p * 0.3 + pulse.current.v * 0.5);
+      core.current.opacity = Math.min(0.5, 0.05 + p * 0.14 + pulse.current.v * 0.3);
     }
     if (halo.current) {
       halo.current.opacity = Math.min(
-        0.85,
-        0.2 + p * 0.25 + pulse.current.v * 0.4,
+        0.3,
+        0.04 + p * 0.1 + pulse.current.v * 0.26,
       );
     }
   });
@@ -240,13 +242,13 @@ function GlassOrb({
   return (
     <group ref={orb}>
       {/* Volumetric glow halo behind the orb. */}
-      <mesh position={[0, 0, -1.6]} scale={6}>
+      <mesh position={[0, 0, -1.6]} scale={4}>
         <planeGeometry args={[1, 1]} />
         <meshBasicMaterial
           ref={halo}
           map={haloTex}
           transparent
-          opacity={0.2}
+          opacity={0.04}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
@@ -288,7 +290,7 @@ function GlassOrb({
           ref={core}
           color="#8aa0ff"
           transparent
-          opacity={0.12}
+          opacity={0.05}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
