@@ -1,4 +1,4 @@
-import { useRef, type MouseEvent, type CSSProperties } from 'react';
+import React, { useRef, type MouseEvent } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
 import { FileText, Globe, Briefcase, ShoppingCart, Code, Settings } from 'lucide-react';
 
@@ -43,7 +43,7 @@ const services = [
 
 // Fine fractal-noise grain to kill blur banding on the light backdrop. Fully
 // percent-encoded so the data URI survives any bundler / CSS parser.
-const grainStyle: CSSProperties = {
+const grainStyle: React.CSSProperties = {
   backgroundImage:
     "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
   backgroundSize: '120px',
@@ -51,7 +51,7 @@ const grainStyle: CSSProperties = {
 
 // Masked 1px gradient ring (the glass rim). Inline so the mask-composite +
 // -webkit- companion are emitted deterministically across engines.
-const ringStyle: CSSProperties = {
+const ringStyle: React.CSSProperties = {
   mask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
   WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
   maskComposite: 'exclude',
