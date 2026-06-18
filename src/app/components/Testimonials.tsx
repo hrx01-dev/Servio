@@ -56,7 +56,7 @@ export function Testimonials() {
   };
 
   return (
-    <section className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] to-[#1a1040] overflow-hidden">
+    <section aria-labelledby="testimonials-title" className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] to-[#1a1040] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ export function Testimonials() {
           <span className="text-cyan-400 font-semibold text-sm uppercase tracking-wider">
             Testimonials
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 id="testimonials-title" className="text-4xl md:text-5xl font-bold text-white mt-3 mb-4">
             What Our{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] bg-clip-text text-transparent">
               Clients Say

@@ -60,7 +60,7 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
+    <section id="pricing" aria-labelledby="pricing-title" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -72,7 +72,7 @@ export function Pricing() {
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Pricing
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+          <h2 id="pricing-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Simple,{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Transparent Pricing
@@ -157,17 +157,20 @@ export function Pricing() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="mt-12 text-center"
+          className="mt-16 text-center"
         >
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Need something custom? We can build anything you need.
-          </p>
-          <button
-            onClick={() => scrollToSection('contact')}
-            className="text-indigo-600 dark:text-indigo-400 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-          >
-            Contact us for a custom quote →
-          </button>
+          <div className="inline-block p-1 rounded-2xl bg-gray-100 dark:bg-slate-800">
+            <div className="px-8 py-6 rounded-xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Need a custom solution?</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">We build enterprise-grade applications tailored to your specific needs.</p>
+              <button
+                onClick={() => scrollToSection('contact')}
+                className="text-indigo-600 dark:text-indigo-400 font-bold hover:underline inline-flex items-center gap-2"
+              >
+                Contact us for a custom quote →
+              </button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

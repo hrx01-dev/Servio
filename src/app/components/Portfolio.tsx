@@ -69,7 +69,7 @@ export function Portfolio() {
       : projects.filter((project) => project.category === activeCategory);
 
   return (
-    <section id="portfolio" className="py-20 md:py-32 bg-white dark:bg-slate-950">
+    <section id="portfolio" aria-labelledby="portfolio-title" className="py-20 md:py-32 bg-white dark:bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -81,7 +81,7 @@ export function Portfolio() {
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Our Work
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+          <h2 id="portfolio-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Portfolio{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Showcase
@@ -159,12 +159,12 @@ export function Portfolio() {
                   </h3>
 
                   <div className="flex flex-wrap gap-2">
-                    {project.tech.map((tech) => (
+                    {project.tech.map((t) => (
                       <span
-                        key={tech}
-                        className="px-3 py-1 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg"
+                        key={t}
+                        className="px-2 py-1 bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 text-[10px] font-medium rounded-md border border-gray-100 dark:border-slate-700"
                       >
-                        {tech}
+                        {t}
                       </span>
                     ))}
                   </div>

@@ -119,7 +119,7 @@ export function QuoteForm() {
   });
 
   return (
-    <section id="contact" className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] via-[#1a0a2e] to-[#0f0f1a] relative overflow-hidden">
+    <section id="contact" aria-labelledby="quote-title" className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] via-[#1a0a2e] to-[#0f0f1a] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
 
@@ -134,7 +134,7 @@ export function QuoteForm() {
           <span className="text-cyan-400 font-semibold text-sm uppercase tracking-wider">
             Get in Touch
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mt-3 mb-4">
+          <h2 id="quote-title" className="text-4xl md:text-5xl font-bold text-white mt-3 mb-4">
             Request Your{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] bg-clip-text text-transparent">
               Free Proposal
@@ -251,119 +251,31 @@ export function QuoteForm() {
                     id="quote-business"
                     type="text"
                     autoComplete="organization"
-                    placeholder="Acme Corp"
+                    placeholder="TechStart Inc."
                     value={form.business}
                     onChange={(e) => setForm({ ...form, business: e.target.value })}
                     className={inputClass("business")}
                     {...fieldAria("business")}
                   />
-                  {errors.business && <p id="quote-business-error" className="mt-1.5 text-red-400 text-xs">{errors.business}</p>}
-                </div>
-
-                {/* Budget */}
-                <div>
-                  <label htmlFor="quote-budget" className="block text-sm font-medium text-gray-300 mb-2">
-                    Budget Range <span className="text-indigo-400">*</span>
-                  </label>
-                  <select
-                    id="quote-budget"
-                    value={form.budget}
-                    onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                    className={`${inputClass("budget")} appearance-none bg-[#1a1040]`}
-                    {...fieldAria("budget")}
-                  >
-                    <option value="" disabled>Select budget</option>
-                    {budgetOptions.map((b) => (
-                      <option key={b} value={b} className="bg-[#1a1040]">{b}</option>
-                    ))}
-                  </select>
-                  {errors.budget && <p id="quote-budget-error" className="mt-1.5 text-red-400 text-xs">{errors.budget}</p>}
-                </div>
-
-                {/* Website Type */}
-                <div className="md:col-span-2">
-                  <span id="quote-type-label" className="block text-sm font-medium text-gray-300 mb-2">
-                    Website Type <span className="text-indigo-400">*</span>
-                  </span>
-                  <div
-                    id="quote-type"
-                    role="group"
-                    aria-labelledby="quote-type-label"
-                    aria-describedby={errors.type ? "quote-type-error" : undefined}
-                    tabIndex={-1}
-                    className="grid grid-cols-2 sm:grid-cols-3 gap-3 outline-none"
-                  >
-                    {websiteTypes.map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        aria-pressed={form.type === type}
-                        onClick={() => setForm({ ...form, type })}
-                        className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                          form.type === type
-                            ? "bg-indigo-600 border-indigo-500 text-white shadow-lg shadow-indigo-500/30"
-                            : "bg-white/5 border-white/15 text-gray-300 hover:border-white/30 hover:bg-white/10"
-                        }`}
-                      >
-                        {type}
-                      </button>
-                    ))}
-                  </div>
-                  {errors.type && <p id="quote-type-error" className="mt-1.5 text-red-400 text-xs">{errors.type}</p>}
-                </div>
-
-                {/* Description */}
-                <div className="md:col-span-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <label htmlFor="quote-description" className="block text-sm font-medium text-gray-300">
-                      Project Description
-                    </label>
-                    <span
-                      className={`text-xs ${
-                        form.description.length > LIMITS.description[1] ? "text-red-400" : "text-gray-500"
-                      }`}
-                    >
-                      {form.description.length}/{LIMITS.description[1]}
-                    </span>
-                  </div>
-                  <textarea
-                    id="quote-description"
-                    rows={4}
-                    placeholder="Tell us about your project goals, timeline, and any specific requirements..."
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200 resize-none"
-                    {...fieldAria("description")}
-                  />
-                  {errors.description && <p id="quote-description-error" className="mt-1.5 text-red-400 text-xs">{errors.description}</p>}
+                  {errors.business && (
+                    <p id="quote-business-error" className="mt-1.5 text-red-400 text-xs">
+                      {errors.business}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Persistent live region: always mounted so the first message is
-                  announced, and re-keyed per error so identical repeats re-fire. */}
-              <div aria-live="assertive">
-                {formError && (
-                  <p key={errorNonce} className="mt-6 text-center text-red-400 text-sm" role="alert">
-                    {formError}
-                  </p>
-                )}
-              </div>
-
-              <div className="mt-8">
+              <div className="mt-10">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white font-semibold rounded-xl hover:shadow-2xl hover:shadow-indigo-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-50"
                 >
                   {loading ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Sending Proposal...
-                    </>
+                    "Sending Request..."
                   ) : (
                     <>
-                      Get My Free Proposal
-                      <Send className="w-5 h-5" />
+                      Send Proposal Request <Send className="w-4 h-4" />
                     </>
                   )}
                 </button>

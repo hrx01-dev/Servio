@@ -33,7 +33,7 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section className="py-20 md:py-32 bg-white dark:bg-slate-950">
+    <section aria-labelledby="faq-title" className="py-20 md:py-32 bg-white dark:bg-slate-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ export function FAQ() {
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             FAQ
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+          <h2 id="faq-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Frequently Asked{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
               Questions
@@ -109,15 +109,12 @@ export function FAQ() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-10 text-center p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800"
         >
-          <p className="text-gray-700 dark:text-gray-200 mb-3">
-            Still have questions? We're happy to help.
+          <p className="text-gray-600 dark:text-gray-300">
+            Still have questions?{" "}
+            <a href="#contact" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+              Get in touch with us
+            </a>
           </p>
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-          >
-            Chat with our team →
-          </a>
         </motion.div>
       </div>
     </section>

@@ -48,7 +48,7 @@ const reasons = [
 
 export function WhyChoose() {
   return (
-    <section className="py-20 md:py-32 bg-white dark:bg-slate-950 relative overflow-hidden">
+    <section aria-labelledby="why-choose-title" className="py-20 md:py-32 bg-white dark:bg-slate-950 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-50/30 dark:via-indigo-900/10 to-transparent pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div
@@ -61,7 +61,7 @@ export function WhyChoose() {
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Why Servio
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+          <h2 id="why-choose-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Why Businesses{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
               Choose Us
@@ -89,8 +89,8 @@ export function WhyChoose() {
                 </div>
               </div>
               <div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{reason.title}</h3>
-                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{reason.description}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{reason.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{reason.description}</p>
               </div>
             </motion.div>
           ))}
