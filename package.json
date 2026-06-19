@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --open",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
@@ -49,6 +49,7 @@
     "cmdk": "1.1.1",
     "date-fns": "3.6.0",
     "embla-carousel-react": "8.6.0",
+    "firebase": "^12.15.0",
     "gsap": "^3.15.0",
     "input-otp": "1.4.2",
     "lucide-react": "0.487.0",
@@ -60,8 +61,8 @@
     "react-hook-form": "7.55.0",
     "react-popper": "2.3.0",
     "react-resizable-panels": "2.1.7",
+    "react-router-dom": "^6.23.1",
     "react-responsive-masonry": "2.7.1",
-    "react-router": "7.13.0",
     "react-slick": "0.31.0",
     "recharts": "2.15.2",
     "sonner": "2.0.3",

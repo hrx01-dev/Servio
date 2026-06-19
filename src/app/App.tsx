@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { Routes, Route } from "react-router";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -16,6 +16,9 @@ import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import NotFound from "./components/NotFound";
 import { SplashScreen } from "./components/SplashScreen";
+import { AuthProvider } from "../Firebase/AuthContext";
+import { SignIn } from "../Firebase/SignIn";
+import { SignUp } from "../Firebase/SignUp";
 import { useAppLoading } from "./hooks/useAppLoading";
 
 const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
@@ -107,10 +110,16 @@ export default function App() {
         transition={{ duration: loading.reducedMotion ? 0.2 : 0.8, ease: REVEAL_EASE }}
         aria-hidden={!loading.isReady || undefined}
       >
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
       </motion.div>
 
       <AnimatePresence onExitComplete={handleExitComplete}>
