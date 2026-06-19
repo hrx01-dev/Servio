@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useThrottledScroll } from '../hooks/useThrottledScroll';
-import { useAuth } from '../../Firebase/AuthContext';
+import { useAuth } from '../../Firebase/useAuth';
 import { auth } from '../../Firebase/firebase';
 
 export function Navbar() {
