@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
+import { useState, useRef } from 'react';
 
 const heroImage = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -11,6 +12,18 @@ const floatingCards = [
 ];
 
 export function Hero() {
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    setMousePosition({
+      x: (e.clientX - rect.left) / rect.width,
+      y: (e.clientY - rect.top) / rect.height,
+    });
+  };
+
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
@@ -19,7 +32,7 @@ export function Hero() {
   };
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20">
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20" onMouseMove={handleMouseMove} ref={containerRef}>
       {/* Gradient Mesh Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-indigo-400/30 to-purple-400/30 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-full blur-3xl animate-pulse" />
@@ -114,36 +127,139 @@ export function Hero() {
                   alt="Modern Dashboard Design"
                   className="w-full h-auto dark:opacity-80"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 to-purple-600/10 dark:from-indigo-600/20 dark:to-purple-600/20" />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 to-purple-600/10 dark:from-indigo-600/20 dark:to-purple-600/20"
+                  animate={{
+                    opacity: [0.6, 1, 0.6],
+                    scale: [1, 1.04, 1],
+                    backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                  }}
+                  transition={{
+                    duration: 6,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                />
               </div>
 
               {/* Floating Cards */}
-              {floatingCards.map((card, index) => (
-                <motion.div
-                  key={card.text}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                  className={`absolute ${
-                    index === 0
-                      ? 'top-4 -left-4 sm:top-8 sm:-left-8'
-                      : index === 1
-                      ? 'top-1/3 -right-4 sm:-right-8'
-                      : index === 2
-                      ? 'bottom-1/3 -left-4 sm:-left-8'
-                      : 'bottom-8 -right-4 sm:-right-8'
-                  } hidden lg:block`}
-                >
-                  <div className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center gap-3 hover:scale-110 transition-transform duration-300">
-                    <div className={`w-10 h-10 bg-gradient-to-br ${card.color} rounded-lg flex items-center justify-center`}>
-                      <card.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap">
-                      {card.text}
-                    </span>
+              {floatingCards.map((card, index) => {
+                const cardAnimations = [
+                  {
+                    y: [0, -20, 0, 12, 0],
+                    x: [0, 8, 0, -8, 0],
+                    rotate: [-3, 3, -3],
+                  },
+                  {
+                    y: [0, -18, 0, 15, 0],
+                    x: [0, -10, 0, 10, 0],
+                    rotate: [2, -2, 2],
+                  },
+                  {
+                    y: [0, -25, 0, 10, 0],
+                    x: [0, 12, 0, -12, 0],
+                    rotate: [-2, 2, -2],
+                  },
+                  {
+                    y: [0, -22, 0, 14, 0],
+                    x: [0, -6, 0, 6, 0],
+                    rotate: [3, -3, 3],
+                  },
+                ];
+
+                const parallaxMultipliers = [8, -10, 6, -8];
+                const multiplier = parallaxMultipliers[index];
+                const parallaxX = (mousePosition.x - 0.5) * multiplier;
+                const parallaxY = (mousePosition.y - 0.5) * multiplier;
+
+                return (
+                  <div
+                    key={card.text}
+                    className={`absolute ${
+                      index === 0
+                        ? 'top-4 -left-4 sm:top-8 sm:-left-8'
+                        : index === 1
+                        ? 'top-1/3 -right-4 sm:-right-8'
+                        : index === 2
+                        ? 'bottom-1/3 -left-4 sm:-left-8'
+                        : 'bottom-8 -right-4 sm:-right-8'
+                    } hidden lg:block`}
+                    style={{
+                      transform: `translate(${parallaxX}px, ${parallaxY}px)`,
+                      transition: 'transform 0.15s ease-out',
+                    }}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '0px 0px -100px 0px' }}
+                      transition={{ duration: 0.6, delay: 0.3 + index * 0.15 }}
+                    >
+                    <motion.div
+                      animate={{ ...cardAnimations[index] }}
+                      transition={{
+                        duration: 5,
+                        repeat: Infinity,
+                        repeatType: 'mirror' as const,
+                        ease: 'easeInOut',
+                      }}
+                      whileHover={{
+                        y: -12,
+                        scale: 1.08,
+                        rotate: 2,
+                        boxShadow: '0 25px 50px rgba(0,0,0,0.25)',
+                      }}
+                      className="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl p-4 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center gap-3 cursor-pointer group transition-shadow duration-300"
+                      style={{
+                        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(99,102,241,0.1))',
+                      }}
+                    >
+                      {/* Glowing gradient border overlay */}
+                      <motion.div
+                        className="absolute inset-0 rounded-2xl pointer-events-none"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        animate={{
+                          boxShadow: [
+                            `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
+                            `inset 0 0 20px rgba(99,102,241,0.2), inset 0 0 1px rgba(99,102,241,0.5)`,
+                            `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
+                          ],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      />
+
+                      <div
+                        className={`w-10 h-10 bg-gradient-to-br ${card.color} rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:shadow-2xl relative overflow-hidden`}
+                      >
+                        {/* Pulsing glow effect on icon */}
+                        <motion.div
+                          className={`absolute inset-0 bg-gradient-to-br ${card.color} rounded-lg blur-md`}
+                          animate={{
+                            opacity: [0.3, 0.6, 0.3],
+                            scale: [1, 1.1, 1],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                        <card.icon className="w-5 h-5 text-white relative z-10" />
+                      </div>
+
+                      <span className="font-medium text-gray-900 dark:text-white whitespace-nowrap relative z-10">
+                        {card.text}
+                      </span>
+                    </motion.div>
+                  </motion.div>
                   </div>
-                </motion.div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
         </div>
