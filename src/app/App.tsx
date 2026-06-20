@@ -21,6 +21,7 @@ import { SplashScreen } from "./components/SplashScreen";
 import { AuthProvider } from "../Firebase/AuthContext";
 import { SignIn } from "../Firebase/SignIn";
 import { SignUp } from "../Firebase/SignUp";
+import { AdminApp } from "../admin/AdminApp";
 import { useAppLoading } from "./hooks/useAppLoading";
 import { ProtectedRoute } from "../dashboard/components/ProtectedRoute";
 import { DashboardLayout } from "../dashboard/components/DashboardLayout";
@@ -30,6 +31,8 @@ import { UpdatesFeed } from "../dashboard/pages/UpdatesFeed";
 import { PaymentManagement } from "../dashboard/pages/PaymentManagement";
 import { InvoiceManagement } from "../dashboard/pages/InvoiceManagement";
 import { ProjectResources } from "../dashboard/pages/ProjectResources";
+import { ProjectEstimation } from "../dashboard/pages/ProjectEstimation";
+import { PricingConfig } from "../dashboard/pages/PricingConfig";
 
 const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
@@ -67,23 +70,13 @@ function LandingPage() {
   );
 }
 
-export default function App() {
+// The landing page keeps its splash-screen brand intro. That intro must gate
+// ONLY the marketing page — auth and /admin routes must never wait on (or be
+// made `inert` by) landing-asset loading — so the splash + scroll-lock + inert
+// wrapper live here and wrap only the landing route's element.
+function LandingShell() {
   const loading = useAppLoading();
   const landingRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Set robots meta tag based on environment
-    const robotsMeta = document.querySelector('meta[name="robots"]');
-    if (robotsMeta) {
-      // In development, use noindex, nofollow to prevent indexing
-      // In production, use index, follow (set in index.html)
-      if (import.meta.env.DEV) {
-        robotsMeta.setAttribute("content", "noindex, nofollow");
-      } else {
-        robotsMeta.setAttribute("content", "index, follow");
-      }
-    }
-  }, []);
 
   // Lock scroll while the splash covers the viewport; restore on reveal/unmount.
   // This effect is the single owner of body overflow.
@@ -105,8 +98,6 @@ export default function App() {
   }, [loading.isReady]);
 
   // After the splash has fully lifted away, hand focus to the revealed content.
-  // Route-agnostic so it also works on the 404 route. (Scroll is already
-  // restored by the scroll-lock effect's cleanup.)
   const handleExitComplete = () => {
     const target =
       document.getElementById("main-content") ??
@@ -116,7 +107,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950" style={{ fontFamily: "'Inter', 'Plus Jakarta Sans', sans-serif" }}>
+    <>
       {/* Landing is always mounted underneath (never display:none → no layout
           shift) and cross-fades in as the splash lifts away. */}
       <motion.div
@@ -149,6 +140,8 @@ export default function App() {
                 <Route path="payments" element={<PaymentManagement />} />
                 <Route path="invoices" element={<InvoiceManagement />} />
                 <Route path="resources" element={<ProjectResources />} />
+              <Route path="estimation" element={<ProjectEstimation />} />
+              <Route path="pricing-config" element={<PricingConfig />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
@@ -169,6 +162,54 @@ export default function App() {
           />
         )}
       </AnimatePresence>
+    </>
+  );
+}
+
+export default function App() {
+  useEffect(() => {
+    // Set robots meta tag based on environment
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    if (robotsMeta) {
+      // In development, use noindex, nofollow to prevent indexing
+      // In production, use index, follow (set in index.html)
+      if (import.meta.env.DEV) {
+        robotsMeta.setAttribute("content", "noindex, nofollow");
+      } else {
+        robotsMeta.setAttribute("content", "index, follow");
+      }
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-white dark:bg-slate-950" style={{ fontFamily: "'Inter', 'Plus Jakarta Sans', sans-serif" }}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            {/* Only the landing route is gated behind the splash intro. */}
+            <Route path="/" element={<LandingShell />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/admin/*" element={<AdminApp />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<DashboardOverview />} />
+              <Route path="progress" element={<ProjectProgress />} />
+              <Route path="updates" element={<UpdatesFeed />} />
+              <Route path="payments" element={<PaymentManagement />} />
+              <Route path="invoices" element={<InvoiceManagement />} />
+              <Route path="resources" element={<ProjectResources />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
     </div>
   );
 }

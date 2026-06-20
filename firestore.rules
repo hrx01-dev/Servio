@@ -1,0 +1,166 @@
+rules_version = '2';
+
+// Servio admin portal — Firestore Security Rules.
+//
+// These rules are the AUTHORITATIVE access control for the admin data. The
+// client-side guards in src/admin (route guards, `can()` checks) are UX only
+// and can be bypassed; THESE rules are what actually protect the data on the
+// server. The role -> capability matrix below mirrors
+// src/admin/rbac/permissions.ts — keep the two in sync.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- helpers -------------------------------------------------------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function adminPath() {
+      return /databases/$(database)/documents/admins/$(request.auth.uid);
+    }
+
+    function adminData() {
+      return get(adminPath()).data;
+    }
+
+    // A valid, enabled admin account.
+    function isAdmin() {
+      return isSignedIn()
+        && exists(adminPath())
+        && adminData().disabled != true;
+    }
+
+    function role() {
+      return adminData().role;
+    }
+
+    function isSuperAdmin() {
+      return isAdmin() && role() == 'super_admin';
+    }
+
+    // Capability check mirroring the role -> permission matrix.
+    function can(perm) {
+      return isAdmin() && (
+        role() == 'super_admin'
+        || (role() == 'frontend_dev' && perm in [
+              'dashboard:view', 'projects:view', 'projects:edit',
+              'clients:view', 'messages:view', 'messages:reply'
+            ])
+        || (role() == 'backend_dev' && perm in [
+              'dashboard:view', 'projects:view', 'projects:edit', 'projects:assign',
+              'clients:view', 'clients:edit', 'messages:view', 'messages:reply',
+              'audit:view'
+            ])
+        || (role() == 'qa_delivery' && perm in [
+              'dashboard:view', 'projects:view', 'clients:view',
+              'messages:view', 'messages:reply'
+            ])
+      );
+    }
+
+    // ---- admins --------------------------------------------------------
+
+    match /admins/{uid} {
+      // Read your own profile; super admins can read everyone.
+      allow get: if isSignedIn() && (request.auth.uid == uid || isSuperAdmin());
+      allow list: if isSuperAdmin();
+
+      // Creating/removing admin accounts is super-admin only.
+      allow create, delete: if isSuperAdmin();
+
+      // Updates: super admins may change anything (role, disabled, ...).
+      // The account owner may only touch their own profile/PIN fields — the
+      // key allowlist makes it impossible to change role/disabled (or inject
+      // any unexpected field), so no self-escalation is possible.
+      allow update: if isSuperAdmin()
+        || (
+          request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+               'displayName', 'email',
+               'pinHash', 'pinSalt', 'pinIterations',
+               'updatedAt', 'lastLoginAt'
+             ])
+        );
+    }
+
+    // ---- projects ------------------------------------------------------
+
+    match /projects/{id} {
+      allow read:           if can('projects:view');
+      allow create, update: if can('projects:edit');
+      allow delete:         if can('projects:delete');
+    }
+
+    // ---- clients -------------------------------------------------------
+
+    match /clients/{id} {
+      allow read:           if can('clients:view');
+      allow create, update: if can('clients:edit');
+      allow delete:         if isSuperAdmin();
+    }
+
+    // ---- messages ------------------------------------------------------
+
+    match /messages/{id} {
+      // The public website may submit a contact/quote message. Lock the shape
+      // down hard: required server timestamp (blocks inbox-ordering tricks),
+      // bounded string sizes (blocks oversized/DoS writes), basic email shape,
+      // and status pinned to 'new'. For scripted-spam protection beyond rules,
+      // enable Firebase App Check and/or a rate-limited callable function.
+      allow create: if
+        request.resource.data.keys().hasOnly(
+          ['name', 'email', 'subject', 'body', 'status', 'createdAt']
+        )
+        && request.resource.data.keys().hasAll(
+          ['name', 'email', 'body', 'status', 'createdAt']
+        )
+        && request.resource.data.status == 'new'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() < 200
+        && request.resource.data.email is string
+        && request.resource.data.email.size() < 320
+        && request.resource.data.email.matches('^[^@]+@[^@]+[.][^@]+$')
+        && request.resource.data.body is string
+        && request.resource.data.body.size() > 0
+        && request.resource.data.body.size() < 5000
+        && (
+          !('subject' in request.resource.data)
+          || (request.resource.data.subject is string
+              && request.resource.data.subject.size() < 300)
+        );
+
+      allow read:   if can('messages:view');
+      allow update: if can('messages:reply');
+      allow delete: if isSuperAdmin();
+    }
+
+    // ---- audit_logs ----------------------------------------------------
+
+    match /audit_logs/{id} {
+      allow read: if can('audit:view');
+
+      // Append-only and unforgeable: an admin may write log entries only for
+      // themselves, with the actor email bound to their auth token and the
+      // timestamp bound to the server clock (no spoofing / backdating).
+      // Entries can never be edited or deleted.
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly([
+             'actorUid', 'actorEmail', 'action',
+             'targetType', 'targetId', 'metadata', 'createdAt'
+           ])
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorEmail == request.auth.token.email
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.action is string
+        && request.resource.data.action.size() > 0
+        && request.resource.data.action.size() < 200;
+      allow update, delete: if false;
+    }
+
+    // Everything else is denied by default.
+  }
+}

@@ -75,3 +75,27 @@ export interface Project {
   resources: ProjectResource[];
   createdAt: string;
 }
+
+export interface FeatureAnalysis {
+  name: string;
+  complexity: "low" | "medium" | "high" | "enterprise";
+  estimatedEffort: string;
+}
+
+export interface EstimationResult {
+  projectType: string;
+  overallComplexity: "low" | "medium" | "high" | "enterprise";
+  features: FeatureAnalysis[];
+  estimatedCostMin: number;
+  estimatedCostMax: number;
+  estimatedTimeline: string;
+  explanation: string;
+}
+
+export interface EstimationRecord {
+  id: string;
+  userId: string;
+  description: string;
+  result: EstimationResult;
+  createdAt: string;
+}
