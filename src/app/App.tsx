@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -118,7 +118,6 @@ export default function App() {
         transition={{ duration: loading.reducedMotion ? 0.2 : 0.8, ease: REVEAL_EASE }}
         aria-hidden={!loading.isReady || undefined}
       >
-        <BrowserRouter>
           <AuthProvider>
             <Routes>
               <Route path="/" element={<LandingPage />} />
@@ -142,7 +141,6 @@ export default function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
-        </BrowserRouter>
       </motion.div>
 
       <AnimatePresence onExitComplete={handleExitComplete}>
