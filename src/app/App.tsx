@@ -1,11 +1,6 @@
-import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-
-function ScrollToTop() {
-  const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
-  return null;
-}
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
+import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { TrustedBy } from "./components/TrustedBy";
@@ -21,12 +16,33 @@ import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import NotFound from "./components/NotFound";
 import { ServiceDetailPage } from "./components/ServiceDetailPage";
+import { SplashScreen } from "./components/SplashScreen";
+import { AuthProvider } from "../Firebase/AuthContext";
+import { SignIn } from "../Firebase/SignIn";
+import { SignUp } from "../Firebase/SignUp";
+import { useAppLoading } from "./hooks/useAppLoading";
+import { ProtectedRoute } from "../dashboard/components/ProtectedRoute";
+import { DashboardLayout } from "../dashboard/components/DashboardLayout";
+import { DashboardOverview } from "../dashboard/pages/DashboardOverview";
+import { ProjectProgress } from "../dashboard/pages/ProjectProgress";
+import { UpdatesFeed } from "../dashboard/pages/UpdatesFeed";
+import { PaymentManagement } from "../dashboard/pages/PaymentManagement";
+import { InvoiceManagement } from "../dashboard/pages/InvoiceManagement";
+import { ProjectResources } from "../dashboard/pages/ProjectResources";
+
+const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 function LandingPage() {
   return (
     <>
       <a
-        href="`#main-content`"
+        href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-md focus:bg-white focus:text-slate-900"
       >
         Skip to main content
@@ -51,6 +67,9 @@ function LandingPage() {
 }
 
 export default function App() {
+  const loading = useAppLoading();
+  const landingRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Set robots meta tag based on environment
     const robotsMeta = document.querySelector('meta[name="robots"]');
@@ -65,14 +84,88 @@ export default function App() {
     }
   }, []);
 
+  // Lock scroll while the splash covers the viewport; restore on reveal/unmount.
+  // This effect is the single owner of body overflow.
+  useLayoutEffect(() => {
+    if (loading.isReady) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [loading.isReady]);
+
+  // While the splash is up, take the landing out of the tab order, the a11y
+  // tree, and pointer hit-testing — this enforces "block interaction beneath"
+  // for keyboard/AT users (the overlay blocks pointer input on top).
+  useLayoutEffect(() => {
+    const el = landingRef.current;
+    if (el) el.inert = !loading.isReady;
+  }, [loading.isReady]);
+
+  // After the splash has fully lifted away, hand focus to the revealed content.
+  // Route-agnostic so it also works on the 404 route. (Scroll is already
+  // restored by the scroll-lock effect's cleanup.)
+  const handleExitComplete = () => {
+    const target =
+      document.getElementById("main-content") ??
+      document.querySelector("main") ??
+      document.body;
+    target.focus({ preventScroll: true });
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950" style={{ fontFamily: "'Inter', 'Plus Jakarta Sans', sans-serif" }}>
-      <ScrollToTop />
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/services/:slug" element={<ServiceDetailPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      {/* Landing is always mounted underneath (never display:none → no layout
+          shift) and cross-fades in as the splash lifts away. */}
+      <motion.div
+        ref={landingRef}
+        initial={false}
+        animate={{ opacity: loading.isReady ? 1 : 0.001 }}
+        transition={{ duration: loading.reducedMotion ? 0.2 : 0.8, ease: REVEAL_EASE }}
+        aria-hidden={!loading.isReady || undefined}
+      >
+        <BrowserRouter>
+          <ScrollToTop />
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/signin" element={<SignIn />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/services/:slug" element={<ServiceDetailPage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<DashboardOverview />} />
+                <Route path="progress" element={<ProjectProgress />} />
+                <Route path="updates" element={<UpdatesFeed />} />
+                <Route path="payments" element={<PaymentManagement />} />
+                <Route path="invoices" element={<InvoiceManagement />} />
+                <Route path="resources" element={<ProjectResources />} />
+              </Route>
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </motion.div>
+
+      <AnimatePresence onExitComplete={handleExitComplete}>
+        {!loading.isReady && (
+          <SplashScreen
+            phase={loading.phase}
+            label={loading.label}
+            progress={loading.progress}
+            isError={loading.isError}
+            reducedMotion={loading.reducedMotion}
+            onRetry={loading.retry}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

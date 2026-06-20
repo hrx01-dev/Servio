@@ -8,8 +8,25 @@
       <title>Servio</title>
       <meta name="description" content="Offers startups and small businesses a premium platform to explore and request custom web development services with seamless project planning and support." />
       <meta name="robots" content="index, follow" />
-      <style>html, body { height: 100%; margin: 0; } #root { height: 100%; }</style>
-      
+      <meta name="theme-color" content="#0f0f1a" />
+      <link
+        rel="preload"
+        as="image"
+        fetchpriority="high"
+        href="https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+      />
+      <style>
+        html, body { height: 100%; margin: 0; }
+        #root { height: 100%; }
+        /* Dark luxury base so the first paint (before React mounts) is never a white flash. */
+        html, body, #root { background: #0f0f1a; }
+        body { overscroll-behavior: none; }
+        @media (prefers-reduced-motion: reduce) {
+          *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+        }
+      </style>
+      <script>window.__SERVIO_FP__ = performance.now();</script>
+
     </head>
 
     <body>

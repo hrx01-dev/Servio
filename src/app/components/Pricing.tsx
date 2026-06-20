@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Check, Star } from 'lucide-react';
 
 const plans = [
@@ -52,10 +52,11 @@ const plans = [
 ];
 
 export function Pricing() {
+  const reduce = useReducedMotion();
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     }
   };
 
@@ -63,10 +64,10 @@ export function Pricing() {
     <section id="pricing" aria-labelledby="pricing-title" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduce ? 0 : 0.6 }}
           className="text-center mb-16"
         >
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
@@ -87,10 +88,10 @@ export function Pricing() {
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+              whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              transition={{ duration: reduce ? 0 : 0.5, delay: index * 0.1 }}
               className={`relative bg-white dark:bg-slate-900 rounded-2xl p-8 ${
                 plan.highlighted
                   ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/30 md:-mt-4 md:mb-4'
@@ -153,10 +154,10 @@ export function Pricing() {
 
         {/* Custom Quote CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduce ? 0 : 0.6 }}
           className="mt-16 text-center"
         >
           <div className="inline-block p-1 rounded-2xl bg-gray-100 dark:bg-slate-800">

@@ -1,15 +1,16 @@
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export function FinalCTA() {
+  const reduce = useReducedMotion();
   return (
     <section className="py-20 md:py-32 relative overflow-hidden bg-white dark:bg-slate-950">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 30 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7 }}
+          transition={{ duration: reduce ? 0 : 0.7 }}
           className="relative rounded-3xl overflow-hidden"
         >
           {/* Gradient background */}
@@ -30,10 +31,10 @@ export function FinalCTA() {
 
           <div className="relative z-10 px-8 py-16 md:px-16 md:py-20 text-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9 }}
+              whileInView={reduce ? { opacity: 1 } : { opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: reduce ? 0 : 0.5, delay: 0.1 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full border border-white/20 mb-8"
             >
               <Sparkles className="w-4 h-4 text-cyan-300" />
@@ -46,7 +47,7 @@ export function FinalCTA() {
             </h2>
 
             <p className="text-white/75 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              Join 150+ businesses that trust Servio to deliver stunning, conversion-focused websites. Get your free proposal today.
+              Partner with Servio to deliver a stunning, conversion-focused website. Get your free proposal today.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

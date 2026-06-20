@@ -2,18 +2,18 @@ import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Send, CheckCircle2 } from "lucide-react";
 import {
-  BUDGET_OPTIONS as budgetOptions,
-  WEBSITE_TYPES as websiteTypes,
-  LIMITS,
   evaluateSubmission,
   type FieldErrors,
   type QuoteFormData,
+  BUDGET_OPTIONS as budgetOptions,
+  WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
 
 // Persisted submission timestamps for client-side rate limiting. Advisory only
 // (a user can clear storage) — the heavy lifting belongs on a server, but this
 // stops casual repeat-spam from the same browser at zero infra cost.
 const RATE_KEY = "servio:quote:submissions";
+
 
 function readHistory(): number[] {
   try {
@@ -46,10 +46,10 @@ export function QuoteForm() {
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [formError, setFormError] = useState<string | null>(null);
+  const [_formError, setFormError] = useState<string | null>(null);
   // Bumped on every surfaced form error so the live region re-announces even
   // when the message text is identical to the previous one (e.g. blocked twice).
-  const [errorNonce, setErrorNonce] = useState(0);
+  const [_errorNonce, setErrorNonce] = useState(0);
 
   // Honeypot value lives outside React state (read on submit via ref) so it
   // never round-trips through the controlled inputs a human interacts with.
@@ -108,8 +108,7 @@ export function QuoteForm() {
   };
 
   const inputClass = (field: keyof QuoteFormData) =>
-    `w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200 ${
-      errors[field] ? "border-red-400/60" : "border-white/20 hover:border-white/30"
+    `w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200 ${errors[field] ? "border-red-400/60" : "border-white/20 hover:border-white/30"
     }`;
 
   // Shared aria wiring for a field: marks it invalid and points at its error text.
@@ -263,6 +262,69 @@ export function QuoteForm() {
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                {/* Budget */}
+                <div>
+                  <label htmlFor="quote-budget" className="block text-sm font-medium text-gray-300 mb-2">
+                    Project Budget <span className="text-indigo-400">*</span>
+                  </label>
+                  <select
+                    id="quote-budget"
+                    value={form.budget}
+                    onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                    className={inputClass("budget")}
+                    {...fieldAria("budget")}
+                  >
+                    <option value="" disabled>Select a budget range</option>
+                    {budgetOptions.map((opt) => (
+                      <option key={opt} value={opt} className="bg-slate-800 text-white">{opt}</option>
+                    ))}
+                  </select>
+                  {errors.budget && <p id="quote-budget-error" className="mt-1.5 text-red-400 text-xs">{errors.budget}</p>}
+                </div>
+
+                {/* Website Type */}
+                <div>
+                  <label htmlFor="quote-type" className="block text-sm font-medium text-gray-300 mb-2">
+                    Website Type <span className="text-indigo-400">*</span>
+                  </label>
+                  <select
+                    id="quote-type"
+                    value={form.type}
+                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    className={inputClass("type")}
+                    {...fieldAria("type")}
+                  >
+                    <option value="" disabled>Select a website type</option>
+                    {websiteTypes.map((opt) => (
+                      <option key={opt} value={opt} className="bg-slate-800 text-white">{opt}</option>
+                    ))}
+                  </select>
+                  {errors.type && <p id="quote-type-error" className="mt-1.5 text-red-400 text-xs">{errors.type}</p>}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mt-6">
+                <label htmlFor="quote-description" className="block text-sm font-medium text-gray-300 mb-2">
+                  Project Description
+                </label>
+                <textarea
+                  id="quote-description"
+                  rows={4}
+                  placeholder="Tell us about your project goals, features, and timeline..."
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className={`${inputClass("description")} resize-y`}
+                  {...fieldAria("description")}
+                />
+                {errors.description && (
+                  <p id="quote-description-error" className="mt-1.5 text-red-400 text-xs">
+                    {errors.description}
+                  </p>
+                )}
               </div>
 
               <div className="mt-10">

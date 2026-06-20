@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
@@ -31,15 +31,16 @@ const faqs = [
 
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
+  const reduce = useReducedMotion();
 
   return (
     <section aria-labelledby="faq-title" className="py-20 md:py-32 bg-white dark:bg-slate-950">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduce ? 0 : 0.6 }}
           className="text-center mb-14"
         >
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
@@ -60,10 +61,10 @@ export function FAQ() {
           {faqs.map((faq, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 12 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
+              whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.05 }}
+              transition={{ duration: reduce ? 0 : 0.4, delay: index * 0.05 }}
               className={`border rounded-2xl overflow-hidden transition-all duration-200 ${
                 open === index
                   ? "border-indigo-200 dark:border-indigo-800 shadow-md shadow-indigo-50 dark:shadow-indigo-900/20"
@@ -87,10 +88,10 @@ export function FAQ() {
                 {open === index && (
                   <motion.div
                     key="content"
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                    initial={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                    animate={reduce ? { opacity: 1 } : { height: "auto", opacity: 1 }}
+                    exit={reduce ? { opacity: 0 } : { height: 0, opacity: 0 }}
+                    transition={{ duration: reduce ? 0 : 0.3, ease: "easeInOut" }}
                   >
                     <div className="px-6 pb-5">
                       <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
@@ -106,7 +107,7 @@ export function FAQ() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ duration: reduce ? 0 : 0.5, delay: 0.3 }}
           className="mt-10 text-center p-6 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl border border-indigo-100 dark:border-indigo-800"
         >
           <p className="text-gray-600 dark:text-gray-300">
