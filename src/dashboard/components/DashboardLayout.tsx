@@ -65,13 +65,18 @@ export function DashboardLayout() {
   const { currentUser } = useAuth();
 
   const handleSignOut = async () => {
-    await signOut(auth);
-    navigate("/");
+    try {
+      await signOut(auth);
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+    }
   };
 
   const initials = currentUser?.displayName
     ? currentUser.displayName
         .split(" ")
+        .filter((n) => n.length > 0)
         .map((n) => n[0])
         .join("")
         .toUpperCase()

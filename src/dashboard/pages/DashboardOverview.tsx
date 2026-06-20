@@ -57,12 +57,18 @@ export function DashboardOverview() {
     );
   }
 
-  const overallProgress = Math.round(
-    Object.values(project.stages).reduce(
-      (sum, s) => sum + s.completionPercent,
-      0,
-    ) / Object.keys(project.stages).length,
-  );
+  const stageValues = Object.values(project.stages ?? {});
+  const overallProgress =
+    stageValues.length > 0
+      ? Math.round(
+          stageValues.reduce(
+            (sum, s) =>
+              sum +
+              (Number.isFinite(s.completionPercent) ? s.completionPercent : 0),
+            0,
+          ) / stageValues.length,
+        )
+      : 0;
 
   const completedStages = Object.values(project.stages).filter(
     (s) => s.status === "completed",
