@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -15,6 +15,8 @@ import { FAQ } from "./components/FAQ";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import NotFound from "./components/NotFound";
+import { ServiceDetailPage } from "./components/ServiceDetailPage";
+import { ThemeProvider } from "./hooks/useTheme";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthProvider } from "../Firebase/AuthContext";
 import { SignIn } from "../Firebase/SignIn";
@@ -33,6 +35,12 @@ import { ProjectEstimation } from "../dashboard/pages/ProjectEstimation";
 import { PricingConfig } from "../dashboard/pages/PricingConfig";
 
 const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 function LandingPage() {
   return (
@@ -110,11 +118,14 @@ function LandingShell() {
         aria-hidden={!loading.isReady || undefined}
       >
         <BrowserRouter>
+          <ThemeProvider>
+          <ScrollToTop />
           <AuthProvider>
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/signin" element={<SignIn />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/services/:slug" element={<ServiceDetailPage />} />
               <Route
                 path="/dashboard"
                 element={
@@ -135,6 +146,7 @@ function LandingShell() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
+          </ThemeProvider>
         </BrowserRouter>
       </motion.div>
 

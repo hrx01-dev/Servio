@@ -1,4 +1,5 @@
 import { motion, useReducedMotion } from 'motion/react';
+import { TypingText } from './TypingText';
 import { ClipboardList, Palette, Code2, Rocket } from 'lucide-react';
 
 const steps = [
@@ -47,7 +48,7 @@ export function Process() {
           <h2 id="process-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             How We{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Work
+              <TypingText text="Work" delay={150} cursorColor="bg-indigo-600" />
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">

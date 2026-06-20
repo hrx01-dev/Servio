@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
+import { TypingText } from "./TypingText";
 import { ChevronDown } from "lucide-react";
 
 const faqs = [
@@ -49,7 +50,7 @@ export function FAQ() {
           <h2 id="faq-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             Frequently Asked{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] bg-clip-text text-transparent">
-              Questions
+              <TypingText text="Questions" delay={150} cursorColor="bg-indigo-600" />
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import { Quote, Star } from "lucide-react";
+import { TypingText } from "./TypingText";
 import priya from "../../assets/testimonials/priya.jpg";
 import arjun from "../../assets/testimonials/arjun.jpg";
 import ananya from "../../assets/testimonials/ananya.jpg";
@@ -220,7 +221,7 @@ export function Testimonials() {
           <h2 id="testimonials-title" className="mb-4 mt-3 text-4xl font-bold text-white md:text-5xl">
             What Our{" "}
             <span className="bg-gradient-to-r from-[#4F46E5] to-[#06B6D4] bg-clip-text text-transparent">
-              Clients Say
+              <TypingText text="Clients Say" delay={150} cursorColor="bg-indigo-500" />
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-400">

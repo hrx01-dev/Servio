@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Moon, Sun } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useThrottledScroll } from '../hooks/useThrottledScroll';
+import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../../Firebase/useAuth';
 import { auth } from '../../Firebase/firebase';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
   const { currentUser } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -19,33 +20,6 @@ export function Navbar() {
   useThrottledScroll((scrollY) => {
     setIsScrolled(scrollY > 20);
   }, 150);
-
-  useEffect(() => {
-    // Check for saved theme preference or system preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
-
-    setIsDarkMode(isDark);
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   const handleSignOut = async () => {
     try {
@@ -143,13 +117,16 @@ export function Navbar() {
               )}
             </button>
             {currentUser ? (
-              <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-700 dark:text-gray-200">
-                  Welcome, {currentUser.displayName || currentUser.email}
-                </span>
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/dashboard"
+                  className="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium text-sm"
+                >
+                  Dashboard
+                </Link>
                 <button
                   onClick={handleSignOut}
-                  className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium"
+                  className="px-4 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 rounded-lg text-sm font-medium hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   Sign Out
                 </button>
@@ -233,12 +210,21 @@ export function Navbar() {
                 Contact
               </button>
               {currentUser ? (
-                <button
-                  onClick={handleSignOut}
-                  className="w-full px-6 py-2.5 bg-red-500 text-white rounded-lg font-medium"
-                >
-                  Sign Out
-                </button>
+                <div className="space-y-2">
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block w-full text-center px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium"
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={handleSignOut}
+                    className="w-full px-6 py-2.5 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               ) : (
                 <Link
                   to="/signin"

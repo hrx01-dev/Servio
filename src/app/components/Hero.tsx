@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { TypingText } from './TypingText';
 
 const heroImage = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 
@@ -63,7 +64,7 @@ export function Hero() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Your Business Deserves a Website That{' '}
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Converts
+                <TypingText text="Converts" delay={1200} triggerOnView={false} cursorColor="bg-indigo-600" />
               </span>
             </h1>
 

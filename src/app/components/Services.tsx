@@ -1,45 +1,8 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
-import { FileText, Globe, Briefcase, ShoppingCart, Code, Settings } from 'lucide-react';
-
-const services = [
-  {
-    icon: FileText,
-    title: 'Landing Pages',
-    description: 'High-converting landing pages designed to capture leads and drive conversions.',
-    color: 'from-indigo-500 to-blue-500',
-  },
-  {
-    icon: Globe,
-    title: 'Business Websites',
-    description: 'Professional multi-page websites that establish your online presence.',
-    color: 'from-purple-500 to-pink-500',
-  },
-  {
-    icon: Briefcase,
-    title: 'Portfolio Websites',
-    description: 'Showcase your work with stunning portfolio designs that impress clients.',
-    color: 'from-cyan-500 to-teal-500',
-  },
-  {
-    icon: ShoppingCart,
-    title: 'E-Commerce Stores',
-    description: 'Full-featured online stores with secure payment processing and inventory management.',
-    color: 'from-orange-500 to-red-500',
-  },
-  {
-    icon: Code,
-    title: 'Custom Web Applications',
-    description: 'Tailored web applications built to solve your unique business challenges.',
-    color: 'from-green-500 to-emerald-500',
-  },
-  {
-    icon: Settings,
-    title: 'Website Maintenance',
-    description: 'Ongoing support and updates to keep your website running smoothly.',
-    color: 'from-violet-500 to-purple-500',
-  },
-];
+import { services } from '../data/servicesData';
+import { TypingText } from './TypingText';
 
 // Fine fractal-noise grain to kill blur banding on the light backdrop. Fully
 // percent-encoded so the data URI survives any bundler / CSS parser.
@@ -78,6 +41,7 @@ function ServiceCard({
   };
 
   return (
+    <Link to={`/services/${service.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-3xl">
     <motion.div
       onMouseMove={onMove}
       initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.96, filter: 'blur(6px)' }}
@@ -160,6 +124,7 @@ function ServiceCard({
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 }
 
@@ -232,7 +197,7 @@ export function Services() {
               animate={reduce ? undefined : { backgroundPositionX: ['0%', '200%'] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             >
-              Succeed Online
+              <TypingText text="Succeed Online" delay={200} cursorColor="bg-indigo-500" />
             </motion.span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">

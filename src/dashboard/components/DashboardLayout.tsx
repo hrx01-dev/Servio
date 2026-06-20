@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { signOut } from "firebase/auth";
 import { auth } from "../../Firebase/firebase";
 import { useAuth } from "../../Firebase/useAuth";
+import { useTheme } from "../../app/hooks/useTheme";
 import {
   LayoutDashboard,
   GitBranch,
@@ -15,6 +16,8 @@ import {
   Menu,
   X,
   Home,
+  Moon,
+  Sun,
   Sparkles,
   Settings2,
 } from "lucide-react";
@@ -67,6 +70,7 @@ export function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const handleSignOut = async () => {
     try {
@@ -121,6 +125,18 @@ export function DashboardLayout() {
       <Separator />
 
       <div className="p-4 space-y-3">
+        <button
+          onClick={toggleTheme}
+          className="w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-slate-800 dark:hover:text-gray-200 transition-colors"
+          aria-label="Toggle theme"
+        >
+          {isDarkMode ? (
+            <Sun className="h-5 w-5 shrink-0 text-yellow-500" />
+          ) : (
+            <Moon className="h-5 w-5 shrink-0" />
+          )}
+          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+        </button>
         <Link
           to="/"
           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-slate-800 dark:hover:text-gray-200 transition-colors"
@@ -200,18 +216,32 @@ export function DashboardLayout() {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Top bar (mobile) */}
-        <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b border-gray-200 bg-white/80 backdrop-blur-md px-4 dark:border-slate-800 dark:bg-slate-900/80 lg:hidden">
+        <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md px-4 dark:border-slate-800 dark:bg-slate-900/80 lg:hidden">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open sidebar"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <span className="text-sm font-semibold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
+              Servio Dashboard
+            </span>
+          </div>
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setSidebarOpen(true)}
-            aria-label="Open sidebar"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
           >
-            <Menu className="h-5 w-5" />
+            {isDarkMode ? (
+              <Sun className="h-5 w-5 text-yellow-500" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
           </Button>
-          <span className="text-sm font-semibold bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
-            Servio Dashboard
-          </span>
         </header>
 
         <main className="p-4 md:p-6 lg:p-8">
