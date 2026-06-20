@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    /* Language and environment */
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "jsx": "react-jsx",
+    "useDefineForClassFields": true,
+
+    /* Modules (Vite/esbuild bundler mode) */
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "isolatedModules": true,
+    "verbatimModuleSyntax": false,
+    "resolveJsonModule": true,
+
+    /* Path alias — mirrors the `@` alias in vite.config.ts */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+
+    /* Type checking only — Vite/esbuild handles emit */
+    "noEmit": true,
+    "skipLibCheck": true,
+
+    /* Strictness — `strict` covers the core type-safety rules. Unused-symbol
+       detection is delegated to ESLint's `no-unused-vars` (more configurable,
+       and reported as warnings so pre-existing debt doesn't block the build). */
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src", "vite.config.ts"]
+}

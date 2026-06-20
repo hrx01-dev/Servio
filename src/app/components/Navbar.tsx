@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Moon, Sun } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { useThrottledScroll } from '../hooks/useThrottledScroll';
+import { useAuth } from '../../Firebase/useAuth';
+import { auth } from '../../Firebase/firebase';
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const { currentUser } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const reduce = useReducedMotion();
 
   // Use throttled scroll handler to prevent excessive re-renders (max once every 150ms)
   useThrottledScroll((scrollY) => {
@@ -18,7 +25,7 @@ export function Navbar() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDark = savedTheme ? savedTheme === 'dark' : prefersDark;
-    
+
     setIsDarkMode(isDark);
     if (isDark) {
       document.documentElement.classList.add('dark');
@@ -30,7 +37,7 @@ export function Navbar() {
   const toggleTheme = () => {
     const newDarkMode = !isDarkMode;
     setIsDarkMode(newDarkMode);
-    
+
     if (newDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -40,21 +47,36 @@ export function Navbar() {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
+  };
+
   const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setIsMobileMenuOpen(false);
+    setIsMobileMenuOpen(false);
+    // If we are not on the landing page, navigate there first.
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Use a timeout to allow the landing page to render before scrolling.
+      setTimeout(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+      }, 100);
+    } else {
+      // If we are already on the landing page, scroll immediately.
+      document.getElementById(id)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
     }
   };
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm dark:shadow-slate-900/50'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? 'bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg shadow-sm dark:shadow-slate-900/50'
+        : 'bg-transparent'
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
@@ -120,12 +142,26 @@ export function Navbar() {
                 <Moon className="w-5 h-5 text-gray-700" />
               )}
             </button>
-            <button
-              onClick={() => scrollToSection('contact')}
-              className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium"
-            >
-              Get Free Quote
-            </button>
+            {currentUser ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm text-gray-700 dark:text-gray-200">
+                  Welcome, {currentUser.displayName || currentUser.email}
+                </span>
+                <button
+                  onClick={handleSignOut}
+                  className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/signin"
+                className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -159,9 +195,10 @@ export function Navbar() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            animate={reduce ? { opacity: 1 } : { opacity: 1, height: 'auto' }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+            transition={{ duration: reduce ? 0 : 0.2 }}
             className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-slate-700"
           >
             <div className="px-4 py-4 space-y-3">
@@ -195,12 +232,22 @@ export function Navbar() {
               >
                 Contact
               </button>
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="w-full px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium"
-              >
-                Get Free Quote
-              </button>
+              {currentUser ? (
+                <button
+                  onClick={handleSignOut}
+                  className="w-full px-6 py-2.5 bg-red-500 text-white rounded-lg font-medium"
+                >
+                  Sign Out
+                </button>
+              ) : (
+                <Link
+                  to="/signin"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block w-full text-center px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 font-medium"
+                >
+                  Sign In
+                </Link>
+              )}
             </div>
           </motion.div>
         )}

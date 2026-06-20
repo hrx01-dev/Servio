@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { ClipboardList, Palette, Code2, Rocket } from 'lucide-react';
 
 const steps = [
@@ -29,20 +29,22 @@ const steps = [
 ];
 
 export function Process() {
+  const reduce = useReducedMotion();
+
   return (
-    <section className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
+    <section aria-labelledby="process-title" className="py-20 md:py-32 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+          whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: reduce ? 0 : 0.6 }}
           className="text-center mb-16"
         >
           <span className="text-indigo-600 dark:text-indigo-400 font-semibold text-sm uppercase tracking-wider">
             Our Process
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
+          <h2 id="process-title" className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mt-3 mb-4">
             How We{' '}
             <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
               Work
@@ -61,10 +63,10 @@ export function Process() {
             {steps.map((step, index) => (
               <motion.div
                 key={step.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 20 }}
+                whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: reduce ? 0 : 0.5, delay: index * 0.1 }}
                 className="relative"
               >
                 {/* Step Number */}
@@ -98,12 +100,7 @@ export function Process() {
                       stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
                 )}

@@ -184,3 +184,61 @@
     line-height: 1.5;
   }
 }
+
+/* Testimonials auto-scrolling marquee */
+@keyframes testimonial-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.testimonial-marquee-track {
+  animation: testimonial-marquee var(--marquee-duration, 40s) linear infinite;
+  animation-direction: var(--marquee-direction, normal);
+}
+
+.testimonial-marquee:hover .testimonial-marquee-track,
+.testimonial-marquee:focus-within .testimonial-marquee-track {
+  animation-play-state: paused;
+}
+
+/* When motion is reduced, stop the auto-scroll and let users reach every
+   card by scrolling the row horizontally (keyboard-focusable container) instead
+   of leaving the off-screen cards clipped and unreachable. */
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-marquee {
+    overflow-x: auto;
+  }
+
+  .testimonial-marquee-track {
+    animation: none;
+  }
+}
+
+/**
+ * Site-wide reduced-motion gate.
+ *
+ * Honors the user's OS-level `prefers-reduced-motion: reduce` setting for
+ * everyone — including users with vestibular disorders — by neutralizing
+ * CSS-driven animation, transitions, and smooth scrolling across the whole
+ * site (Tailwind `animate-pulse`, hover transforms, the `html` smooth scroll
+ * above, etc.). JS-driven motion (motion/react) is gated separately in each
+ * component via the `useReducedMotion()` hook.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html {
+    scroll-behavior: auto !important;
+  }
+}

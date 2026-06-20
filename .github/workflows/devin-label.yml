@@ -1,0 +1,51 @@
+
+name: Send Issue to Devin
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  devin:
+    if: github.event.label.name == 'devin'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create Devin Session
+        env:
+          DEVIN_API_KEY: ${{ secrets.DEVIN_API_KEY }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+
+        run: |
+          jq -n \
+            --arg issue_url "$ISSUE_URL" \
+            --arg issue_title "$ISSUE_TITLE" \
+            --arg issue_body "$ISSUE_BODY" \
+            --arg issue_number "$ISSUE_NUMBER" \
+            '{
+              prompt:
+                ("Work on GitHub issue #" + $issue_number +
+                 " in repository hrx01-dev/servio.\n\n" +
+                 "Issue URL: " + $issue_url + "\n\n" +
+                 "Title: " + $issue_title + "\n\n" +
+                 "Description:\n" + $issue_body + "\n\n" +
+                 "Requirements:\n" +
+                 "- Create a new branch\n" +
+                 "- Implement the solution\n" +
+                 "- Run tests if available\n" +
+                 "- Open a pull request")
+            }' > payload.json
+
+          curl --fail-with-body \
+            -X POST "https://api.devin.ai/v1/sessions" \
+            -H "Authorization: Bearer $DEVIN_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d @payload.json
+

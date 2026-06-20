@@ -73,7 +73,7 @@ export function isValidEmail(raw: string): boolean {
 // number we validate — and a leading "00" IDD prefix becomes "+" so long
 // international numbers don't blow the 15-digit ceiling purely on the prefix.
 export function normalizePhone(raw: string): string {
-  let n = raw.replace(/[\s().\-]/g, "");
+  let n = raw.replace(/[\s().-]/g, "");
   n = n.replace(/(?:x|ext\.?|#)\d+$/i, "");
   if (n.startsWith("00")) n = "+" + n.slice(2);
   return n;
