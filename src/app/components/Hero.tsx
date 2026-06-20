@@ -90,25 +90,26 @@ export function Hero() {
               </motion.button>
             </div>
 
-            {/* Stats */}
+            {/* What we deliver — honest, verifiable claims rather than
+                unverified vanity metrics. */}
             <div className="grid grid-cols-3 gap-6 mt-12 pt-12 border-t border-gray-200 dark:border-slate-700">
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  150+
+                <div className="text-2xl lg:text-3xl font-bold leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  100%
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Projects Done</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Custom Code</div>
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  98%
+                <div className="text-2xl lg:text-3xl font-bold leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  Mobile-First
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Client Satisfaction</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Responsive Design</div>
               </div>
               <div className="text-center lg:text-left">
-                <div className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  5+
+                <div className="text-2xl lg:text-3xl font-bold leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  SEO-Ready
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Years Experience</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Built to Rank</div>
               </div>
             </div>
           </motion.div>

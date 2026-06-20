@@ -47,7 +47,7 @@ export function FinalCTA() {
             </h2>
 
             <p className="text-white/75 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              Join 150+ businesses that trust Servio to deliver stunning, conversion-focused websites. Get your free proposal today.
+              Partner with Servio to deliver a stunning, conversion-focused website. Get your free proposal today.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
