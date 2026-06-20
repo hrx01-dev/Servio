@@ -5,6 +5,7 @@ import { useAuth } from "@/Firebase/useAuth";
 import { AdminContext, AdminContextValue } from "./AdminContextObject";
 import { COLLECTIONS, parseAdminProfile } from "../lib/collections";
 import { hasPermission, Permission } from "../rbac/permissions";
+import { DEV_MOCK_ENABLED, MOCK_ADMIN, MOCK_USER } from "../lib/devMock";
 import { AdminProfile } from "../types";
 
 /**
@@ -21,6 +22,14 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Local preview: skip Firebase entirely and inject a fake super_admin.
+    if (DEV_MOCK_ENABLED) {
+      setAdmin(MOCK_ADMIN);
+      setDocLoading(false);
+      setError(null);
+      return;
+    }
+
     if (authLoading) return;
 
     if (!currentUser) {
@@ -53,8 +62,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, [currentUser, authLoading]);
 
-  const isAdmin = admin !== null && !admin.disabled;
-  const role = isAdmin ? admin.role : null;
+  // In mock mode the fake admin must be available synchronously on the first
+  // render (before the effect runs), or the route guard bounces to /unauthorized.
+  const effectiveAdmin = DEV_MOCK_ENABLED ? MOCK_ADMIN : admin;
+  const isAdmin = effectiveAdmin !== null && !effectiveAdmin.disabled;
+  const role = isAdmin ? effectiveAdmin.role : null;
 
   const can = useCallback(
     (permission: Permission) => hasPermission(role, permission),
@@ -63,15 +75,24 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AdminContextValue>(
     () => ({
-      firebaseUser: currentUser,
-      admin,
+      firebaseUser: DEV_MOCK_ENABLED ? MOCK_USER : currentUser,
+      admin: effectiveAdmin,
       role,
-      loading: authLoading || docLoading,
+      loading: DEV_MOCK_ENABLED ? false : authLoading || docLoading,
       error,
       isAdmin,
       can,
     }),
-    [currentUser, admin, role, authLoading, docLoading, error, isAdmin, can],
+    [
+      currentUser,
+      effectiveAdmin,
+      role,
+      authLoading,
+      docLoading,
+      error,
+      isAdmin,
+      can,
+    ],
   );
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;

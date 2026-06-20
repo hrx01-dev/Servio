@@ -24,6 +24,14 @@ import {
   ContactMessage,
   Project,
 } from "../types";
+import {
+  DEV_MOCK_ENABLED,
+  MOCK_ADMINS,
+  MOCK_AUDIT,
+  MOCK_CLIENTS,
+  MOCK_MESSAGES,
+  MOCK_PROJECTS,
+} from "../lib/devMock";
 
 export interface CollectionState<T> {
   data: T[];
@@ -52,6 +60,7 @@ function useCollectionData<T>(
   ref: CollectionReference<DocumentData>,
   parse: (id: string, data: DocumentData) => T | null,
   compare?: (a: T, b: T) => number,
+  mock?: T[],
 ): CollectionState<T> {
   const [state, setState] = useState<CollectionState<T>>({
     data: [],
@@ -60,6 +69,14 @@ function useCollectionData<T>(
   });
 
   useEffect(() => {
+    // Local preview: serve demo data instead of subscribing to Firestore.
+    if (DEV_MOCK_ENABLED) {
+      const data = mock ? [...mock] : [];
+      if (compare) data.sort(compare);
+      setState({ data, loading: false, error: null });
+      return;
+    }
+
     const unsubscribe = onSnapshot(
       ref,
       (snapshot) => {
@@ -74,27 +91,55 @@ function useCollectionData<T>(
       (err) => setState({ data: [], loading: false, error: err.message }),
     );
     return unsubscribe;
-  }, [ref, parse, compare]);
+  }, [ref, parse, compare, mock]);
 
   return state;
 }
 
+// The mock args are gated on DEV_MOCK_ENABLED (which folds to `false` in a
+// production build) so the demo data + fake credentials are tree-shaken out of
+// the prod bundle entirely.
 export function useProjects(): CollectionState<Project> {
-  return useCollectionData(projectsCollection, parseProject, byCreatedDesc);
+  return useCollectionData(
+    projectsCollection,
+    parseProject,
+    byCreatedDesc,
+    DEV_MOCK_ENABLED ? MOCK_PROJECTS : undefined,
+  );
 }
 
 export function useClients(): CollectionState<Client> {
-  return useCollectionData(clientsCollection, parseClient, byCreatedDesc);
+  return useCollectionData(
+    clientsCollection,
+    parseClient,
+    byCreatedDesc,
+    DEV_MOCK_ENABLED ? MOCK_CLIENTS : undefined,
+  );
 }
 
 export function useMessages(): CollectionState<ContactMessage> {
-  return useCollectionData(messagesCollection, parseMessage, byCreatedDesc);
+  return useCollectionData(
+    messagesCollection,
+    parseMessage,
+    byCreatedDesc,
+    DEV_MOCK_ENABLED ? MOCK_MESSAGES : undefined,
+  );
 }
 
 export function useAuditLogs(): CollectionState<AuditLogEntry> {
-  return useCollectionData(auditLogsCollection, parseAuditLog, byCreatedDesc);
+  return useCollectionData(
+    auditLogsCollection,
+    parseAuditLog,
+    byCreatedDesc,
+    DEV_MOCK_ENABLED ? MOCK_AUDIT : undefined,
+  );
 }
 
 export function useAdmins(): CollectionState<AdminProfile> {
-  return useCollectionData(adminsCollection, parseAdminProfile);
+  return useCollectionData(
+    adminsCollection,
+    parseAdminProfile,
+    undefined,
+    DEV_MOCK_ENABLED ? MOCK_ADMINS : undefined,
+  );
 }

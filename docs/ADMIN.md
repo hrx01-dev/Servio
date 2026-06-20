@@ -234,6 +234,20 @@ firebase deploy --only firestore:rules
 # (.firebaserc already targets the `servio-0` project)
 ```
 
+### 5.5 Local preview without a backend (dev mock)
+
+To browse the admin UI locally without configuring Firebase Auth/Firestore, set
+`VITE_ADMIN_DEV_MOCK=true` in `.env.local` and run `npm run dev`. Visiting
+`/admin` then signs you in as a fake **super_admin** ("Dev Admin") with demo
+data across every page.
+
+- **Hard-gated on `import.meta.env.DEV`**, which is `false` in `vite build`, so
+  the mock — and its demo data/fake credentials — can never activate in or be
+  bundled into a production build (the mock args fold away and are tree-shaken).
+- It's a **read-only preview**: writes (create/delete/role change) hit real
+  Firestore and will fail without a backend.
+- Turn it off by clearing the env var and restarting the dev server.
+
 ---
 
 ## 6. Routes
