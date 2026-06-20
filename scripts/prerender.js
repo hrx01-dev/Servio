@@ -22,17 +22,16 @@ const ROUTES = ['/', '404.html'];
 function startServer(port) {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
-      // Normalize the URL pathname to prevent directory traversal
+      // Get the URL pathname
       let urlPath = new URL(req.url, `http://localhost:${port}`).pathname;
-      urlPath = path.normalize(urlPath);
       
       // Default to index.html for root or 404.html
       if (urlPath === '/' || urlPath === '/404.html') {
         urlPath = '/index.html';
       }
 
-      // Resolve the full file path
-      let filePath = path.resolve(DIST_DIR, '.' + urlPath);
+      // Resolve the full file path safely
+      let filePath = path.join(DIST_DIR, urlPath);
       const distDirResolved = path.resolve(DIST_DIR);
 
       // Validate that the resolved path is within DIST_DIR (prevent directory traversal)
