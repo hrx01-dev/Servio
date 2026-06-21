@@ -54,7 +54,7 @@ export function hasDigit(password: string): boolean {
  * Recognised special characters: `! @ # $ % ^ & * ( ) _ + - = [ ] { } ; ' : " | , . < > ? / \\ ~`
  */
 export function hasSpecialChar(password: string): boolean {
-  return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(password);
+  return /[!@#$%^&*()_+\-=[\]{};':"|,.<>/?~`]/.test(password);
 }
 
 // ─── Score calculator ─────────────────────────────────────────────────────────
