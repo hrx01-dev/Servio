@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { useInView } from 'motion/react';
 import { TypingText } from './TypingText';
 
 const heroImage = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
@@ -16,6 +17,7 @@ export function Hero() {
   const reduce = useReducedMotion();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "200px" });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (reduce) return;
@@ -38,8 +40,8 @@ export function Hero() {
     <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 pt-20" onMouseMove={handleMouseMove} ref={containerRef}>
       {/* Gradient Mesh Background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-indigo-400/30 to-purple-400/30 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-full blur-3xl animate-pulse motion-reduce:animate-none" />
-        <div className="absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-cyan-400/30 to-blue-400/30 dark:from-cyan-600/20 dark:to-blue-600/20 rounded-full blur-3xl animate-pulse motion-reduce:animate-none" style={{ animationDelay: '1s' }} />
+        <div className={`absolute -top-1/2 -left-1/4 w-[600px] h-[600px] bg-gradient-to-br from-indigo-400/30 to-purple-400/30 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-full blur-3xl ${isInView ? 'animate-pulse' : ''} motion-reduce:animate-none`} />
+        <div className={`absolute -bottom-1/2 -right-1/4 w-[600px] h-[600px] bg-gradient-to-br from-cyan-400/30 to-blue-400/30 dark:from-cyan-600/20 dark:to-blue-600/20 rounded-full blur-3xl ${isInView ? 'animate-pulse' : ''} motion-reduce:animate-none`} style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
@@ -57,7 +59,7 @@ export function Hero() {
               transition={{ duration: reduce ? 0 : 0.5 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm rounded-full border border-indigo-100 dark:border-indigo-900 mb-6"
             >
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse motion-reduce:animate-none" />
+              <span className={`w-2 h-2 bg-green-500 rounded-full ${isInView ? 'animate-pulse' : ''} motion-reduce:animate-none`} />
               <span className="text-sm text-gray-700 dark:text-gray-200">Available for new projects</span>
             </motion.div>
 
@@ -132,7 +134,7 @@ export function Hero() {
                 />
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-tr from-indigo-600/10 to-purple-600/10 dark:from-indigo-600/20 dark:to-purple-600/20"
-                  animate={reduce ? undefined : {
+                  animate={reduce || !isInView ? undefined : {
                     opacity: [0.6, 1, 0.6],
                     scale: [1, 1.04, 1],
                     backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
@@ -199,7 +201,7 @@ export function Hero() {
                       transition={{ duration: reduce ? 0 : 0.6, delay: 0.3 + index * 0.15 }}
                     >
                     <motion.div
-                      animate={reduce ? undefined : { ...cardAnimations[index] }}
+                      animate={reduce || !isInView ? undefined : { ...cardAnimations[index] }}
                       transition={{
                         duration: 5,
                         repeat: Infinity,
@@ -217,18 +219,17 @@ export function Hero() {
                         filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.1)) drop-shadow(0 0 20px rgba(99,102,241,0.1))',
                       }}
                     >
-                      {/* Glowing gradient border overlay */}
-                      <motion.div
-                        className="absolute inset-0 rounded-2xl pointer-events-none"
-                        initial={{ opacity: 0 }}
-                        whileInView={{ opacity: 1 }}
-                        animate={reduce ? undefined : {
-                          boxShadow: [
-                            `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
-                            `inset 0 0 20px rgba(99,102,241,0.2), inset 0 0 1px rgba(99,102,241,0.5)`,
-                            `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
-                          ],
-                        }}
+                        <motion.div
+                          className="absolute inset-0 rounded-2xl pointer-events-none"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          animate={reduce || !isInView ? undefined : {
+                            boxShadow: [
+                              `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
+                              `inset 0 0 20px rgba(99,102,241,0.2), inset 0 0 1px rgba(99,102,241,0.5)`,
+                              `inset 0 0 20px rgba(99,102,241,0), inset 0 0 0px ${card.color}`,
+                            ],
+                          }}
                         transition={{
                           duration: 3,
                           repeat: Infinity,
@@ -239,10 +240,9 @@ export function Hero() {
                       <div
                         className={`w-10 h-10 bg-gradient-to-br ${card.color} rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:shadow-2xl relative overflow-hidden`}
                       >
-                        {/* Pulsing glow effect on icon */}
                         <motion.div
                           className={`absolute inset-0 bg-gradient-to-br ${card.color} rounded-lg blur-md`}
-                          animate={reduce ? undefined : {
+                          animate={reduce || !isInView ? undefined : {
                             opacity: [0.3, 0.6, 0.3],
                             scale: [1, 1.1, 1],
                           }}
