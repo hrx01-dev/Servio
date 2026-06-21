@@ -131,11 +131,16 @@ export function DashboardLayout() {
           aria-label="Toggle theme"
         >
           {isDarkMode ? (
-            <Sun className="h-5 w-5 shrink-0 text-yellow-500" />
+            <>
+              <Sun className="h-5 w-5 shrink-0 text-yellow-500" />
+              <span>Light Mode</span>
+            </>
           ) : (
-            <Moon className="h-5 w-5 shrink-0" />
+            <>
+              <Moon className="h-5 w-5 shrink-0 text-gray-500" />
+              <span>Dark Mode</span>
+            </>
           )}
-          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
         </button>
         <Link
           to="/"
@@ -239,7 +244,7 @@ export function DashboardLayout() {
             {isDarkMode ? (
               <Sun className="h-5 w-5 text-yellow-500" />
             ) : (
-              <Moon className="h-5 w-5" />
+              <Moon className="h-5 w-5 text-gray-600" />
             )}
           </Button>
         </header>
