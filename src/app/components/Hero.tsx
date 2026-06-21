@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useInView } from 'motion/react';
 import { TypingText } from './TypingText';
 

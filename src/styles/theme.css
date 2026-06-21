@@ -16,6 +16,7 @@
     #1e1b4b 100%
   );
   background-size: 200% auto;
+  color: #4338ca; /* fallback color */
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -32,6 +33,7 @@
     #818cf8 100%
   );
   background-size: 200% auto;
+  color: #818cf8; /* fallback color */
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
