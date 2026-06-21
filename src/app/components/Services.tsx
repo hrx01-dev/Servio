@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react';
+import { motion, useScroll, useTransform, useReducedMotion, useInView } from 'motion/react';
 import { services } from '../data/servicesData';
 import { TypingText } from './TypingText';
 
@@ -131,6 +131,7 @@ function ServiceCard({
 export function Services() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const isInView = useInView(ref, { margin: "200px" });
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const bgY = useTransform(scrollYProgress, [0, 1], ['-8%', '8%']);
   const bgScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.1, 1, 1.1]);
@@ -156,17 +157,17 @@ export function Services() {
       >
         <motion.div
           className="absolute -top-32 -left-24 w-[640px] h-[640px] rounded-full bg-gradient-to-br from-indigo-400/40 to-purple-400/30 dark:from-indigo-500/20 dark:to-purple-500/15 blur-3xl"
-          animate={reduce ? undefined : { x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.08, 0.96, 1] }}
+          animate={reduce || !isInView ? undefined : { x: [0, 40, -20, 0], y: [0, -30, 20, 0], scale: [1, 1.08, 0.96, 1] }}
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute top-1/3 right-[-120px] w-[560px] h-[560px] rounded-full bg-gradient-to-br from-purple-400/35 to-fuchsia-300/25 dark:from-purple-500/15 dark:to-fuchsia-400/10 blur-3xl"
-          animate={reduce ? undefined : { x: [0, -50, 30, 0], y: [0, 25, -15, 0], scale: [1, 1.06, 0.97, 1] }}
+          animate={reduce || !isInView ? undefined : { x: [0, -50, 30, 0], y: [0, 25, -15, 0], scale: [1, 1.06, 0.97, 1] }}
           transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut' }}
         />
         <motion.div
           className="absolute bottom-[-160px] left-1/3 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-cyan-400/35 to-teal-300/25 dark:from-cyan-500/15 dark:to-teal-400/10 blur-3xl"
-          animate={reduce ? undefined : { x: [0, 30, -40, 0], y: [0, -20, 30, 0], scale: [1, 1.07, 0.95, 1] }}
+          animate={reduce || !isInView ? undefined : { x: [0, 30, -40, 0], y: [0, -20, 30, 0], scale: [1, 1.07, 0.95, 1] }}
           transition={{ duration: 26, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>
@@ -194,7 +195,7 @@ export function Services() {
                   'linear-gradient(110deg,#4F46E5,#7C3AED,#06B6D4,#7C3AED,#4F46E5)',
                 backgroundSize: '200% auto',
               }}
-              animate={reduce ? undefined : { backgroundPositionX: ['0%', '200%'] }}
+              animate={reduce || !isInView ? undefined : { backgroundPositionX: ['0%', '200%'] }}
               transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
             >
               <TypingText text="Succeed Online" delay={200} cursorColor="bg-indigo-500" />

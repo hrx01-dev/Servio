@@ -1,4 +1,5 @@
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, useInView } from "motion/react";
+import { useRef } from "react";
 import { Quote, Star } from "lucide-react";
 import { TypingText } from "./TypingText";
 import priya from "../../assets/testimonials/priya.jpg";
@@ -169,8 +170,12 @@ function MarqueeRow({
   duration?: string;
   label: string;
 }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const isInView = useInView(ref, { margin: "200px" });
+
   return (
     <div
+      ref={ref}
       className="testimonial-marquee group relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400/60"
       role="group"
       tabIndex={0}
@@ -186,6 +191,7 @@ function MarqueeRow({
           {
             "--marquee-duration": duration,
             "--marquee-direction": direction,
+            animationPlayState: !isInView ? 'paused' : undefined,
           } as React.CSSProperties
         }
       >
