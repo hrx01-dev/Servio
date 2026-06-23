@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --open",
+    "icons": "node scripts/generate-icons.mjs",
     "build": "vite build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
