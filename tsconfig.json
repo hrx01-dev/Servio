@@ -15,7 +15,6 @@
     "resolveJsonModule": true,
 
     /* Path alias — mirrors the `@` alias in vite.config.ts */
-    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
