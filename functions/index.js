@@ -11,7 +11,7 @@ exports.submitQuote = onCall(async (request) => {
   const ip = request.rawRequest.ip || request.rawRequest.headers['x-forwarded-for'] || "unknown-ip";
 
   // 1. Honeypot check
-  if (honeypot) {
+  if (typeof honeypot === 'string' && honeypot.trim().length > 0) {
     // Log blocked spam attempt
     await db.collection("spam_logs").add({
       reason: "honeypot",
@@ -66,15 +66,63 @@ exports.submitQuote = onCall(async (request) => {
   }
 
   // 3. Process the quote request
-  if (!form || !form.name || !form.email || !form.body) {
+  if (!form || typeof form !== 'object') {
+    throw new HttpsError("invalid-argument", "Invalid form data.");
+  }
+
+  const name = typeof form.name === 'string' ? form.name.trim() : "";
+  const email = typeof form.email === 'string' ? form.email.trim() : "";
+  const phone = typeof form.phone === 'string' ? form.phone.trim() : "";
+  const business = typeof form.business === 'string' ? form.business.trim() : "";
+  const budget = typeof form.budget === 'string' ? form.budget.trim() : "";
+  const type = typeof form.type === 'string' ? form.type.trim() : "";
+  const description = typeof form.description === 'string' ? form.description.trim() : "";
+
+  if (!name || !email || !business || !budget || !type) {
     throw new HttpsError("invalid-argument", "Missing required form fields.");
   }
 
+  function escapeHtml(value) {
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  const subject = `New quote request: ${type} — ${business}`;
+
+  const text = [
+    `New proposal request from ${name} (${business}).`,
+    ``,
+    `Email: ${email}`,
+    `Phone: ${phone || "—"}`,
+    `Budget: ${budget}`,
+    `Website type: ${type}`,
+    ``,
+    `Project description:`,
+    description || "(none provided)",
+  ].join("\n");
+
+  const html = [
+    `<h2>New quote request</h2>`,
+    `<p><strong>${escapeHtml(name)}</strong> (${escapeHtml(business)})</p>`,
+    `<ul>`,
+    `<li>Email: ${escapeHtml(email)}</li>`,
+    `<li>Phone: ${escapeHtml(phone || "—")}</li>`,
+    `<li>Budget: ${escapeHtml(budget)}</li>`,
+    `<li>Website type: ${escapeHtml(type)}</li>`,
+    `</ul>`,
+    `<p><strong>Project description</strong></p>`,
+    `<p>${escapeHtml(description || "(none provided)").replace(/\n/g, "<br>")}</p>`,
+  ].join("");
+
   const messageData = {
-    name: form.name,
-    email: form.email,
-    subject: form.subject || "New Quote Request",
-    body: form.body,
+    name,
+    email,
+    subject,
+    body: text,
     status: "new",
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   };
@@ -83,11 +131,11 @@ exports.submitQuote = onCall(async (request) => {
 
   const mailData = {
     to: ["hello@servio.dev"],
-    replyTo: form.email,
+    replyTo: email,
     message: {
-      subject: messageData.subject,
-      text: messageData.body,
-      html: form.html || messageData.body.replace(/\n/g, "<br>")
+      subject,
+      text,
+      html
     },
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   };
