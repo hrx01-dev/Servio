@@ -114,35 +114,16 @@ export function buildMailData(summary: QuoteSummary) {
  * Persist the lead, then queue the notification email via Firebase Cloud Functions.
  */
 export async function submitQuote(form: QuoteFormData, honeypot: string = ""): Promise<void> {
-<<<<<<< HEAD
   const submitQuoteFn = httpsCallable(functions, 'submitQuote');
   
   const payload = {
     form,
-=======
-  const summary = buildQuoteSummary(form);
-  
-  const submitQuoteFn = httpsCallable(functions, 'submitQuote');
-  
-  const payload = {
-    form: {
-      name: summary.name,
-      email: summary.email,
-      subject: summary.subject,
-      body: summary.text,
-      html: summary.html
-    },
->>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
     honeypot
   };
 
   try {
     await submitQuoteFn(payload);
-<<<<<<< HEAD
   } catch (err) {
-=======
-  } catch (err: any) {
->>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
     console.error("[quote] error submitting quote via cloud function:", err);
     throw err;
   }

@@ -106,14 +106,9 @@ export function QuoteForm() {
     try {
       await submitQuote(form, honeypotRef.current?.value ?? "");
       setSubmitted(true);
-<<<<<<< HEAD
     } catch (err) {
       const error = err as { code?: string; message?: string };
       if (error.code === "functions/resource-exhausted" || error.message?.includes("Too many submissions")) {
-=======
-    } catch (err: any) {
-      if (err.code === "functions/resource-exhausted" || err.message?.includes("Too many submissions")) {
->>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
         showFormError("Too many submissions. Please wait a minute before trying again.");
       } else {
         showFormError(
