@@ -15,8 +15,8 @@
 // missing extension or an undeployed `mail` rule must never fail the user's
 // submission (losing leads is the bug we are fixing — see issue #9).
 
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/Firebase/firebase";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "@/Firebase/firebase";
 import type { QuoteFormData } from "./quoteValidation";
 
 /**
@@ -25,9 +25,6 @@ import type { QuoteFormData } from "./quoteValidation";
  * it requires editing both places (and is documented in docs/QUOTE_FORM.md).
  */
 export const QUOTE_NOTIFY_EMAIL = "hello@servio.dev";
-
-const MESSAGES_COLLECTION = "messages";
-const MAIL_COLLECTION = "mail";
 
 export type QuoteSummary = {
   name: string;
@@ -114,28 +111,28 @@ export function buildMailData(summary: QuoteSummary) {
 }
 
 /**
- * Persist the lead, then queue the notification email. Rejects only if the lead
- * itself could not be saved; a failed email queue write is logged and swallowed.
+ * Persist the lead, then queue the notification email via Firebase Cloud Functions.
  */
-export async function submitQuote(form: QuoteFormData): Promise<void> {
+export async function submitQuote(form: QuoteFormData, honeypot: string = ""): Promise<void> {
   const summary = buildQuoteSummary(form);
+  
+  const submitQuoteFn = httpsCallable(functions, 'submitQuote');
+  
+  const payload = {
+    form: {
+      name: summary.name,
+      email: summary.email,
+      subject: summary.subject,
+      body: summary.text,
+      html: summary.html
+    },
+    honeypot
+  };
 
-  // 1. Durable lead record — must succeed; a failure propagates to the caller.
-  await addDoc(collection(db, MESSAGES_COLLECTION), {
-    ...buildMessageData(summary),
-    createdAt: serverTimestamp(),
-  });
-
-  // 2. Email notification — best-effort; never block lead capture on it.
   try {
-    await addDoc(collection(db, MAIL_COLLECTION), {
-      ...buildMailData(summary),
-      createdAt: serverTimestamp(),
-    });
-  } catch (err) {
-    console.warn(
-      "[quote] lead saved, but the email notification could not be queued:",
-      err,
-    );
+    await submitQuoteFn(payload);
+  } catch (err: any) {
+    console.error("[quote] error submitting quote via cloud function:", err);
+    throw err;
   }
 }

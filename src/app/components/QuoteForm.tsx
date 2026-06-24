@@ -104,12 +104,16 @@ export function QuoteForm() {
     writeHistory(verdict.nextHistory);
     setLoading(true);
     try {
-      await submitQuote(form);
+      await submitQuote(form, honeypotRef.current?.value ?? "");
       setSubmitted(true);
-    } catch {
-      showFormError(
-        "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
-      );
+    } catch (err: any) {
+      if (err.code === "functions/resource-exhausted" || err.message?.includes("Too many submissions")) {
+        showFormError("Too many submissions. Please wait a minute before trying again.");
+      } else {
+        showFormError(
+          "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
+        );
+      }
     } finally {
       setLoading(false);
     }
