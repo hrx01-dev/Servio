@@ -107,17 +107,19 @@ service cloud.firestore {
       // The public website may submit a contact/quote message. Lock the shape
       // down hard: required server timestamp (blocks inbox-ordering tricks),
       // bounded string sizes (blocks oversized/DoS writes), basic email shape,
-      // and status pinned to 'new'. For scripted-spam protection beyond rules,
-      // enable Firebase App Check and/or a rate-limited callable function.
+      // and status pinned to 'new'.
       allow create: if
         request.resource.data.keys().hasOnly(
-          ['name', 'email', 'subject', 'body', 'status', 'createdAt']
+          ['name', 'email', 'subject', 'body', 'status', 'createdAt', 'sessionId', 'honeypot']
         )
         && request.resource.data.keys().hasAll(
-          ['name', 'email', 'body', 'status', 'createdAt']
+          ['name', 'email', 'body', 'status', 'createdAt', 'sessionId']
         )
         && request.resource.data.status == 'new'
         && request.resource.data.createdAt == request.time
+        && (!('honeypot' in request.resource.data) || request.resource.data.honeypot == '')
+        && request.resource.data.sessionId is string
+        && getAfter(/databases/$(database)/documents/rate_limits/$(request.resource.data.sessionId)).data.lastWrite == request.time
         && request.resource.data.name is string
         && request.resource.data.name.size() > 0
         && request.resource.data.name.size() < 200
@@ -136,6 +138,30 @@ service cloud.firestore {
       allow read:   if can('messages:view');
       allow update: if can('messages:reply');
       allow delete: if isSuperAdmin();
+    }
+    
+    // ---- rate_limits ---------------------------------------------------
+
+    match /rate_limits/{sessionId} {
+      allow create: if request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastWrite'])
+                    && request.resource.data.count == 1
+                    && request.resource.data.windowStart == request.time
+                    && request.resource.data.lastWrite == request.time;
+                    
+      allow update: if request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastWrite'])
+                    && request.resource.data.lastWrite == request.time
+                    && (
+                      // Reset window if > 1 min
+                      (request.time > resource.data.windowStart + duration.value(1, 'm')
+                       && request.resource.data.count == 1
+                       && request.resource.data.windowStart == request.time)
+                      ||
+                      // Increment window if <= 1 min
+                      (request.time <= resource.data.windowStart + duration.value(1, 'm')
+                       && request.resource.data.count == resource.data.count + 1
+                       && request.resource.data.count <= 5
+                       && request.resource.data.windowStart == resource.data.windowStart)
+                    );
     }
 
     // ---- mail (outbound email queue) -----------------------------------

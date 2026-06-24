@@ -15,8 +15,6 @@
 // missing extension or an undeployed `mail` rule must never fail the user's
 // submission (losing leads is the bug we are fixing — see issue #9).
 
-import { httpsCallable } from "firebase/functions";
-import { functions } from "@/Firebase/firebase";
 import type { QuoteFormData } from "./quoteValidation";
 
 /**
@@ -110,21 +108,93 @@ export function buildMailData(summary: QuoteSummary) {
   };
 }
 
+import { db } from "@/Firebase/firebase";
+import { collection, doc, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
+
+// Retrieve or generate a persistent session ID for rate limiting
+function getSessionId(): string {
+  let sessionId = localStorage.getItem("servio:quote:session");
+  if (!sessionId) {
+    sessionId = crypto.randomUUID();
+    localStorage.setItem("servio:quote:session", sessionId);
+  }
+  return sessionId;
+}
+
 /**
- * Persist the lead, then queue the notification email via Firebase Cloud Functions.
+ * Persist the lead, then queue the notification email, using a Firestore batch
+ * to also update the rate_limits document.
  */
 export async function submitQuote(form: QuoteFormData, honeypot: string = ""): Promise<void> {
-  const submitQuoteFn = httpsCallable(functions, 'submitQuote');
-  
-  const payload = {
-    form,
-    honeypot
-  };
+  // Silent reject for bots hitting the honeypot
+  if (honeypot.trim().length > 0) {
+    console.warn("Honeypot triggered. Silent rejection.");
+    return; // Acts like a success to the bot
+  }
+
+  const summary = buildQuoteSummary(form);
+  const messageData = buildMessageData(summary);
+  const mailData = buildMailData(summary);
+  const sessionId = getSessionId();
 
   try {
-    await submitQuoteFn(payload);
-  } catch (err) {
-    console.error("[quote] error submitting quote via cloud function:", err);
+    // We do a small pre-check of the rate limit to provide a friendly error message, 
+    // although the authoritative enforcement happens in Firestore Rules during the batch commit.
+    const rateLimitRef = doc(db, "rate_limits", sessionId);
+    const rateLimitSnap = await getDoc(rateLimitRef);
+    
+    let nextCount = 1;
+    let windowStart = serverTimestamp();
+    
+    if (rateLimitSnap.exists()) {
+      const data = rateLimitSnap.data();
+      const now = Date.now();
+      const windowStartMs = data.windowStart?.toMillis?.() ?? now;
+      
+      if (now - windowStartMs <= 60000) {
+        if (data.count >= 5) {
+          throw new Error("Too many submissions. Please wait a minute before trying again.");
+        }
+        nextCount = data.count + 1;
+        // Keep existing window start if not resetting
+        windowStart = data.windowStart;
+      }
+    }
+
+    const batch = writeBatch(db);
+    
+    // 1. Write the message
+    const messageRef = doc(collection(db, "messages"));
+    batch.set(messageRef, {
+      ...messageData,
+      sessionId,
+      honeypot: "",
+      createdAt: serverTimestamp()
+    });
+
+    // 2. Queue the email notification
+    const mailRef = doc(collection(db, "mail"));
+    batch.set(mailRef, {
+      ...mailData,
+      createdAt: serverTimestamp()
+    });
+
+    // 3. Update the rate limits
+    batch.set(rateLimitRef, {
+      count: nextCount,
+      windowStart: windowStart,
+      lastWrite: serverTimestamp()
+    });
+
+    await batch.commit();
+  } catch (err: any) {
+    console.error("[quote] error submitting quote to Firestore:", err);
+    if (err.message && err.message.includes("Too many submissions")) {
+      throw err;
+    }
+    if (err.code === "permission-denied") {
+      throw new Error("Too many submissions. Please wait a minute before trying again.");
+    }
     throw err;
   }
 }
