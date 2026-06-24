@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FolderKanban, Plus, Trash2 } from "lucide-react";
 import {
   addDoc,
@@ -9,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { toast } from "sonner";
 import { db } from "@/Firebase/firebase";
+import { isTyping } from "../lib/keyboard";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -75,6 +77,8 @@ export function Projects() {
   const { admin, can } = useAdmin();
   const projects = useProjects();
   const runSensitive = useSensitiveAction();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -85,6 +89,28 @@ export function Projects() {
 
   const canEdit = can("projects:edit");
   const canDelete = can("projects:delete");
+
+  // "N" shortcut — open New Project dialog (skip when typing in a form field)
+  useEffect(() => {
+    if (!canEdit) return;
+    function handleKey(e: KeyboardEvent) {
+      if (isTyping(e)) return;
+      if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        setDialogOpen(true);
+      }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [canEdit]);
+
+  // Open dialog when the command palette navigates here with { state: { openNew: true } }
+  useEffect(() => {
+    if (location.state?.openNew && canEdit) {
+      setDialogOpen(true);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, canEdit, navigate, location.pathname]);
 
   function resetForm() {
     setName("");
@@ -181,10 +207,15 @@ export function Projects() {
   ).length;
 
   const newProjectButton = canEdit ? (
-    <Button onClick={() => setDialogOpen(true)}>
-      <Plus className="h-4 w-4" aria-hidden="true" />
-      New project
-    </Button>
+    <div className="flex items-center gap-2">
+      <Button onClick={() => setDialogOpen(true)}>
+        <Plus className="h-4 w-4" aria-hidden="true" />
+        New project
+      </Button>
+      <kbd className="hidden rounded bg-muted px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground ring-1 ring-border sm:inline">
+        N
+      </kbd>
+    </div>
   ) : null;
 
   return (
