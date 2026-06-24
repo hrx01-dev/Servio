@@ -1,23 +1,24 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { collection, doc, writeBatch, getDoc } from "firebase/firestore";
+import { writeBatch, addDoc } from "firebase/firestore";
 import type { QuoteFormData } from "./quoteValidation";
 
 // The real module pulls in Firebase app/analytics init; stub it out.
 vi.mock("@/Firebase/firebase", () => ({ db: { __mock: true } }));
 
-const mockSet = vi.fn();
-const mockCommit = vi.fn();
-
+// vi.mock is hoisted, so variables declared outside the factory are not yet
+// initialised when the factory runs. Declare all fns inside the factory and
+// expose them through vi.mocked() after the imports instead.
 vi.mock("firebase/firestore", () => {
   return {
     collection: vi.fn((_db: unknown, name: string) => name),
-    doc: vi.fn((dbOrColl: any, ...args: string[]) => {
+    doc: vi.fn((dbOrColl: unknown, ...args: string[]) => {
       if (typeof dbOrColl === "string") return { __doc: dbOrColl, id: args[0] || dbOrColl };
       return { __doc: args[0], id: args[0] };
     }),
+    addDoc: vi.fn().mockResolvedValue({ id: "spam-x" }),
     writeBatch: vi.fn(() => ({
-      set: mockSet,
-      commit: mockCommit,
+      set: vi.fn(),
+      commit: vi.fn(),
     })),
     getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
     serverTimestamp: vi.fn(() => "__ts__"),
@@ -30,6 +31,16 @@ import {
   buildMailData,
   QUOTE_NOTIFY_EMAIL,
 } from "./submitQuote";
+
+// Retrieve the stable mock references AFTER the module is imported.
+const mockWriteBatch = vi.mocked(writeBatch);
+const mockAddDoc = vi.mocked(addDoc);
+
+// Helper to get the batch object returned by the most recent writeBatch() call.
+function lastBatch() {
+  const calls = mockWriteBatch.mock.results;
+  return calls[calls.length - 1]?.value as { set: ReturnType<typeof vi.fn>; commit: ReturnType<typeof vi.fn> } | undefined;
+}
 
 const validForm: QuoteFormData = {
   name: "  Sarah Chen  ",
@@ -86,22 +97,24 @@ describe("buildMailData", () => {
 
 describe("submitQuote", () => {
   it("writes the lead to messages, mail, and rate_limits in a batch", async () => {
-    mockCommit.mockResolvedValueOnce(undefined);
     await submitQuote(validForm);
 
-    expect(writeBatch).toHaveBeenCalledTimes(1);
-    expect(mockSet).toHaveBeenCalledTimes(3); // messages, mail, rate_limits
-    expect(mockCommit).toHaveBeenCalledTimes(1);
+    expect(mockWriteBatch).toHaveBeenCalledTimes(1);
+    const batch = lastBatch()!;
+    expect(batch.set).toHaveBeenCalledTimes(3); // messages, mail, rate_limits
+    expect(batch.commit).toHaveBeenCalledTimes(1);
 
-    const messageCall = mockSet.mock.calls.find((c) => c[0].__doc === "messages");
-    const mailCall = mockSet.mock.calls.find((c) => c[0].__doc === "mail");
-    const rateLimitCall = mockSet.mock.calls.find((c) => c[0].id === "rate_limits" || c[0].__doc === "rate_limits");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const setCalls = (batch.set as any).mock.calls as [{ __doc?: string; id?: string }, Record<string, unknown>][];
+    const messageCall = setCalls.find((c) => c[0].__doc === "messages");
+    const mailCall    = setCalls.find((c) => c[0].__doc === "mail");
+    const rateLimitCall = setCalls.find((c) => c[0].__doc === "rate_limits" || c[0].id === "rate_limits");
 
     expect(messageCall).toBeDefined();
     expect(mailCall).toBeDefined();
     expect(rateLimitCall).toBeDefined();
 
-    const message = messageCall[1];
+    const message = messageCall![1];
     expect(message.status).toBe("new");
     expect(message.createdAt).toBe("__ts__"); // serverTimestamp(), required by rules
     expect(message.name).toBe("Sarah Chen");
@@ -110,23 +123,34 @@ describe("submitQuote", () => {
       "New quote request: Business Website — TechStart Inc.",
     );
 
-    const mail = mailCall[1];
+    const mail = mailCall![1];
     expect(mail.to).toEqual([QUOTE_NOTIFY_EMAIL]);
     expect(mail.createdAt).toBe("__ts__");
-    expect(mail.sessionId).toBeDefined(); // sessionId is included now
+    expect(mail.sessionId).toBeDefined();
   });
 
-  it("silently rejects honeypot submissions", async () => {
+  it("logs honeypot submissions to spam_logs and returns silently", async () => {
     await submitQuote(validForm, "bot-value");
-    
-    // Should return early and not call writeBatch
-    expect(writeBatch).not.toHaveBeenCalled();
-    expect(mockCommit).not.toHaveBeenCalled();
+
+    // Must NOT write a real lead
+    expect(mockWriteBatch).not.toHaveBeenCalled();
+
+    // Must log to spam_logs via addDoc
+    expect(mockAddDoc).toHaveBeenCalledTimes(1);
+    const [collArg, dataArg] = mockAddDoc.mock.calls[0] as unknown as [string, Record<string, unknown>];
+    expect(collArg).toBe("spam_logs");
+    expect(dataArg.honeypot).toBe("bot-value");
+    expect(dataArg.sessionId).toBeDefined();
+    expect(dataArg.createdAt).toBe("__ts__");
   });
 
-  it("rejects when the batch fails (e.g. permission-denied)", async () => {
-    mockCommit.mockRejectedValueOnce({ code: "permission-denied" });
+  it("rejects when the batch commit fails (e.g. permission-denied)", async () => {
+    // Make the commit() on the batch returned by writeBatch() reject
+    const batch = { set: vi.fn(), commit: vi.fn().mockRejectedValueOnce({ code: "permission-denied" }) };
+    mockWriteBatch.mockReturnValueOnce(batch as never);
+
     await expect(submitQuote(validForm)).rejects.toThrow("Too many submissions. Please wait a minute before trying again.");
-    expect(mockCommit).toHaveBeenCalledTimes(1);
+    expect(batch.commit).toHaveBeenCalledTimes(1);
   });
 });
+

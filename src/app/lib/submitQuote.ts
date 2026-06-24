@@ -109,7 +109,7 @@ export function buildMailData(summary: QuoteSummary) {
 }
 
 import { db } from "@/Firebase/firebase";
-import { collection, doc, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
+import { collection, doc, addDoc, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
 
 // Retrieve or generate a persistent session ID for rate limiting
 function getSessionId(): string {
@@ -126,10 +126,21 @@ function getSessionId(): string {
  * to also update the rate_limits document.
  */
 export async function submitQuote(form: QuoteFormData, honeypot: string = ""): Promise<void> {
-  // Silent reject for bots hitting the honeypot
+  // Honeypot triggered — log to spam_logs (append-only, no read rule for clients)
+  // then return a simulated success so the bot gets no signal.
   if (honeypot.trim().length > 0) {
-    console.warn("Honeypot triggered. Silent rejection.");
-    return; // Acts like a success to the bot
+    const sessionId = getSessionId();
+    console.warn("[quote] Honeypot triggered. Logging to spam_logs.");
+    try {
+      await addDoc(collection(db, "spam_logs"), {
+        honeypot: honeypot.trim().slice(0, 500),
+        sessionId,
+        createdAt: serverTimestamp(),
+      });
+    } catch {
+      // Best-effort — never block the simulated-success path
+    }
+    return;
   }
 
   const summary = buildQuoteSummary(form);

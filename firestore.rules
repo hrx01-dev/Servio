@@ -143,14 +143,18 @@ service cloud.firestore {
     // ---- rate_limits ---------------------------------------------------
 
     match /rate_limits/{sessionId} {
-      // Best-effort throttling: this uses a client-supplied session ID which can be rotated.
-      // For true rate-limiting, integrate Firebase App Check.
+      // BEST-EFFORT THROTTLING ONLY: the sessionId is client-supplied, so a
+      // determined bot can rotate IDs to bypass the cap. True enforcement
+      // requires Firebase App Check or an auth-backed identity. The get is
+      // intentionally open (no list rule exists) so clients can read their own
+      // rate-limit document for the preflight check — they cannot enumerate
+      // other sessions without knowing the exact UUID.
       allow get;
       allow create: if request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastWrite'])
                     && request.resource.data.count == 1
                     && request.resource.data.windowStart == request.time
                     && request.resource.data.lastWrite == request.time;
-                    
+
       allow update: if request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastWrite'])
                     && request.resource.data.lastWrite == request.time
                     && (
@@ -159,12 +163,28 @@ service cloud.firestore {
                        && request.resource.data.count == 1
                        && request.resource.data.windowStart == request.time)
                       ||
-                      // Increment window if <= 1 min
+                      // Increment within window if <= 1 min and under the cap
                       (request.time <= resource.data.windowStart + duration.value(1, 'm')
                        && request.resource.data.count == resource.data.count + 1
                        && request.resource.data.count <= 5
                        && request.resource.data.windowStart == resource.data.windowStart)
                     );
+    }
+
+    // ---- spam_logs -----------------------------------------------------
+
+    // Append-only log written by the client when the honeypot fires.
+    // No reads or updates permitted from the client — only the Admin SDK
+    // (e.g. a future Cloud Function or admin report) can read these.
+    match /spam_logs/{id} {
+      allow create: if
+        request.resource.data.keys().hasOnly(['honeypot', 'createdAt', 'sessionId'])
+        && request.resource.data.keys().hasAll(['honeypot', 'createdAt', 'sessionId'])
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.honeypot is string
+        && request.resource.data.honeypot.size() < 500
+        && request.resource.data.sessionId is string;
+      allow read, update, delete: if false;
     }
 
     // ---- mail (outbound email queue) -----------------------------------
