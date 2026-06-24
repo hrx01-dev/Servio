@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
@@ -125,6 +125,15 @@ export function PinVerify() {
 
   // locked=true disables all interaction and triggers auto sign-out.
   const [locked, setLocked] = useState(false);
+  const lockoutTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (lockoutTimerRef.current) {
+        clearTimeout(lockoutTimerRef.current);
+      }
+    };
+  }, []);
 
   // The failed-attempt count is the persisted store's responsibility (see
   // ../lib/pinLockout) — it's the single source of truth and survives refreshes.
@@ -240,8 +249,9 @@ export function PinVerify() {
             `Too many failed attempts. Account locked until ${new Date(lockedUntil).toLocaleTimeString()}. Signing out…`,
           );
           // Auto sign-out after a brief delay so the user sees the message.
-          const t = setTimeout(() => void doSignOut(), LOCKOUT_SIGNOUT_DELAY_MS);
-          return () => clearTimeout(t);
+          if (lockoutTimerRef.current) clearTimeout(lockoutTimerRef.current);
+          lockoutTimerRef.current = setTimeout(() => void doSignOut(), LOCKOUT_SIGNOUT_DELAY_MS);
+          return;
         } else {
           setError(
             next === MAX_ATTEMPTS - 1
