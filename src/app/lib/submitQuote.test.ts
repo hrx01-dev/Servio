@@ -1,14 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { addDoc, collection } from "firebase/firestore";
+import { collection, doc, writeBatch, getDoc } from "firebase/firestore";
 import type { QuoteFormData } from "./quoteValidation";
 
 // The real module pulls in Firebase app/analytics init; stub it out.
 vi.mock("@/Firebase/firebase", () => ({ db: { __mock: true } }));
-vi.mock("firebase/firestore", () => ({
-  addDoc: vi.fn(),
-  collection: vi.fn((_db: unknown, name: string) => ({ __collection: name })),
-  serverTimestamp: vi.fn(() => "__ts__"),
-}));
+
+const mockSet = vi.fn();
+const mockCommit = vi.fn();
+
+vi.mock("firebase/firestore", () => {
+  return {
+    collection: vi.fn((_db: unknown, name: string) => name),
+    doc: vi.fn((dbOrColl: any, ...args: string[]) => {
+      if (typeof dbOrColl === "string") return { __doc: dbOrColl, id: args[0] || dbOrColl };
+      return { __doc: args[0], id: args[0] };
+    }),
+    writeBatch: vi.fn(() => ({
+      set: mockSet,
+      commit: mockCommit,
+    })),
+    getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
+    serverTimestamp: vi.fn(() => "__ts__"),
+  };
+});
 
 import {
   submitQuote,
@@ -16,9 +30,6 @@ import {
   buildMailData,
   QUOTE_NOTIFY_EMAIL,
 } from "./submitQuote";
-
-const mockedAddDoc = vi.mocked(addDoc);
-const mockedCollection = vi.mocked(collection);
 
 const validForm: QuoteFormData = {
   name: "  Sarah Chen  ",
@@ -29,15 +40,6 @@ const validForm: QuoteFormData = {
   type: "Business Website",
   description: "Need a new marketing site.",
 };
-
-function collName(call: number): string {
-  return (mockedAddDoc.mock.calls[call][0] as unknown as { __collection: string })
-    .__collection;
-}
-
-function payload(call: number): Record<string, unknown> {
-  return mockedAddDoc.mock.calls[call][1] as unknown as Record<string, unknown>;
-}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -83,46 +85,48 @@ describe("buildMailData", () => {
 });
 
 describe("submitQuote", () => {
-  it("writes the lead to messages, then queues the email to mail", async () => {
-    mockedAddDoc.mockResolvedValue({ id: "x" } as never);
+  it("writes the lead to messages, mail, and rate_limits in a batch", async () => {
+    mockCommit.mockResolvedValueOnce(undefined);
     await submitQuote(validForm);
 
-    expect(mockedAddDoc).toHaveBeenCalledTimes(2);
-    expect(collName(0)).toBe("messages");
-    expect(collName(1)).toBe("mail");
+    expect(writeBatch).toHaveBeenCalledTimes(1);
+    expect(mockSet).toHaveBeenCalledTimes(3); // messages, mail, rate_limits
+    expect(mockCommit).toHaveBeenCalledTimes(1);
 
-    const message = payload(0);
+    const messageCall = mockSet.mock.calls.find((c) => c[0].__doc === "messages");
+    const mailCall = mockSet.mock.calls.find((c) => c[0].__doc === "mail");
+    const rateLimitCall = mockSet.mock.calls.find((c) => c[0].id === "rate_limits" || c[0].__doc === "rate_limits");
+
+    expect(messageCall).toBeDefined();
+    expect(mailCall).toBeDefined();
+    expect(rateLimitCall).toBeDefined();
+
+    const message = messageCall[1];
     expect(message.status).toBe("new");
     expect(message.createdAt).toBe("__ts__"); // serverTimestamp(), required by rules
     expect(message.name).toBe("Sarah Chen");
-    // body + subject are rule-load-bearing on the `messages` write — pin the mapping.
     expect(message.body).toBe(buildQuoteSummary(validForm).text);
     expect(message.subject).toBe(
       "New quote request: Business Website — TechStart Inc.",
     );
 
-    const mail = payload(1);
+    const mail = mailCall[1];
     expect(mail.to).toEqual([QUOTE_NOTIFY_EMAIL]);
     expect(mail.createdAt).toBe("__ts__");
-
-    expect(mockedCollection).toHaveBeenCalledWith({ __mock: true }, "messages");
+    expect(mail.sessionId).toBeDefined(); // sessionId is included now
   });
 
-  it("still resolves when the email queue write fails (lead is already saved)", async () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    mockedAddDoc
-      .mockResolvedValueOnce({ id: "msg" } as never) // messages OK
-      .mockRejectedValueOnce(new Error("mail rule not deployed")); // mail fails
-
-    await expect(submitQuote(validForm)).resolves.toBeUndefined();
-    expect(mockedAddDoc).toHaveBeenCalledTimes(2);
-    expect(warn).toHaveBeenCalled();
-    warn.mockRestore();
+  it("silently rejects honeypot submissions", async () => {
+    await submitQuote(validForm, "bot-value");
+    
+    // Should return early and not call writeBatch
+    expect(writeBatch).not.toHaveBeenCalled();
+    expect(mockCommit).not.toHaveBeenCalled();
   });
 
-  it("rejects when the lead itself cannot be persisted", async () => {
-    mockedAddDoc.mockRejectedValueOnce(new Error("permission-denied"));
-    await expect(submitQuote(validForm)).rejects.toThrow("permission-denied");
-    expect(mockedAddDoc).toHaveBeenCalledTimes(1); // never tries to email
+  it("rejects when the batch fails (e.g. permission-denied)", async () => {
+    mockCommit.mockRejectedValueOnce({ code: "permission-denied" });
+    await expect(submitQuote(validForm)).rejects.toThrow("Too many submissions. Please wait a minute before trying again.");
+    expect(mockCommit).toHaveBeenCalledTimes(1);
   });
 });

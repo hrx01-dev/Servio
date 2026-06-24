@@ -176,6 +176,7 @@ export async function submitQuote(form: QuoteFormData, honeypot: string = ""): P
     const mailRef = doc(collection(db, "mail"));
     batch.set(mailRef, {
       ...mailData,
+      sessionId,
       createdAt: serverTimestamp()
     });
 
@@ -187,13 +188,17 @@ export async function submitQuote(form: QuoteFormData, honeypot: string = ""): P
     });
 
     await batch.commit();
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[quote] error submitting quote to Firestore:", err);
-    if (err.message && err.message.includes("Too many submissions")) {
+    if (err instanceof Error && err.message.includes("Too many submissions")) {
       throw err;
     }
-    if (err.code === "permission-denied") {
-      throw new Error("Too many submissions. Please wait a minute before trying again.");
+    
+    // Narrowing for Firestore-specific error codes
+    if (typeof err === "object" && err !== null && "code" in err) {
+      if ((err as { code: string }).code === "permission-denied") {
+        throw new Error("Too many submissions. Please wait a minute before trying again.");
+      }
     }
     throw err;
   }

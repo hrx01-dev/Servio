@@ -143,6 +143,9 @@ service cloud.firestore {
     // ---- rate_limits ---------------------------------------------------
 
     match /rate_limits/{sessionId} {
+      // Best-effort throttling: this uses a client-supplied session ID which can be rotated.
+      // For true rate-limiting, integrate Firebase App Check.
+      allow get;
       allow create: if request.resource.data.keys().hasOnly(['count', 'windowStart', 'lastWrite'])
                     && request.resource.data.count == 1
                     && request.resource.data.windowStart == request.time
@@ -178,11 +181,13 @@ service cloud.firestore {
     match /mail/{id} {
       allow create: if
         request.resource.data.keys().hasOnly(
-          ['to', 'replyTo', 'message', 'createdAt']
+          ['to', 'replyTo', 'message', 'createdAt', 'sessionId']
         )
-        && request.resource.data.keys().hasAll(['to', 'message', 'createdAt'])
+        && request.resource.data.keys().hasAll(['to', 'message', 'createdAt', 'sessionId'])
         && request.resource.data.to == ['hello@servio.dev']
         && request.resource.data.createdAt == request.time
+        && request.resource.data.sessionId is string
+        && getAfter(/databases/$(database)/documents/rate_limits/$(request.resource.data.sessionId)).data.lastWrite == request.time
         && (
           !('replyTo' in request.resource.data)
           || (request.resource.data.replyTo is string
