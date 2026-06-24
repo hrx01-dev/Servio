@@ -11,7 +11,11 @@ exports.submitQuote = onCall(async (request) => {
   const ip = request.rawRequest.ip || request.rawRequest.headers['x-forwarded-for'] || "unknown-ip";
 
   // 1. Honeypot check
+<<<<<<< HEAD
   if (typeof honeypot === 'string' && honeypot.trim().length > 0) {
+=======
+  if (honeypot) {
+>>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
     // Log blocked spam attempt
     await db.collection("spam_logs").add({
       reason: "honeypot",
@@ -66,6 +70,7 @@ exports.submitQuote = onCall(async (request) => {
   }
 
   // 3. Process the quote request
+<<<<<<< HEAD
   if (!form || typeof form !== 'object') {
     throw new HttpsError("invalid-argument", "Invalid form data.");
   }
@@ -123,6 +128,17 @@ exports.submitQuote = onCall(async (request) => {
     email,
     subject,
     body: text,
+=======
+  if (!form || !form.name || !form.email || !form.body) {
+    throw new HttpsError("invalid-argument", "Missing required form fields.");
+  }
+
+  const messageData = {
+    name: form.name,
+    email: form.email,
+    subject: form.subject || "New Quote Request",
+    body: form.body,
+>>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
     status: "new",
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   };
@@ -131,11 +147,19 @@ exports.submitQuote = onCall(async (request) => {
 
   const mailData = {
     to: ["hello@servio.dev"],
+<<<<<<< HEAD
     replyTo: email,
     message: {
       subject,
       text,
       html
+=======
+    replyTo: form.email,
+    message: {
+      subject: messageData.subject,
+      text: messageData.body,
+      html: form.html || messageData.body.replace(/\n/g, "<br>")
+>>>>>>> d427ad344c4efca617a5ebb90c9194c787c84e0d
     },
     createdAt: admin.firestore.FieldValue.serverTimestamp()
   };
