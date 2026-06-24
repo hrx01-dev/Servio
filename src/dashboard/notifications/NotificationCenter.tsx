@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDebounce } from "../../hooks/useDebounce";
 import { motion } from "motion/react";
 import {
   Bell,
@@ -139,6 +140,7 @@ export function NotificationCenter() {
     useNotifications();
 
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const [categoryFilter, setCategoryFilter] =
     useState<NotificationCategory | "all">("all");
   const [readFilter, setReadFilter] = useState<ReadFilter>("all");
@@ -147,8 +149,8 @@ export function NotificationCenter() {
   const filtered = useMemo(() => {
     let result = notifications;
 
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
+    if (debouncedSearchQuery.trim()) {
+      const q = debouncedSearchQuery.toLowerCase();
       result = result.filter(
         (n) =>
           n.title.toLowerCase().includes(q) ||
@@ -167,7 +169,7 @@ export function NotificationCenter() {
     }
 
     return result;
-  }, [notifications, searchQuery, categoryFilter, readFilter]);
+  }, [notifications, debouncedSearchQuery, categoryFilter, readFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
