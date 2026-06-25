@@ -13,6 +13,8 @@ interface TypingTextProps {
   showCursor?: boolean;
   /** Tailwind bg-* class for the cursor bar colour */
   cursorColor?: string;
+  /** Called once when typing animation completes */
+  onDone?: () => void;
 }
 
 /**
@@ -28,10 +30,13 @@ export function TypingText({
   triggerOnView = true,
   showCursor = true,
   cursorColor = 'bg-indigo-500',
+  onDone,
 }: TypingTextProps) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-5% 0px' });
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   const [displayed, setDisplayed] = useState(reduce ? text : '');
   const [done, setDone] = useState(!!reduce);
@@ -57,7 +62,10 @@ export function TypingText({
         setDisplayed(text.slice(0, i));
         if (i >= text.length) {
           clearInterval(intervalId);
-          if (!cancelled) setDone(true);
+          if (!cancelled) {
+            setDone(true);
+            onDoneRef.current?.();
+          }
         }
       }, speed);
     }, delay);

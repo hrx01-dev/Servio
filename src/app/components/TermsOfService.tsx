@@ -3,12 +3,18 @@ import { ArrowLeft } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
+import { SEO } from "./SEO";
 
 export function TermsOfService() {
   const reduce = useReducedMotion();
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO
+        title="Terms of Service"
+        description="Read Servio's Terms of Service to understand the rules and conditions governing the use of our web development services."
+        canonical="/terms-of-service"
+      />
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <motion.div

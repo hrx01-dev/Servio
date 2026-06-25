@@ -3,12 +3,18 @@ import { ArrowLeft } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
+import { SEO } from "./SEO";
 
 export function CookiePolicy() {
   const reduce = useReducedMotion();
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO
+        title="Cookie Policy"
+        description="Learn how Servio uses cookies and similar technologies to improve your experience on our website."
+        canonical="/cookie-policy"
+      />
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <motion.div

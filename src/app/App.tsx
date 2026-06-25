@@ -1,5 +1,8 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
+import { SEO } from "./components/SEO";
+import { SITE_URL } from "./lib/siteConfig";
 import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
@@ -61,9 +64,38 @@ function ScrollToTop() {
   return null;
 }
 
+const HOME_JSON_LD = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": `${SITE_URL}/#organization`,
+    "name": "Servio",
+    "description": "Custom web development agency specialising in landing pages, business websites, e-commerce stores, portfolios, and web applications.",
+    "url": SITE_URL,
+    "logo": { "@type": "ImageObject", "url": `${SITE_URL}/icon-512.png` },
+    "serviceType": ["Web Development", "Web Design", "E-Commerce Development", "Custom Web Applications"],
+    "areaServed": "Worldwide",
+    "priceRange": "$$",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    "url": SITE_URL,
+    "name": "Servio",
+    "description": "Custom web development services for startups and small businesses.",
+    "publisher": { "@id": `${SITE_URL}/#organization` },
+  },
+];
+
 function LandingPage() {
   return (
     <>
+      <SEO
+        canonical="/"
+        description="Servio builds fast, conversion-focused websites for startups and small businesses — landing pages, e-commerce stores, portfolios, and custom web apps. Get a free quote today."
+        jsonLd={HOME_JSON_LD}
+      />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-md focus:bg-white focus:text-slate-900"
@@ -156,21 +188,8 @@ function LandingShell() {
 }
 
 export default function App() {
-  useEffect(() => {
-    // Set robots meta tag based on environment
-    const robotsMeta = document.querySelector('meta[name="robots"]');
-    if (robotsMeta) {
-      // In development, use noindex, nofollow to prevent indexing
-      // In production, use index, follow (set in index.html)
-      if (import.meta.env.DEV) {
-        robotsMeta.setAttribute("content", "noindex, nofollow");
-      } else {
-        robotsMeta.setAttribute("content", "index, follow");
-      }
-    }
-  }, []);
-
   return (
+    <HelmetProvider>
     <div className="min-h-screen bg-white dark:bg-slate-950" style={{ fontFamily: "'Inter', 'Plus Jakarta Sans', sans-serif" }}>
       <BrowserRouter>
         <ThemeProvider>
@@ -180,8 +199,8 @@ export default function App() {
               <Routes>
                 {/* Only the landing route is gated behind the splash intro. */}
                 <Route path="/" element={<LandingShell />} />
-                <Route path="/signin" element={<SignIn />} />
-                <Route path="/signup" element={<SignUp />} />
+                <Route path="/signin" element={<><SEO title="Sign In" noIndex /><SignIn /></>} />
+                <Route path="/signup" element={<><SEO title="Sign Up" noIndex /><SignUp /></>} />
                 <Route path="/admin/*" element={<AdminApp />} />
                 <Route path="/services/:slug" element={<ServiceDetailPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
@@ -213,5 +232,6 @@ export default function App() {
         </ThemeProvider>
       </BrowserRouter>
     </div>
+    </HelmetProvider>
   );
 }

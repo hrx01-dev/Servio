@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /signin
+Disallow: /signup
+
+Sitemap: https://servio.dev/sitemap.xml

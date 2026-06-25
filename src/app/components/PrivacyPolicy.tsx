@@ -3,12 +3,18 @@ import { ArrowLeft } from "lucide-react";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
+import { SEO } from "./SEO";
 
 export function PrivacyPolicy() {
   const reduce = useReducedMotion();
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO
+        title="Privacy Policy"
+        description="Read Servio's Privacy Policy to understand how we collect, use, and protect your personal information."
+        canonical="/privacy-policy"
+      />
       <Navbar />
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         <motion.div

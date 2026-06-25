@@ -5,6 +5,8 @@ import { ArrowLeft, Check, ChevronDown, ArrowRight } from 'lucide-react';
 import { services } from '../data/servicesData';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
+import { SEO } from './SEO';
+import { SITE_URL } from '../lib/siteConfig';
 
 function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
   const [open, setOpen] = useState(false);
@@ -53,8 +55,31 @@ export function ServiceDetailPage() {
 
   const Icon = service.icon;
 
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": service.title,
+    "description": service.description,
+    "provider": { "@id": `${SITE_URL}/#organization` },
+    "url": `${SITE_URL}/services/${service.slug}`,
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "Services", "item": `${SITE_URL}/services` },
+        { "@type": "ListItem", "position": 3, "name": service.title, "item": `${SITE_URL}/services/${service.slug}` },
+      ],
+    },
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO
+        title={service.title}
+        description={service.description}
+        canonical={`/services/${service.slug}`}
+        jsonLd={serviceJsonLd}
+      />
       <Navbar />
 
       <main>
