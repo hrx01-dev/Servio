@@ -2,18 +2,21 @@ import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { Send, CheckCircle2 } from "lucide-react";
 import {
-  BUDGET_OPTIONS as budgetOptions,
-  WEBSITE_TYPES as websiteTypes,
-  LIMITS,
   evaluateSubmission,
   type FieldErrors,
   type QuoteFormData,
+  BUDGET_OPTIONS as budgetOptions,
+  WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
+import { submitQuote } from "../lib/submitQuote";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "./UnsavedChangesDialog";
 
 // Persisted submission timestamps for client-side rate limiting. Advisory only
 // (a user can clear storage) — the heavy lifting belongs on a server, but this
 // stops casual repeat-spam from the same browser at zero infra cost.
 const RATE_KEY = "servio:quote:submissions";
+
 
 function readHistory(): number[] {
   try {
@@ -34,6 +37,8 @@ function writeHistory(history: number[]): void {
 }
 
 export function QuoteForm() {
+  const { markDirty, markClean, blocker } = useUnsavedChanges();
+
   const [form, setForm] = useState<QuoteFormData>({
     name: "",
     email: "",
@@ -99,17 +104,24 @@ export function QuoteForm() {
       return;
     }
 
-    // verdict.status === "ok" — record this submission, then "send".
+    // verdict.status === "ok" — record this submission, then persist + notify.
     writeHistory(verdict.nextHistory);
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await submitQuote(form);
+      markClean();
+      setSubmitted(true);
+    } catch {
+      showFormError(
+        "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputClass = (field: keyof QuoteFormData) =>
-    `w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200 ${
-      errors[field] ? "border-red-400/60" : "border-white/20 hover:border-white/30"
+    `w-full px-4 py-3 bg-white/10 backdrop-blur-sm border rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200 ${errors[field] ? "border-red-400/60" : "border-white/20 hover:border-white/30"
     }`;
 
   // Shared aria wiring for a field: marks it invalid and points at its error text.
@@ -119,6 +131,8 @@ export function QuoteForm() {
   });
 
   return (
+    <>
+    <UnsavedChangesDialog blocker={blocker} />
     <section id="contact" aria-labelledby="quote-title" className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] via-[#1a0a2e] to-[#0f0f1a] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -198,7 +212,7 @@ export function QuoteForm() {
                     autoComplete="name"
                     placeholder="Sarah Chen"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, name: e.target.value }); }}
                     className={inputClass("name")}
                     {...fieldAria("name")}
                   />
@@ -216,7 +230,7 @@ export function QuoteForm() {
                     autoComplete="email"
                     placeholder="sarah@company.com"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, email: e.target.value }); }}
                     className={inputClass("email")}
                     {...fieldAria("email")}
                   />
@@ -235,7 +249,7 @@ export function QuoteForm() {
                     autoComplete="tel"
                     placeholder="+1 555 123 4567"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, phone: e.target.value }); }}
                     className={inputClass("phone")}
                     {...fieldAria("phone")}
                   />
@@ -253,7 +267,7 @@ export function QuoteForm() {
                     autoComplete="organization"
                     placeholder="TechStart Inc."
                     value={form.business}
-                    onChange={(e) => setForm({ ...form, business: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, business: e.target.value }); }}
                     className={inputClass("business")}
                     {...fieldAria("business")}
                   />
@@ -265,7 +279,92 @@ export function QuoteForm() {
                 </div>
               </div>
 
-              <div className="mt-10">
+              <div className="grid md:grid-cols-2 gap-6 mt-6">
+                {/* Budget */}
+                <div>
+                  <label htmlFor="quote-budget" className="block text-sm font-medium text-gray-300 mb-2">
+                    Project Budget <span className="text-indigo-400">*</span>
+                  </label>
+                  <select
+                    id="quote-budget"
+                    value={form.budget}
+                    onChange={(e) => { markDirty(); setForm({ ...form, budget: e.target.value }); }}
+                    className={inputClass("budget")}
+                    {...fieldAria("budget")}
+                  >
+                    <option value="" disabled>Select a budget range</option>
+                    {budgetOptions.map((opt) => (
+                      <option key={opt} value={opt} className="bg-slate-800 text-white">{opt}</option>
+                    ))}
+                  </select>
+                  {errors.budget && <p id="quote-budget-error" className="mt-1.5 text-red-400 text-xs">{errors.budget}</p>}
+                </div>
+
+                {/* Website Type */}
+                <div>
+                  <label htmlFor="quote-type" className="block text-sm font-medium text-gray-300 mb-2">
+                    Website Type <span className="text-indigo-400">*</span>
+                  </label>
+                  <select
+                    id="quote-type"
+                    value={form.type}
+                    onChange={(e) => { markDirty(); setForm({ ...form, type: e.target.value }); }}
+                    className={inputClass("type")}
+                    {...fieldAria("type")}
+                  >
+                    <option value="" disabled>Select a website type</option>
+                    {websiteTypes.map((opt) => (
+                      <option key={opt} value={opt} className="bg-slate-800 text-white">{opt}</option>
+                    ))}
+                  </select>
+                  {errors.type && <p id="quote-type-error" className="mt-1.5 text-red-400 text-xs">{errors.type}</p>}
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mt-6">
+                <label htmlFor="quote-description" className="block text-sm font-medium text-gray-300 mb-2">
+                  Project Description
+                </label>
+                <textarea
+                  id="quote-description"
+                  rows={4}
+                  placeholder="Tell us about your project goals, features, and timeline..."
+                  value={form.description}
+                  onChange={(e) => { markDirty(); setForm({ ...form, description: e.target.value }); }}
+                  className={`${inputClass("description")} resize-y`}
+                  {...fieldAria("description")}
+                />
+                {errors.description && (
+                  <p id="quote-description-error" className="mt-1.5 text-red-400 text-xs">
+                    {errors.description}
+                  </p>
+                )}
+              </div>
+
+              {formError && (
+                <div
+                  key={errorNonce}
+                  role="alert"
+                  aria-live="assertive"
+                  className="mt-6 rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-sm text-red-300"
+                >
+                  {formError}
+                </div>
+              )}
+
+              <div className="mt-8 text-sm text-gray-400 text-center">
+                By submitting this request, you agree to our{" "}
+                <a href="/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+                  Privacy Policy
+                </a>{" "}
+                and{" "}
+                <a href="/terms-of-service" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2">
+                  Terms of Service
+                </a>.
+              </div>
+
+              <div className="mt-6">
                 <button
                   type="submit"
                   disabled={loading}
@@ -285,5 +384,6 @@ export function QuoteForm() {
         </motion.div>
       </div>
     </section>
+    </>
   );
 }

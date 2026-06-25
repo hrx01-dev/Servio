@@ -51,6 +51,11 @@ export const LIMITS = {
   business: [2, 100],
   description: [0, 2000],
   email: [5, 254], // 254 = practical RFC 5321 max
+  // Raw (human-formatted) length cap. isValidPhone only constrains the *dialable*
+  // digits, so a bound on the raw string is needed too — otherwise a hugely
+  // padded but "valid" number ("(((…+15551234567…)))") slips through here and
+  // later overflows the size-bounded persistence write, silently losing the lead.
+  phone: [0, 40],
 } as const;
 
 // ----------------------------------------------------------------------------
@@ -113,9 +118,12 @@ export function validateFields(data: QuoteFormData): FieldErrors {
     errs.email = "Enter a valid email address";
   }
 
-  // Optional, but if the user typed something it must look like a phone number.
-  if (data.phone.trim() && !isValidPhone(data.phone)) {
-    errs.phone = "Enter a valid phone number, or leave it blank";
+  // Optional, but if the user typed something it must look like a phone number
+  // and stay within a sane raw length (see LIMITS.phone).
+  if (data.phone.trim()) {
+    if (data.phone.trim().length > LIMITS.phone[1] || !isValidPhone(data.phone)) {
+      errs.phone = "Enter a valid phone number, or leave it blank";
+    }
   }
 
   if (!data.business.trim()) {

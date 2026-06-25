@@ -1,17 +1,22 @@
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
-const companies = [
-  { name: "Vercel", logo: "▲ Vercel" },
-  { name: "Stripe", logo: "/ Stripe" },
-  { name: "Linear", logo: "◈ Linear" },
-  { name: "Notion", logo: "○ Notion" },
-  { name: "Figma", logo: "✦ Figma" },
-  { name: "Framer", logo: "◇ Framer" },
-  { name: "Supabase", logo: "⬡ Supabase" },
-  { name: "Railway", logo: "◉ Railway" },
+// The tools and frameworks we build with. These are technologies we use —
+// not partners or clients — so the heading deliberately avoids implying any
+// endorsement or relationship with these companies.
+const tools = [
+  "React",
+  "Next.js",
+  "Tailwind",
+  "Vercel",
+  "Stripe",
+  "Figma",
+  "Supabase",
+  "Framer",
 ];
 
 export function TrustedBy() {
+  const reduce = useReducedMotion();
+
   return (
     <section className="py-14 bg-white dark:bg-slate-950 border-y border-gray-100 dark:border-slate-800 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,28 +24,29 @@ export function TrustedBy() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          transition={{ duration: reduce ? 0 : 0.4 }}
           className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-10"
         >
-          Trusted by teams at
+          Built with modern tools
         </motion.p>
 
-        {/* Scrolling strip */}
+        {/* Tech stack strip */}
         <div className="relative">
           <div className="flex gap-12 items-center justify-center flex-wrap">
-            {companies.map((company, i) => (
+            {tools.map((tool, i) => (
               <motion.div
-                key={company.name}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                key={tool}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: i * 0.06 }}
+                transition={{ duration: reduce ? 0 : 0.4, delay: i * 0.06 }}
                 className="text-gray-300 dark:text-gray-600 hover:text-gray-500 dark:hover:text-gray-400 transition-colors duration-300 cursor-default select-none"
               >
                 <span
                   className="text-lg font-bold tracking-tight"
                   style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
                 >
-                  {company.logo}
+                  {tool}
                 </span>
               </motion.div>
             ))}
