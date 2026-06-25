@@ -25,6 +25,8 @@ import { COLLECTIONS, clientsCollection } from "../lib/collections";
 import { writeAuditLog } from "../lib/audit";
 import { formatRelative, initials } from "../lib/format";
 import { Client } from "../types";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "@/app/components/UnsavedChangesDialog";
 
 const INPUT_CLASS =
   "block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/40";
@@ -65,16 +67,19 @@ export function Clients() {
   const [saving, setSaving] = useState(false);
 
   const canEdit = can("clients:edit");
+  const { markDirty, markClean, blocker } = useUnsavedChanges();
 
   function openCreate() {
     setEditing(null);
     setForm(EMPTY_FORM);
+    markClean();
     setDialogOpen(true);
   }
 
   function openEdit(client: Client) {
     setEditing(client);
     setForm(toForm(client));
+    markClean();
     setDialogOpen(true);
   }
 
@@ -125,6 +130,7 @@ export function Clients() {
       setDialogOpen(false);
       setEditing(null);
       setForm(EMPTY_FORM);
+      markClean();
       toast.success(editing ? "Client updated." : "Client created.");
     } catch (err) {
       console.error(err);
@@ -136,6 +142,7 @@ export function Clients() {
 
   return (
     <div className="space-y-8">
+      <UnsavedChangesDialog blocker={blocker} />
       <PageHeader
         title="Clients"
         description="Companies and contacts you work with."
@@ -258,9 +265,10 @@ export function Clients() {
                 type="text"
                 required
                 value={form.name}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, name: event.target.value }))
-                }
+                onChange={(event) => {
+                  markDirty();
+                  setForm((prev) => ({ ...prev, name: event.target.value }));
+                }}
                 className={INPUT_CLASS}
               />
             </div>
@@ -281,12 +289,13 @@ export function Clients() {
                   id="client-company"
                   type="text"
                   value={form.company}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    markDirty();
                     setForm((prev) => ({
                       ...prev,
                       company: event.target.value,
-                    }))
-                  }
+                    }));
+                  }}
                   className={`${INPUT_CLASS} pl-9`}
                 />
               </div>
@@ -304,9 +313,10 @@ export function Clients() {
                 type="email"
                 required
                 value={form.email}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, email: event.target.value }))
-                }
+                onChange={(event) => {
+                  markDirty();
+                  setForm((prev) => ({ ...prev, email: event.target.value }));
+                }}
                 className={INPUT_CLASS}
               />
             </div>
@@ -322,9 +332,10 @@ export function Clients() {
                 id="client-phone"
                 type="tel"
                 value={form.phone}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, phone: event.target.value }))
-                }
+                onChange={(event) => {
+                  markDirty();
+                  setForm((prev) => ({ ...prev, phone: event.target.value }));
+                }}
                 className={INPUT_CLASS}
               />
             </div>
@@ -340,9 +351,10 @@ export function Clients() {
                 id="client-notes"
                 rows={3}
                 value={form.notes}
-                onChange={(event) =>
-                  setForm((prev) => ({ ...prev, notes: event.target.value }))
-                }
+                onChange={(event) => {
+                  markDirty();
+                  setForm((prev) => ({ ...prev, notes: event.target.value }));
+                }}
                 className={INPUT_CLASS}
               />
             </div>
@@ -352,7 +364,7 @@ export function Clients() {
             <Button
               type="button"
               variant="outline"
-              onClick={() => setDialogOpen(false)}
+              onClick={() => { markClean(); setDialogOpen(false); }}
             >
               Cancel
             </Button>

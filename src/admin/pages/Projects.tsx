@@ -32,6 +32,8 @@ import { writeAuditLog } from "../lib/audit";
 import { COLLECTIONS, projectsCollection } from "../lib/collections";
 import { formatCurrency, formatDate } from "../lib/format";
 import type { Project, ProjectStatus } from "../types";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "@/app/components/UnsavedChangesDialog";
 
 const STATUS_OPTIONS: readonly ProjectStatus[] = [
   "lead",
@@ -89,6 +91,7 @@ export function Projects() {
 
   const canEdit = can("projects:edit");
   const canDelete = can("projects:delete");
+  const { markDirty, markClean, blocker } = useUnsavedChanges();
 
   // "N" shortcut — open New Project dialog (skip when typing in a form field)
   useEffect(() => {
@@ -117,6 +120,7 @@ export function Projects() {
     setStatus("lead");
     setClientName("");
     setBudget("");
+    markClean();
   }
 
   async function handleCreate() {
@@ -220,6 +224,7 @@ export function Projects() {
 
   return (
     <div className="space-y-8">
+      <UnsavedChangesDialog blocker={blocker} />
       <PageHeader
         title="Projects"
         description="Track delivery across every engagement."
@@ -362,7 +367,7 @@ export function Projects() {
               <input
                 id="project-name"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => { markDirty(); setName(e.target.value); }}
                 required
                 className={inputClasses}
                 placeholder="Website redesign"
@@ -403,7 +408,7 @@ export function Projects() {
               <input
                 id="project-client"
                 value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
+                onChange={(e) => { markDirty(); setClientName(e.target.value); }}
                 className={inputClasses}
                 placeholder="Acme Inc."
               />
@@ -424,7 +429,7 @@ export function Projects() {
                 type="number"
                 min="0"
                 value={budget}
-                onChange={(e) => setBudget(e.target.value)}
+                onChange={(e) => { markDirty(); setBudget(e.target.value); }}
                 className={inputClasses}
                 placeholder="100000"
               />

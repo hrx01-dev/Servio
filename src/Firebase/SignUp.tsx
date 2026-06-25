@@ -5,6 +5,8 @@ import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } f
 import { auth } from './firebase';
 import { notifyWelcome } from '../dashboard/notifications/notificationTriggers';
 import { Home, Check, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
+import { UnsavedChangesDialog } from '@/app/components/UnsavedChangesDialog';
 import {
   analysePassword,
   isPasswordAcceptable,
@@ -210,6 +212,7 @@ function WeakPasswordAlert({ visible, missingLabels }: WeakPasswordAlertProps) {
 // ─── Main SignUp Component ─────────────────────────────────────────────────────
 
 export function SignUp() {
+  const { markDirty, markClean, blocker } = useUnsavedChanges();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -248,6 +251,7 @@ export function SignUp() {
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
       notifyWelcome(user.uid, user.displayName ?? user.email ?? 'there');
+      markClean();
       navigate('/dashboard');
     } catch (err: unknown) {
       if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -264,6 +268,7 @@ export function SignUp() {
       const provider = new GoogleAuthProvider();
       const { user } = await signInWithPopup(auth, provider);
       notifyWelcome(user.uid, user.displayName ?? user.email ?? 'there');
+      markClean();
       navigate('/dashboard');
     } catch (err: unknown) {
       if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -277,6 +282,8 @@ export function SignUp() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
+    <>
+    <UnsavedChangesDialog blocker={blocker} />
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950 px-4 py-10">
       {/* Animated gradient background blobs */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -349,7 +356,7 @@ export function SignUp() {
                 required
                 aria-required="true"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { markDirty(); setEmail(e.target.value); }}
                 className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
                 placeholder="you@example.com"
               />
@@ -377,6 +384,7 @@ export function SignUp() {
                   aria-invalid={weakAttempt ? 'true' : undefined}
                   value={password}
                   onChange={(e) => {
+                    markDirty();
                     setPassword(e.target.value);
                     if (weakAttempt) setWeakAttempt(false);
                   }}
@@ -497,5 +505,6 @@ export function SignUp() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }
