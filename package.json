@@ -55,13 +55,9 @@
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
-    "cors": "^2.8.6",
     "date-fns": "3.6.0",
-    "dotenv": "^17.4.2",
     "embla-carousel-react": "8.6.0",
-    "express": "^5.2.1",
     "firebase": "^12.15.0",
-    "firebase-admin": "^14.1.0",
     "gsap": "^3.15.0",
     "input-otp": "1.4.2",
     "lucide-react": "0.487.0",
@@ -104,7 +100,7 @@
     "tailwindcss": "4.1.12",
     "typescript": "~5.7.3",
     "typescript-eslint": "^8.61.1",
-    "vite": "6.3.5",
+    "vite": "6.4.3",
     "vitest": "^4.1.9"
   },
   "peerDependencies": {
@@ -121,7 +117,7 @@
   },
   "pnpm": {
     "overrides": {
-      "vite": "6.3.5"
+      "vite": "6.4.3"
     }
   }
 }
