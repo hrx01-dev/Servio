@@ -8,6 +8,13 @@ import { useAdmin } from "../context/useAdmin";
 import { usePinGate } from "../context/usePinGate";
 import { AdminLoading } from "../components/AdminLoading";
 import { authErrorMessage } from "../lib/authError";
+import {
+  readLoginLockout,
+  recordLoginFailure,
+  clearLoginLockout,
+  MAX_LOGIN_ATTEMPTS,
+  type LoginLockoutState,
+} from "../lib/loginLockout";
 
 interface LocationState {
   from?: { pathname?: string };
@@ -32,6 +39,11 @@ export function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [lockout, setLockout] = useState<LoginLockoutState>({
+    attempts: 0,
+    lockedUntil: null,
+  });
+  const [secondsLeft, setSecondsLeft] = useState(0);
 
   useEffect(() => {
     if (loading || !firebaseUser || !isAdmin) return;
@@ -58,14 +70,41 @@ export function AdminLogin() {
     }
   }, [loading, firebaseUser, isAdmin, admin, pinSessionVerified, protectedFrom, navigate]);
 
+  // Tick the lockout countdown every second while an active lockout is present.
+  useEffect(() => {
+    if (lockout.lockedUntil === null) {
+      setSecondsLeft(0);
+      return;
+    }
+    const tick = () => {
+      const ms = Math.max(0, lockout.lockedUntil! - Date.now());
+      setSecondsLeft(Math.ceil(ms / 1000));
+      if (ms <= 0) setLockout({ attempts: 0, lockedUntil: null });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [lockout.lockedUntil]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Check for an active lockout before hitting Firebase.
+    const current = readLoginLockout(email);
+    if (current.lockedUntil !== null && current.lockedUntil > Date.now()) {
+      setLockout(current);
+      return;
+    }
+
     setBusy(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      clearLoginLockout(email);
       // Redirect is handled by the effect once the admin profile resolves.
     } catch (err) {
+      const next = recordLoginFailure(email);
+      setLockout(next);
       setError(authErrorMessage(err));
       setBusy(false);
     }
@@ -82,6 +121,10 @@ export function AdminLogin() {
   }
 
   const signedInNotAdmin = Boolean(firebaseUser) && !isAdmin;
+  const isLocked = lockout.lockedUntil !== null && lockout.lockedUntil > Date.now();
+  const attemptsRemaining = MAX_LOGIN_ATTEMPTS - lockout.attempts;
+  const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+  const ss = String(secondsLeft % 60).padStart(2, "0");
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white px-4 dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950">
@@ -140,13 +183,34 @@ export function AdminLogin() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
+            {isLocked ? (
               <p
                 role="alert"
-                className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                className="rounded-lg bg-destructive/10 px-3 py-3 text-sm text-destructive"
               >
-                {error}
+                Too many failed attempts. Try again in{" "}
+                <span className="font-mono font-medium">{mm}:{ss}</span>.
               </p>
+            ) : (
+              <>
+                {error && (
+                  <p
+                    role="alert"
+                    className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                  >
+                    {error}
+                  </p>
+                )}
+                {!error && lockout.attempts > 0 && attemptsRemaining <= 2 && (
+                  <p
+                    role="status"
+                    className="rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:bg-amber-900/20 dark:text-amber-300"
+                  >
+                    {attemptsRemaining} attempt{attemptsRemaining !== 1 ? "s" : ""}{" "}
+                    remaining before temporary lockout.
+                  </p>
+                )}
+              </>
             )}
             <div className="space-y-1.5">
               <label
@@ -182,7 +246,7 @@ export function AdminLogin() {
                 className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/40"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={busy}>
+            <Button type="submit" className="w-full" disabled={busy || isLocked}>
               {busy && (
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
               )}
