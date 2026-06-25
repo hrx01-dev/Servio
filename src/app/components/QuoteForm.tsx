@@ -9,6 +9,8 @@ import {
   WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
 import { submitQuote } from "../lib/submitQuote";
+import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "./UnsavedChangesDialog";
 
 // Persisted submission timestamps for client-side rate limiting. Advisory only
 // (a user can clear storage) — the heavy lifting belongs on a server, but this
@@ -35,6 +37,8 @@ function writeHistory(history: number[]): void {
 }
 
 export function QuoteForm() {
+  const { markDirty, markClean, blocker } = useUnsavedChanges();
+
   const [form, setForm] = useState<QuoteFormData>({
     name: "",
     email: "",
@@ -105,6 +109,7 @@ export function QuoteForm() {
     setLoading(true);
     try {
       await submitQuote(form);
+      markClean();
       setSubmitted(true);
     } catch {
       showFormError(
@@ -126,6 +131,8 @@ export function QuoteForm() {
   });
 
   return (
+    <>
+    <UnsavedChangesDialog blocker={blocker} />
     <section id="contact" aria-labelledby="quote-title" className="py-20 md:py-32 bg-gradient-to-br from-[#0f0f1a] via-[#1a0a2e] to-[#0f0f1a] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
@@ -205,7 +212,7 @@ export function QuoteForm() {
                     autoComplete="name"
                     placeholder="Sarah Chen"
                     value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, name: e.target.value }); }}
                     className={inputClass("name")}
                     {...fieldAria("name")}
                   />
@@ -223,7 +230,7 @@ export function QuoteForm() {
                     autoComplete="email"
                     placeholder="sarah@company.com"
                     value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, email: e.target.value }); }}
                     className={inputClass("email")}
                     {...fieldAria("email")}
                   />
@@ -242,7 +249,7 @@ export function QuoteForm() {
                     autoComplete="tel"
                     placeholder="+1 555 123 4567"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, phone: e.target.value }); }}
                     className={inputClass("phone")}
                     {...fieldAria("phone")}
                   />
@@ -260,7 +267,7 @@ export function QuoteForm() {
                     autoComplete="organization"
                     placeholder="TechStart Inc."
                     value={form.business}
-                    onChange={(e) => setForm({ ...form, business: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, business: e.target.value }); }}
                     className={inputClass("business")}
                     {...fieldAria("business")}
                   />
@@ -281,7 +288,7 @@ export function QuoteForm() {
                   <select
                     id="quote-budget"
                     value={form.budget}
-                    onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, budget: e.target.value }); }}
                     className={inputClass("budget")}
                     {...fieldAria("budget")}
                   >
@@ -301,7 +308,7 @@ export function QuoteForm() {
                   <select
                     id="quote-type"
                     value={form.type}
-                    onChange={(e) => setForm({ ...form, type: e.target.value })}
+                    onChange={(e) => { markDirty(); setForm({ ...form, type: e.target.value }); }}
                     className={inputClass("type")}
                     {...fieldAria("type")}
                   >
@@ -324,7 +331,7 @@ export function QuoteForm() {
                   rows={4}
                   placeholder="Tell us about your project goals, features, and timeline..."
                   value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  onChange={(e) => { markDirty(); setForm({ ...form, description: e.target.value }); }}
                   className={`${inputClass("description")} resize-y`}
                   {...fieldAria("description")}
                 />
@@ -377,5 +384,6 @@ export function QuoteForm() {
         </motion.div>
       </div>
     </section>
+    </>
   );
 }

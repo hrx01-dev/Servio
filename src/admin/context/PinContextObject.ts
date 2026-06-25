@@ -40,3 +40,6 @@ export const PinGateContext = createContext<PinGateValue | null>(null);
 
 /** How long a single PIN verification stays valid. */
 export const PIN_SESSION_TTL_MS = 5 * 60 * 1000;
+
+/** Inactivity period after which the admin PIN session is expired. */
+export const ADMIN_SESSION_TIMEOUT_MS = 30 * 60 * 1000;

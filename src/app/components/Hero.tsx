@@ -1,12 +1,11 @@
-import { motion, AnimatePresence, useReducedMotion, useInView } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef } from 'react';
+import { useInView } from 'motion/react';
 import { TypingText } from './TypingText';
 import { scrollToSection } from '../lib/scrollToSection';
 
 const heroImage = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-
-const CYCLING_WORDS = ['Converts', 'Captivates', 'Dominates', 'Delivers'];
 
 const floatingCards = [
   { icon: Smartphone, text: 'Mobile Responsive', color: 'from-cyan-500 to-blue-500' },
@@ -20,20 +19,6 @@ export function Hero() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "200px" });
-
-  const [wordIndex, setWordIndex] = useState(0);
-  const [cycleKey, setCycleKey] = useState(0);
-  const cycleTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  useEffect(() => () => { clearTimeout(cycleTimerRef.current); }, []);
-
-  const handleTypingDone = useCallback(() => {
-    if (reduce) return;
-    cycleTimerRef.current = setTimeout(() => {
-      setWordIndex(i => (i + 1) % CYCLING_WORDS.length);
-      setCycleKey(k => k + 1);
-    }, 2200);
-  }, [reduce]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (reduce) return;
@@ -77,24 +62,9 @@ export function Hero() {
               <span className="hero-shimmer">
                 Your Business Deserves a Website That{' '}
               </span>
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={cycleKey}
-                  className="converts-glow inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: reduce ? 0 : 0.2 }}
-                >
-                  <TypingText
-                    text={CYCLING_WORDS[wordIndex]}
-                    delay={cycleKey === 0 ? 1200 : 0}
-                    triggerOnView={false}
-                    cursorColor="bg-indigo-600"
-                    onDone={handleTypingDone}
-                  />
-                </motion.span>
-              </AnimatePresence>
+              <span className="converts-glow bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Converts
+              </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto lg:mx-0">

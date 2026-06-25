@@ -13,8 +13,6 @@ interface TypingTextProps {
   showCursor?: boolean;
   /** Tailwind bg-* class for the cursor bar colour */
   cursorColor?: string;
-  /** Called once every character has been typed */
-  onDone?: () => void;
 }
 
 /**
@@ -30,7 +28,6 @@ export function TypingText({
   triggerOnView = true,
   showCursor = true,
   cursorColor = 'bg-indigo-500',
-  onDone,
 }: TypingTextProps) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLSpanElement>(null);

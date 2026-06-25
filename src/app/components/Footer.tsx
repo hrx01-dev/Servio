@@ -12,11 +12,11 @@ const services = [
 ];
 
 const company = [
-  { label: "About", href: null, section: null },
-  { label: "Portfolio", href: null, section: "portfolio" },
-  { label: "Pricing", href: null, section: "pricing" },
-  { label: "Blog", href: null, section: null },
-  { label: "Careers", href: null, section: null },
+  { label: "About", route: "/about", section: null },
+  { label: "Portfolio", route: null, section: "portfolio" },
+  { label: "Pricing", route: null, section: "pricing" },
+  { label: "Blog", route: "/blog", section: null },
+  { label: "Careers", route: "/careers", section: null },
 ];
 
 const socials = [
@@ -79,16 +79,16 @@ export function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-5">Company</h4>
             <ul className="space-y-3">
-              {company.map(({ label, href, section }) => (
+              {company.map(({ label, route, section }) => (
                 <li key={label}>
                   {section ? (
                     <SmoothLink to={section} className="text-sm hover:text-indigo-400 transition-colors">
                       {label}
                     </SmoothLink>
-                  ) : href ? (
-                    <a href={href} className="text-sm hover:text-indigo-400 transition-colors">
+                  ) : route ? (
+                    <Link to={route} className="text-sm hover:text-indigo-400 transition-colors">
                       {label}
-                    </a>
+                    </Link>
                   ) : (
                     <span className="text-sm cursor-default">{label}</span>
                   )}

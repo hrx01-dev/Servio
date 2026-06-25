@@ -4,6 +4,8 @@ import { motion } from 'motion/react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { auth } from './firebase';
 import { Home } from 'lucide-react';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
+import { UnsavedChangesDialog } from '@/app/components/UnsavedChangesDialog';
 
 function GoogleLogo() {
     return (
@@ -17,6 +19,7 @@ function GoogleLogo() {
 }
 
 export function SignIn() {
+    const { markDirty, markClean, blocker } = useUnsavedChanges();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -27,6 +30,7 @@ export function SignIn() {
         setError('');
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            markClean();
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -42,6 +46,7 @@ export function SignIn() {
         try {
             const provider = new GoogleAuthProvider();
             await signInWithPopup(auth, provider);
+            markClean();
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -53,6 +58,8 @@ export function SignIn() {
     };
 
     return (
+        <>
+        <UnsavedChangesDialog blocker={blocker} />
         <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950 px-4">
             {/* Animated gradient background blobs */}
             <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -109,7 +116,7 @@ export function SignIn() {
                                 required
                                 aria-required="true"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => { markDirty(); setEmail(e.target.value); }}
                                 className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
                             />
                         </div>
@@ -128,7 +135,7 @@ export function SignIn() {
                                 required
                                 aria-required="true"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                onChange={(e) => { markDirty(); setPassword(e.target.value); }}
                                 className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
                             />
                         </div>
@@ -175,5 +182,6 @@ export function SignIn() {
                 </div>
             </motion.div>
         </div>
+        </>
     );
 }

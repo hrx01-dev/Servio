@@ -49,19 +49,14 @@ export function Navbar() {
           <div className="flex-shrink-0">
             <button
               onClick={() => scrollToSection('hero')}
-              className="flex items-center gap-2.5 group"
+              className="flex items-center gap-2 group"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">S</span>
               </div>
-              <div className="flex flex-col items-start leading-none">
-                <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Servio
-                </span>
-                <span className="text-[10px] font-semibold tracking-widest uppercase text-gray-400 dark:text-gray-500 mt-0.5 hidden sm:block">
-                  We Code. You Grow.
-                </span>
-              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Servio
+              </span>
             </button>
           </div>
 

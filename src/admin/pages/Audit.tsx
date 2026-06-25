@@ -1,8 +1,42 @@
+import { List, RowComponentProps } from "react-window";
 import { ClipboardList } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { EmptyState } from "../components/EmptyState";
 import { useAuditLogs } from "../hooks/useAdminData";
 import { formatRelative } from "../lib/format";
+import type { AuditLogEntry } from "../types";
+
+const ROW_H = 44;
+const LIST_H = 440;
+
+interface AuditRowProps {
+  entries: AuditLogEntry[];
+}
+
+function AuditRow({ index, style, entries }: RowComponentProps<AuditRowProps>) {
+  const entry = entries[index];
+  return (
+    <div
+      style={style}
+      className="grid grid-cols-4 items-center gap-3 border-b border-border pr-1"
+    >
+      <span className="truncate font-mono text-xs text-foreground">
+        {entry.action}
+      </span>
+      <span className="truncate text-xs text-muted-foreground">
+        {entry.actorEmail || "—"}
+      </span>
+      <span className="truncate text-xs text-muted-foreground">
+        {entry.targetType
+          ? `${entry.targetType}/${entry.targetId ?? "—"}`
+          : "—"}
+      </span>
+      <span className="truncate text-xs text-muted-foreground">
+        {formatRelative(entry.createdAt)}
+      </span>
+    </div>
+  );
+}
 
 export function Audit() {
   const auditLogs = useAuditLogs();
@@ -24,39 +58,22 @@ export function Audit() {
             description="Sensitive admin actions will be recorded here."
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-border text-xs text-muted-foreground">
-                  <th className="py-2 pr-3 font-medium">Action</th>
-                  <th className="py-2 pr-3 font-medium">Actor</th>
-                  <th className="py-2 pr-3 font-medium">Target</th>
-                  <th className="py-2 font-medium">When</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {auditLogs.data.slice(0, 50).map((entry) => (
-                  <tr key={entry.id}>
-                    <td className="py-3 pr-3">
-                      <span className="font-mono text-xs text-foreground">
-                        {entry.action}
-                      </span>
-                    </td>
-                    <td className="py-3 pr-3 text-muted-foreground">
-                      {entry.actorEmail || "—"}
-                    </td>
-                    <td className="py-3 pr-3 text-muted-foreground">
-                      {entry.targetType
-                        ? `${entry.targetType}/${entry.targetId ?? "—"}`
-                        : "—"}
-                    </td>
-                    <td className="py-3 text-muted-foreground">
-                      {formatRelative(entry.createdAt)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div>
+            <div className="grid grid-cols-4 gap-3 border-b border-border pb-2 text-xs font-medium text-muted-foreground">
+              <span>Action</span>
+              <span>Actor</span>
+              <span>Target</span>
+              <span>When</span>
+            </div>
+            <div style={{ height: Math.min(LIST_H, auditLogs.data.length * ROW_H) }}>
+              <List
+                rowCount={auditLogs.data.length}
+                rowHeight={ROW_H}
+                rowProps={{ entries: auditLogs.data }}
+                rowComponent={AuditRow}
+                overscanCount={5}
+              />
+            </div>
           </div>
         )}
       </div>
