@@ -33,8 +33,6 @@ interface AIClassification {
   hasSignificantUnknowns: boolean;
 }
 
-const COMPLEXITIES = new Set(["low", "medium", "high", "enterprise"]);
-
 const DEFAULT_PRICING: PricingConfig = {
   featurePricing: {
     authentication: 5000,

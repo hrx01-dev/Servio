@@ -167,8 +167,9 @@ export default async function handler(
     const classification = validateClassification(parsed, new Set(featureCategories));
 
     return res.status(200).json(classification);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Estimation Error:", error);
-    return res.status(500).json({ error: error.message || "Failed to process estimation" });
+    const errorMessage = error instanceof Error ? error.message : "Failed to process estimation";
+    return res.status(500).json({ error: errorMessage });
   }
 }
