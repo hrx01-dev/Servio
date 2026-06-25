@@ -18,9 +18,6 @@ import { FAQ } from "./components/FAQ";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import NotFound from "./components/NotFound";
-import { About } from "./components/About";
-import { Blog } from "./components/Blog";
-import { Careers } from "./components/Careers";
 import { ThemeProvider } from "./hooks/useTheme";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthProvider } from "../Firebase/AuthContext";
@@ -47,6 +44,9 @@ const ProjectEstimation = lazy(() => import('../dashboard/pages/ProjectEstimatio
 const PricingConfig = lazy(() => import('../dashboard/pages/PricingConfig').then(m => ({ default: m.PricingConfig })));
 const NotificationCenter = lazy(() => import('../dashboard/notifications/NotificationCenter').then(m => ({ default: m.NotificationCenter })));
 const NotificationPreferences = lazy(() => import('../dashboard/notifications/NotificationPreferences').then(m => ({ default: m.NotificationPreferences })));
+const About = lazy(() => import('./components/About').then(m => ({ default: m.About })));
+const Blog = lazy(() => import('./components/Blog').then(m => ({ default: m.Blog })));
+const Careers = lazy(() => import('./components/Careers').then(m => ({ default: m.Careers })));
 
 const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
 
@@ -208,6 +208,9 @@ const router = createBrowserRouter(
       <Route path="/signin" element={<><SEO title="Sign In" noIndex /><SignIn /></>} />
       <Route path="/signup" element={<><SEO title="Sign Up" noIndex /><SignUp /></>} />
       <Route path="/admin/*" element={<AdminApp />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/blog" element={<Blog />} />
+      <Route path="/careers" element={<Careers />} />
       <Route path="/services/:slug" element={<ServiceDetailPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       <Route path="/terms-of-service" element={<TermsOfService />} />
