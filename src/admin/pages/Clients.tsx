@@ -232,7 +232,13 @@ export function Clients() {
         </div>
       )}
 
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) markClean();
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
