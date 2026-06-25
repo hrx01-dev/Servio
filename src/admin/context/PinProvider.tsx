@@ -10,6 +10,7 @@ import {
   PinGateContext,
   PinGateValue,
   PIN_SESSION_TTL_MS,
+  ADMIN_SESSION_TIMEOUT_MS,
 } from "./PinContextObject";
 import { useAdmin } from "./useAdmin";
 import { PinDialog } from "../components/PinDialog";
@@ -44,6 +45,34 @@ export function PinGateProvider({ children }: { children: ReactNode }) {
   const clearPinSession = useCallback(() => {
     setPinSessionVerified(false);
   }, []);
+
+  // ── Inactivity session expiry ───────────────────────────────────────────
+  // Track the last time the admin interacted with the page. When the session
+  // is active, a 30-second interval checks whether they've been idle longer
+  // than ADMIN_SESSION_TIMEOUT_MS; if so, pinSessionVerified is cleared and
+  // RequirePinSession redirects them back to the PIN page.
+  const lastActivityRef = useRef<number>(Date.now());
+
+  useEffect(() => {
+    if (!pinSessionVerified) return;
+
+    lastActivityRef.current = Date.now();
+
+    const ACTIVITY_EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'] as const;
+    const onActivity = () => { lastActivityRef.current = Date.now(); };
+    ACTIVITY_EVENTS.forEach(e => window.addEventListener(e, onActivity, { passive: true }));
+
+    const timerId = setInterval(() => {
+      if (Date.now() - lastActivityRef.current > ADMIN_SESSION_TIMEOUT_MS) {
+        setPinSessionVerified(false);
+      }
+    }, 30_000);
+
+    return () => {
+      ACTIVITY_EVENTS.forEach(e => window.removeEventListener(e, onActivity));
+      clearInterval(timerId);
+    };
+  }, [pinSessionVerified]);
 
   const settle = useCallback((ok: boolean) => {
     const resolve = resolverRef.current;
