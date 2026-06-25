@@ -27,7 +27,7 @@ import { LIMITS, validateFields, hasErrors, type QuoteFormData } from "./quoteVa
  */
 function sanitize(value: string, maxChars: number): string {
   return value
-    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
     .slice(0, maxChars);
 }
 

@@ -2,7 +2,6 @@ import { motion, useReducedMotion } from 'motion/react';
 import { Smartphone, Zap, TrendingUp, Sparkles } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { useInView } from 'motion/react';
-import { TypingText } from './TypingText';
 import { scrollToSection } from '../lib/scrollToSection';
 
 const heroImage = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3ZWJzaXRlJTIwZGFzaGJvYXJkJTIwZGVzaWdufGVufDF8fHx8MTc4MTcwMjY1OXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
