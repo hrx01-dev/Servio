@@ -104,6 +104,44 @@ export interface ProjectBilling {
   updatedAt?: Timestamp;
 }
 
+/** The showcase category a portfolio project belongs to. */
+export type PortfolioCategory = "Business" | "E-Commerce" | "SaaS" | "Other";
+
+export const PORTFOLIO_CATEGORIES: readonly PortfolioCategory[] = [
+  "Business",
+  "E-Commerce",
+  "SaaS",
+  "Other",
+];
+
+/**
+ * A document in the `portfolio` collection — a showcase project admins manage
+ * from the dashboard and that renders on the public marketing site. Only
+ * `published` items are exposed publicly; `order` controls their display order.
+ * Optional fields (industry, projectUrl, githubUrl) are stored as empty strings
+ * when unset so the security-rule shape can pin the full key set.
+ */
+export interface PortfolioItem {
+  id: string;
+  title: string;
+  description: string;
+  category: PortfolioCategory;
+  industry: string;
+  /** Cover image URL. */
+  imageUrl: string;
+  technologies: string[];
+  /** Live demo / project URL. */
+  projectUrl: string;
+  /** Optional source repository URL. */
+  githubUrl: string;
+  /** Display order on the public page (ascending). */
+  order: number;
+  /** When false the item is a draft, hidden from the public site. */
+  published: boolean;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
 /** A document in the `clients` collection. */
 export interface Client {
   id: string;

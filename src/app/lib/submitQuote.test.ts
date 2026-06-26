@@ -25,7 +25,7 @@ const validForm: QuoteFormData = {
   email: " sarah@company.com ",
   phone: "+1 555 123 4567",
   business: "TechStart Inc.",
-  budget: "$5,000 – $10,000",
+  budget: "₹75,000 – ₹2,00,000",
   type: "Business Website",
   description: "Need a new marketing site.",
 };
@@ -51,7 +51,7 @@ describe("buildQuoteSummary", () => {
     expect(s.subject).toBe("New quote request: Business Website — TechStart Inc.");
     expect(s.text).toContain("Email: sarah@company.com");
     expect(s.text).toContain("Phone: +1 555 123 4567");
-    expect(s.text).toContain("Budget: $5,000 – $10,000");
+    expect(s.text).toContain("Budget: ₹75,000 – ₹2,00,000");
     expect(s.text).toContain("Need a new marketing site.");
   });
 

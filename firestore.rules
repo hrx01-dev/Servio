@@ -208,6 +208,62 @@ service cloud.firestore {
       allow delete: if can('projects:edit');
     }
 
+    // ---- portfolio (admin-managed public showcase) ---------------------
+
+    // Showcase projects managed from the admin dashboard and rendered on the
+    // public marketing site. The PUBLIC (unauthenticated) visitor may read only
+    // PUBLISHED items; admins who can view projects read everything incl. drafts.
+    // Writes are restricted to projects:edit admins with the document shape
+    // pinned and timestamps server-stamped, so the collection can never be abused
+    // as arbitrary publicly-readable storage. createdAt is immutable on update.
+    match /portfolio/{id} {
+      function validPortfolioData(data) {
+        return data.title is string
+          && data.title.matches('.*\\S.*')
+          && data.title.size() < 200
+          && data.description is string
+          && data.description.size() < 5000
+          && data.category in ['Business', 'E-Commerce', 'SaaS', 'Other']
+          && data.industry is string
+          && data.industry.size() < 200
+          && data.imageUrl is string
+          && data.imageUrl.size() < 2000
+          && data.technologies is list
+          && data.technologies.size() < 50
+          && data.projectUrl is string
+          && data.projectUrl.size() < 2000
+          && data.githubUrl is string
+          && data.githubUrl.size() < 2000
+          && data.order is number
+          && data.published is bool;
+      }
+
+      allow read: if resource.data.published == true || can('projects:view');
+
+      allow create: if can('projects:edit')
+        && request.resource.data.keys().hasOnly(
+             ['title', 'description', 'category', 'industry', 'imageUrl',
+              'technologies', 'projectUrl', 'githubUrl', 'order', 'published',
+              'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(
+             ['title', 'description', 'category', 'industry', 'imageUrl',
+              'technologies', 'projectUrl', 'githubUrl', 'order', 'published',
+              'createdAt', 'updatedAt'])
+        && validPortfolioData(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if can('projects:edit')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+             ['title', 'description', 'category', 'industry', 'imageUrl',
+              'technologies', 'projectUrl', 'githubUrl', 'order', 'published',
+              'updatedAt'])
+        && validPortfolioData(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if can('projects:edit');
+    }
+
     // ---- clients -------------------------------------------------------
 
     match /clients/{id} {

@@ -14,9 +14,11 @@ import {
   parseAuditLog,
   parseClient,
   parseMessage,
+  parsePortfolioItem,
   parseProject,
   parseProjectBilling,
   parseProjectUpdate,
+  portfolioCollection,
   projectBillingCollection,
   projectsCollection,
   projectUpdatesCollection,
@@ -26,6 +28,7 @@ import {
   AuditLogEntry,
   Client,
   ContactMessage,
+  PortfolioItem,
   Project,
   ProjectBilling,
   ProjectUpdate,
@@ -61,6 +64,14 @@ function byClientEmail(
   b: { clientEmail: string },
 ): number {
   return a.clientEmail.localeCompare(b.clientEmail);
+}
+
+function byOrder(
+  a: { order: number; createdAt?: Timestamp },
+  b: { order: number; createdAt?: Timestamp },
+): number {
+  if (a.order !== b.order) return a.order - b.order;
+  return millis(a.createdAt) - millis(b.createdAt);
 }
 
 /**
@@ -143,6 +154,12 @@ export function useProjectBilling(): CollectionState<ProjectBilling> {
     parseProjectBilling,
     byClientEmail,
   );
+}
+
+export function usePortfolio(): CollectionState<PortfolioItem> {
+  // Sorted by display order (then oldest-first) to match the public page. No
+  // dev-mock dataset — in local preview this simply shows an empty list.
+  return useCollectionData(portfolioCollection, parsePortfolioItem, byOrder);
 }
 
 export function useClients(enabled = true): CollectionState<Client> {

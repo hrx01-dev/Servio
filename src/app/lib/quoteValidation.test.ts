@@ -6,7 +6,7 @@ const base: QuoteFormData = {
   email: "sarah@company.com",
   phone: "",
   business: "TechStart Inc.",
-  budget: "$5,000 – $10,000",
+  budget: "₹75,000 – ₹2,00,000",
   type: "Business Website",
   description: "Need a new marketing site.",
 };

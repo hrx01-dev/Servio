@@ -8,6 +8,9 @@ import {
   ContactMessage,
   MessageStatus,
   PaymentStatus,
+  PortfolioCategory,
+  PortfolioItem,
+  PORTFOLIO_CATEGORIES,
   Project,
   ProjectBilling,
   ProjectPayment,
@@ -22,6 +25,7 @@ export const COLLECTIONS = {
   projects: "projects",
   projectUpdates: "projectUpdates",
   projectBilling: "projectBilling",
+  portfolio: "portfolio",
   clients: "clients",
   messages: "messages",
   auditLogs: "audit_logs",
@@ -37,6 +41,7 @@ export const projectBillingCollection = collection(
   db,
   COLLECTIONS.projectBilling,
 );
+export const portfolioCollection = collection(db, COLLECTIONS.portfolio);
 export const clientsCollection = collection(db, COLLECTIONS.clients);
 export const messagesCollection = collection(db, COLLECTIONS.messages);
 export const auditLogsCollection = collection(db, COLLECTIONS.auditLogs);
@@ -181,6 +186,33 @@ export function parseProjectBilling(
     clientEmail: str(data.clientEmail),
     totalCost: num(data.totalCost),
     payments,
+    createdAt: ts(data.createdAt),
+    updatedAt: ts(data.updatedAt),
+  };
+}
+
+export function parsePortfolioItem(
+  id: string,
+  data: DocumentData,
+): PortfolioItem {
+  const category = PORTFOLIO_CATEGORIES.includes(data.category as PortfolioCategory)
+    ? (data.category as PortfolioCategory)
+    : "Other";
+  const technologies = Array.isArray(data.technologies)
+    ? data.technologies.filter((t): t is string => typeof t === "string")
+    : [];
+  return {
+    id,
+    title: str(data.title, "Untitled project"),
+    description: str(data.description),
+    category,
+    industry: str(data.industry),
+    imageUrl: str(data.imageUrl),
+    technologies,
+    projectUrl: str(data.projectUrl),
+    githubUrl: str(data.githubUrl),
+    order: num(data.order),
+    published: data.published === true,
     createdAt: ts(data.createdAt),
     updatedAt: ts(data.updatedAt),
   };
