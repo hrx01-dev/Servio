@@ -320,6 +320,50 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ---- estimations (AI project-estimation history) -------------------
+
+    // Per-user history of AI cost estimates produced by the dashboard's
+    // estimator. Each document is owned by the signed-in user who created it
+    // (addressed by their auth uid). A user may create and read ONLY their own
+    // estimates; records are immutable history (no update/delete). Without this
+    // rule the estimator's save was denied by default, surfacing "Missing or
+    // insufficient permissions" and hiding the computed estimate (issue #184).
+    match /estimations/{id} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly(
+             ['userId', 'description', 'result', 'createdAt'])
+        && request.resource.data.keys().hasAll(
+             ['userId', 'description', 'result', 'createdAt'])
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.description is string
+        && request.resource.data.description.size() > 0
+        && request.resource.data.description.size() < 5001
+        && request.resource.data.createdAt is string
+        // Pin the result to the fixed EstimationResult shape so the collection
+        // can't be abused as arbitrary client-writable storage (rules can't
+        // iterate the features list, so it's only length-bounded — mirroring
+        // projectBilling.payments).
+        && request.resource.data.result is map
+        && request.resource.data.result.keys().hasOnly(
+             ['projectType', 'overallComplexity', 'features',
+              'estimatedCostMin', 'estimatedCostMax',
+              'estimatedTimeline', 'explanation'])
+        && request.resource.data.result.estimatedCostMin is number
+        && request.resource.data.result.estimatedCostMax is number
+        && request.resource.data.result.features is list
+        && request.resource.data.result.features.size() < 100
+        && request.resource.data.result.projectType is string
+        && request.resource.data.result.projectType.size() < 200
+        && request.resource.data.result.estimatedTimeline is string
+        && request.resource.data.result.estimatedTimeline.size() < 100
+        && request.resource.data.result.explanation is string
+        && request.resource.data.result.explanation.size() < 4000;
+
+      allow update, delete: if false;
+    }
+
     // Everything else is denied by default.
   }
 }

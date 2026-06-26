@@ -69,6 +69,10 @@ function validateClassification(
     throw new Error("Invalid classification structure");
   }
 
+  // Be resilient to an occasional malformed feature from the model: skip an
+  // entry with a missing name, an unknown category, or an invalid complexity
+  // rather than failing the entire estimate. We still require at least one
+  // usable feature below so the estimate stays meaningful.
   const features: AIFeature[] = [];
   for (const f of obj.features) {
     const feat = f as Record<string, unknown>;
@@ -79,13 +83,17 @@ function validateClassification(
       !allowedCategories.has(feat.category as string) ||
       !COMPLEXITIES.has(feat.complexity as string)
     ) {
-      throw new Error("Invalid feature in classification");
+      continue;
     }
     features.push({
       name: feat.name,
       category: feat.category,
       complexity: feat.complexity as string,
     });
+  }
+
+  if (features.length === 0) {
+    throw new Error("Invalid classification: no usable features");
   }
 
   return {
