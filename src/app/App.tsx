@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Routes, Route, useLocation, BrowserRouter } from "react-router-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { Navbar } from "./components/Navbar";
@@ -15,31 +15,42 @@ import { FAQ } from "./components/FAQ";
 import { FinalCTA } from "./components/FinalCTA";
 import { Footer } from "./components/Footer";
 import NotFound from "./components/NotFound";
-import { ServiceDetailPage } from "./components/ServiceDetailPage";
-import { PrivacyPolicy } from "./components/PrivacyPolicy";
-import { TermsOfService } from "./components/TermsOfService";
-import { CookiePolicy } from "./components/CookiePolicy";
 import { ThemeProvider } from "./hooks/useTheme";
 import { SplashScreen } from "./components/SplashScreen";
 import { AuthProvider } from "../Firebase/AuthContext";
-import { SignIn } from "../Firebase/SignIn";
-import { SignUp } from "../Firebase/SignUp";
-import { AdminApp } from "../admin/AdminApp";
 import { useAppLoading } from "./hooks/useAppLoading";
 import { ProtectedRoute } from "../dashboard/components/ProtectedRoute";
-import { DashboardLayout } from "../dashboard/components/DashboardLayout";
-import { DashboardOverview } from "../dashboard/pages/DashboardOverview";
-import { ProjectProgress } from "../dashboard/pages/ProjectProgress";
-import { UpdatesFeed } from "../dashboard/pages/UpdatesFeed";
-import { PaymentManagement } from "../dashboard/pages/PaymentManagement";
-import { InvoiceManagement } from "../dashboard/pages/InvoiceManagement";
-import { ProjectResources } from "../dashboard/pages/ProjectResources";
-import { ProjectEstimation } from "../dashboard/pages/ProjectEstimation";
-import { PricingConfig } from "../dashboard/pages/PricingConfig";
-import { NotificationCenter } from "../dashboard/notifications/NotificationCenter";
-import { NotificationPreferences } from "../dashboard/notifications/NotificationPreferences";
+
+// Route-level lazy chunks — each becomes its own JS file, downloaded only
+// when the user first navigates to that route.
+const AdminApp = lazy(() => import('../admin/AdminApp').then(m => ({ default: m.AdminApp })));
+const SignIn = lazy(() => import('../Firebase/SignIn').then(m => ({ default: m.SignIn })));
+const SignUp = lazy(() => import('../Firebase/SignUp').then(m => ({ default: m.SignUp })));
+const ServiceDetailPage = lazy(() => import('./components/ServiceDetailPage').then(m => ({ default: m.ServiceDetailPage })));
+const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy').then(m => ({ default: m.PrivacyPolicy })));
+const TermsOfService = lazy(() => import('./components/TermsOfService').then(m => ({ default: m.TermsOfService })));
+const CookiePolicy = lazy(() => import('./components/CookiePolicy').then(m => ({ default: m.CookiePolicy })));
+const DashboardLayout = lazy(() => import('../dashboard/components/DashboardLayout').then(m => ({ default: m.DashboardLayout })));
+const DashboardOverview = lazy(() => import('../dashboard/pages/DashboardOverview').then(m => ({ default: m.DashboardOverview })));
+const ProjectProgress = lazy(() => import('../dashboard/pages/ProjectProgress').then(m => ({ default: m.ProjectProgress })));
+const UpdatesFeed = lazy(() => import('../dashboard/pages/UpdatesFeed').then(m => ({ default: m.UpdatesFeed })));
+const PaymentManagement = lazy(() => import('../dashboard/pages/PaymentManagement').then(m => ({ default: m.PaymentManagement })));
+const InvoiceManagement = lazy(() => import('../dashboard/pages/InvoiceManagement').then(m => ({ default: m.InvoiceManagement })));
+const ProjectResources = lazy(() => import('../dashboard/pages/ProjectResources').then(m => ({ default: m.ProjectResources })));
+const ProjectEstimation = lazy(() => import('../dashboard/pages/ProjectEstimation').then(m => ({ default: m.ProjectEstimation })));
+const PricingConfig = lazy(() => import('../dashboard/pages/PricingConfig').then(m => ({ default: m.PricingConfig })));
+const NotificationCenter = lazy(() => import('../dashboard/notifications/NotificationCenter').then(m => ({ default: m.NotificationCenter })));
+const NotificationPreferences = lazy(() => import('../dashboard/notifications/NotificationPreferences').then(m => ({ default: m.NotificationPreferences })));
 
 const REVEAL_EASE: [number, number, number, number] = [0.4, 0, 0.2, 1];
+
+function PageSpinner() {
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -162,37 +173,39 @@ export default function App() {
         <ThemeProvider>
           <ScrollToTop />
           <AuthProvider>
-            <Routes>
-              {/* Only the landing route is gated behind the splash intro. */}
-              <Route path="/" element={<LandingShell />} />
-              <Route path="/signin" element={<SignIn />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/admin/*" element={<AdminApp />} />
-              <Route path="/services/:slug" element={<ServiceDetailPage />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <DashboardLayout />
-                  </ProtectedRoute>
-                }
-              >
-                <Route index element={<DashboardOverview />} />
-                <Route path="progress" element={<ProjectProgress />} />
-                <Route path="updates" element={<UpdatesFeed />} />
-                <Route path="payments" element={<PaymentManagement />} />
-                <Route path="invoices" element={<InvoiceManagement />} />
-                <Route path="resources" element={<ProjectResources />} />
-                <Route path="estimation" element={<ProjectEstimation />} />
-                <Route path="pricing-config" element={<PricingConfig />} />
-                <Route path="notifications" element={<NotificationCenter />} />
-                <Route path="notification-preferences" element={<NotificationPreferences />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageSpinner />}>
+              <Routes>
+                {/* Only the landing route is gated behind the splash intro. */}
+                <Route path="/" element={<LandingShell />} />
+                <Route path="/signin" element={<SignIn />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route path="/admin/*" element={<AdminApp />} />
+                <Route path="/services/:slug" element={<ServiceDetailPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <DashboardLayout />
+                    </ProtectedRoute>
+                  }
+                >
+                  <Route index element={<DashboardOverview />} />
+                  <Route path="progress" element={<ProjectProgress />} />
+                  <Route path="updates" element={<UpdatesFeed />} />
+                  <Route path="payments" element={<PaymentManagement />} />
+                  <Route path="invoices" element={<InvoiceManagement />} />
+                  <Route path="resources" element={<ProjectResources />} />
+                  <Route path="estimation" element={<ProjectEstimation />} />
+                  <Route path="pricing-config" element={<PricingConfig />} />
+                  <Route path="notifications" element={<NotificationCenter />} />
+                  <Route path="notification-preferences" element={<NotificationPreferences />} />
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </AuthProvider>
         </ThemeProvider>
       </BrowserRouter>

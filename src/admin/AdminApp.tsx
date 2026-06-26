@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AdminProvider } from "./context/AdminContext";
 import { PinGateProvider } from "./context/PinProvider";
@@ -5,16 +6,27 @@ import { AdminLayout } from "./components/AdminLayout";
 import { ProtectedAdminRoute } from "./components/guards/ProtectedAdminRoute";
 import { RequirePinSession } from "./components/guards/RequirePinSession";
 import { RequirePermission } from "./components/guards/RequirePermission";
-import { AdminLogin } from "./pages/AdminLogin";
-import { Unauthorized } from "./pages/Unauthorized";
-import { PinVerify } from "./pages/PinVerify";
-import { PinSetup } from "./pages/PinSetup";
-import { Dashboard } from "./pages/Dashboard";
-import { Projects } from "./pages/Projects";
-import { Clients } from "./pages/Clients";
-import { Messages } from "./pages/Messages";
-import { Audit } from "./pages/Audit";
-import { Settings } from "./pages/Settings";
+
+// Page-level lazy chunks inside the admin subtree — downloaded only when the
+// admin user first navigates to each page.
+const AdminLogin = lazy(() => import('./pages/AdminLogin').then(m => ({ default: m.AdminLogin })));
+const Unauthorized = lazy(() => import('./pages/Unauthorized').then(m => ({ default: m.Unauthorized })));
+const PinVerify = lazy(() => import('./pages/PinVerify').then(m => ({ default: m.PinVerify })));
+const PinSetup = lazy(() => import('./pages/PinSetup').then(m => ({ default: m.PinSetup })));
+const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m.Dashboard })));
+const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
+const Clients = lazy(() => import('./pages/Clients').then(m => ({ default: m.Clients })));
+const Messages = lazy(() => import('./pages/Messages').then(m => ({ default: m.Messages })));
+const Audit = lazy(() => import('./pages/Audit').then(m => ({ default: m.Audit })));
+const Settings = lazy(() => import('./pages/Settings').then(m => ({ default: m.Settings })));
+
+function AdminPageSpinner() {
+  return (
+    <div className="flex flex-1 items-center justify-center p-12">
+      <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+    </div>
+  );
+}
 
 /**
  * The `/admin/*` route subtree. Mounted from the app router under the shared
@@ -31,75 +43,77 @@ export function AdminApp() {
   return (
     <AdminProvider>
       <PinGateProvider>
-        <Routes>
-          {/* ── Public / semi-public routes ─────────────────────────── */}
-          <Route path="login" element={<AdminLogin />} />
-          <Route path="unauthorized" element={<Unauthorized />} />
+        <Suspense fallback={<AdminPageSpinner />}>
+          <Routes>
+            {/* ── Public / semi-public routes ─────────────────────────── */}
+            <Route path="login" element={<AdminLogin />} />
+            <Route path="unauthorized" element={<Unauthorized />} />
 
-          {/* ── PIN flow: requires Firebase auth + admin role ────────── */}
-          {/*    but does NOT require pinSessionVerified yet              */}
-          <Route element={<ProtectedAdminRoute />}>
-            <Route path="pin-verify" element={<PinVerify />} />
-            <Route path="pin-setup" element={<PinSetup />} />
+            {/* ── PIN flow: requires Firebase auth + admin role ────────── */}
+            {/*    but does NOT require pinSessionVerified yet              */}
+            <Route element={<ProtectedAdminRoute />}>
+              <Route path="pin-verify" element={<PinVerify />} />
+              <Route path="pin-setup" element={<PinSetup />} />
 
-            {/* ── Protected admin area: requires PIN session ──────── */}
-            <Route element={<RequirePinSession />}>
-              <Route element={<AdminLayout />}>
-                <Route index element={<Navigate to="dashboard" replace />} />
-                <Route
-                  path="dashboard"
-                  element={
-                    <RequirePermission permission="dashboard:view">
-                      <Dashboard />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="projects"
-                  element={
-                    <RequirePermission permission="projects:view">
-                      <Projects />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="clients"
-                  element={
-                    <RequirePermission permission="clients:view">
-                      <Clients />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="messages"
-                  element={
-                    <RequirePermission permission="messages:view">
-                      <Messages />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="audit"
-                  element={
-                    <RequirePermission permission="audit:view">
-                      <Audit />
-                    </RequirePermission>
-                  }
-                />
-                <Route
-                  path="settings"
-                  element={
-                    <RequirePermission permission="settings:view">
-                      <Settings />
-                    </RequirePermission>
-                  }
-                />
+              {/* ── Protected admin area: requires PIN session ──────── */}
+              <Route element={<RequirePinSession />}>
+                <Route element={<AdminLayout />}>
+                  <Route index element={<Navigate to="dashboard" replace />} />
+                  <Route
+                    path="dashboard"
+                    element={
+                      <RequirePermission permission="dashboard:view">
+                        <Dashboard />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="projects"
+                    element={
+                      <RequirePermission permission="projects:view">
+                        <Projects />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="clients"
+                    element={
+                      <RequirePermission permission="clients:view">
+                        <Clients />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="messages"
+                    element={
+                      <RequirePermission permission="messages:view">
+                        <Messages />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="audit"
+                    element={
+                      <RequirePermission permission="audit:view">
+                        <Audit />
+                      </RequirePermission>
+                    }
+                  />
+                  <Route
+                    path="settings"
+                    element={
+                      <RequirePermission permission="settings:view">
+                        <Settings />
+                      </RequirePermission>
+                    }
+                  />
+                </Route>
               </Route>
             </Route>
-          </Route>
 
-          <Route path="*" element={<Navigate to="dashboard" replace />} />
-        </Routes>
+            <Route path="*" element={<Navigate to="dashboard" replace />} />
+          </Routes>
+        </Suspense>
       </PinGateProvider>
     </AdminProvider>
   );

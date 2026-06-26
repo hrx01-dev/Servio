@@ -34,6 +34,28 @@ export default defineConfig({
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 
+  build: {
+    rollupOptions: {
+      output: {
+        // Group large vendor libraries into stable named chunks so browsers
+        // can cache them independently of app code changes.
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) {
+              return 'vendor-react';
+            }
+            if (id.includes('/firebase/')) {
+              return 'vendor-firebase';
+            }
+            if (id.includes('/motion/') || id.includes('/framer-motion/')) {
+              return 'vendor-motion';
+            }
+          }
+        },
+      },
+    },
+  },
+
   // ── Vitest configuration ────────────────────────────────────────────────
   test: {
     environment: 'jsdom',
