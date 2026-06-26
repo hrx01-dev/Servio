@@ -15,7 +15,9 @@ import {
   parseClient,
   parseMessage,
   parseProject,
+  parseProjectBilling,
   parseProjectUpdate,
+  projectBillingCollection,
   projectsCollection,
   projectUpdatesCollection,
 } from "../lib/collections";
@@ -25,6 +27,7 @@ import {
   Client,
   ContactMessage,
   Project,
+  ProjectBilling,
   ProjectUpdate,
 } from "../types";
 import {
@@ -51,6 +54,13 @@ function byCreatedDesc(
   b: { createdAt?: Timestamp },
 ): number {
   return millis(b.createdAt) - millis(a.createdAt);
+}
+
+function byClientEmail(
+  a: { clientEmail: string },
+  b: { clientEmail: string },
+): number {
+  return a.clientEmail.localeCompare(b.clientEmail);
 }
 
 /**
@@ -117,6 +127,16 @@ export function useProjectUpdates(): CollectionState<ProjectUpdate> {
     projectUpdatesCollection,
     parseProjectUpdate,
     byCreatedDesc,
+  );
+}
+
+export function useProjectBilling(): CollectionState<ProjectBilling> {
+  // One billing document per client, sorted by email for easy scanning. No
+  // dev-mock dataset — in local preview this simply shows an empty list.
+  return useCollectionData(
+    projectBillingCollection,
+    parseProjectBilling,
+    byClientEmail,
   );
 }
 

@@ -144,6 +144,70 @@ service cloud.firestore {
       allow delete: if can('projects:edit');
     }
 
+    // ---- project billing (admin -> client payments) --------------------
+
+    // A client's project billing — total cost + the list of recorded payments —
+    // shown on the client dashboard's Payments section. One document per client,
+    // addressed by (and keyed on) the client's lowercased email, the only
+    // identifier shared between what an admin knows and the client's auth token.
+    // The amount-paid / remaining figures are DERIVED on the client from the
+    // payments, never stored.
+    match /projectBilling/{id} {
+      // A signed-in client may read ONLY their own billing — and only once their
+      // email is VERIFIED. Addressing is by email and Firebase lets anyone
+      // register an arbitrary (unverified) address, so without this an attacker
+      // could pre-register an unclaimed client's email and read their billing.
+      // The client app gates the Payments UI on `emailVerified`; Google sign-in
+      // is verified automatically. Any admin who can view projects may read all.
+      allow read: if can('projects:view')
+        || (
+          isSignedIn()
+          && request.auth.token.email != null
+          && request.auth.token.email_verified == true
+          && resource.data.clientEmail == request.auth.token.email.lower()
+        );
+
+      // Only admins who can edit projects may author billing. The top-level shape
+      // is pinned hard (exact key set, bounded total cost, an already-lowercased
+      // email, server-stamped timestamps). NOTE: Firestore rules cannot iterate a
+      // list, so individual `payments` entries are validated by the client parser
+      // (`src/dashboard/lib/payments.ts`), not here — acceptable because writes
+      // are restricted to trusted projects:edit admins. The list size is bounded
+      // to keep the document well under Firestore's 1 MiB limit.
+      allow create: if can('projects:edit')
+        && request.resource.data.keys().hasOnly(
+             ['clientEmail', 'totalCost', 'payments', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(
+             ['clientEmail', 'totalCost', 'payments', 'createdAt', 'updatedAt'])
+        && request.resource.data.clientEmail is string
+        && request.resource.data.clientEmail.size() > 0
+        && request.resource.data.clientEmail.size() < 320
+        && request.resource.data.clientEmail == request.resource.data.clientEmail.lower()
+        && request.resource.data.clientEmail.matches('^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$')
+        && request.resource.data.totalCost is number
+        && request.resource.data.totalCost >= 0
+        && request.resource.data.totalCost < 1000000000000
+        && request.resource.data.payments is list
+        && request.resource.data.payments.size() < 500
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // An editing admin may update only the mutable fields; the addressee email
+      // and creation time are immutable (kept out of the affected-keys allowlist),
+      // and updatedAt is re-stamped to the server clock.
+      allow update: if can('projects:edit')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+             ['totalCost', 'payments', 'updatedAt'])
+        && request.resource.data.totalCost is number
+        && request.resource.data.totalCost >= 0
+        && request.resource.data.totalCost < 1000000000000
+        && request.resource.data.payments is list
+        && request.resource.data.payments.size() < 500
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if can('projects:edit');
+    }
+
     // ---- clients -------------------------------------------------------
 
     match /clients/{id} {

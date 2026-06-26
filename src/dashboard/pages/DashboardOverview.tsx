@@ -17,6 +17,7 @@ import { Separator } from "../../app/components/ui/separator";
 import { Skeleton } from "../../app/components/ui/skeleton";
 import { useProjects } from "../hooks/useProjects";
 import { useClientUpdates } from "../hooks/useClientUpdates";
+import { useClientPayments } from "../hooks/useClientPayments";
 import { PROJECT_STAGES } from "../types";
 
 const fadeUp = {
@@ -31,6 +32,8 @@ const recentUpdateDateFormatter = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
 });
 
+const inr = (value: number) => `₹${value.toLocaleString("en-IN")}`;
+
 export function DashboardOverview() {
   const { projects, loading, isDemo } = useProjects();
   const {
@@ -39,6 +42,12 @@ export function DashboardOverview() {
     error: updatesError,
     needsEmailVerification,
   } = useClientUpdates();
+  const {
+    billing,
+    loading: paymentsLoading,
+    error: paymentsError,
+    needsEmailVerification: paymentsNeedsVerification,
+  } = useClientPayments();
 
   if (loading) {
     return (
@@ -91,7 +100,23 @@ export function DashboardOverview() {
     PROJECT_STAGES.find((s) => s.key === project.currentStage)?.label ??
     project.currentStage;
 
-  const remaining = project.totalCost - project.amountPaid;
+  // Payment figures come from the client's real, email-addressed billing — not
+  // the project record — and load independently, so the stat card reflects the
+  // billing hook's state (loading / verify-email / not-set-up / data).
+  let paymentValue: string;
+  let paymentSubtitle: string | undefined;
+  if (paymentsNeedsVerification) {
+    paymentValue = "Verify email";
+  } else if (paymentsLoading) {
+    paymentValue = "…";
+  } else if (paymentsError) {
+    paymentValue = "Unavailable";
+  } else if (!billing) {
+    paymentValue = "Not set up";
+  } else {
+    paymentValue = `${inr(billing.amountPaid)} paid`;
+    paymentSubtitle = `${inr(billing.remaining)} remaining`;
+  }
 
   const statCards = [
     {
@@ -117,11 +142,11 @@ export function DashboardOverview() {
     },
     {
       title: "Payment Status",
-      value: `₹${project.amountPaid.toLocaleString("en-IN")} paid`,
+      value: paymentValue,
       icon: CreditCard,
       color: "text-amber-600 dark:text-amber-400",
       bg: "bg-amber-50 dark:bg-amber-950/50",
-      subtitle: `₹${remaining.toLocaleString("en-IN")} remaining`,
+      subtitle: paymentSubtitle,
     },
   ];
 
@@ -326,44 +351,73 @@ export function DashboardOverview() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Total Cost
-                    </p>
-                    <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                      ₹{project.totalCost.toLocaleString("en-IN")}
-                    </p>
+              {paymentsLoading ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                      <Skeleton key={i} className="h-12" />
+                    ))}
                   </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Paid
-                    </p>
-                    <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                      ₹{project.amountPaid.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Remaining
-                    </p>
-                    <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
-                      ₹{remaining.toLocaleString("en-IN")}
-                    </p>
-                  </div>
+                  <Skeleton className="h-2" />
                 </div>
-                <Progress
-                  value={(project.amountPaid / project.totalCost) * 100}
-                  className="h-2"
-                />
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400">
-                  {Math.round(
-                    (project.amountPaid / project.totalCost) * 100,
-                  )}
-                  % of total paid
-                </p>
-              </div>
+              ) : paymentsError ? (
+                <div
+                  className="flex flex-col items-center py-6 text-center"
+                  role="alert"
+                >
+                  <CreditCard className="h-8 w-8 text-red-300 dark:text-red-500/70 mb-2" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Couldn&apos;t load payments
+                  </p>
+                </div>
+              ) : paymentsNeedsVerification ? (
+                <div className="flex flex-col items-center py-6 text-center">
+                  <CreditCard className="h-8 w-8 text-indigo-300 dark:text-indigo-500/70 mb-2" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Verify your email to see payments
+                  </p>
+                </div>
+              ) : !billing ? (
+                <div className="flex flex-col items-center py-6 text-center">
+                  <CreditCard className="h-8 w-8 text-gray-300 dark:text-gray-600 mb-2" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No payment information yet
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Total Cost
+                      </p>
+                      <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                        {inr(billing.totalCost)}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Paid
+                      </p>
+                      <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        {inr(billing.amountPaid)}
+                      </p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Remaining
+                      </p>
+                      <p className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                        {inr(billing.remaining)}
+                      </p>
+                    </div>
+                  </div>
+                  <Progress value={billing.paidPercent} className="h-2" />
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400">
+                    {billing.paidPercent}% of total paid
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </motion.div>

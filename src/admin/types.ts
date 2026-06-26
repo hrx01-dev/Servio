@@ -72,6 +72,38 @@ export interface ProjectUpdate {
   createdAt?: Timestamp;
 }
 
+/** The state of a recorded payment. Only `completed` counts as money received. */
+export type PaymentStatus = "completed" | "pending" | "failed";
+
+/** A single recorded payment, embedded in a `projectBilling` document. */
+export interface ProjectPayment {
+  id: string;
+  /** ISO calendar date ('YYYY-MM-DD') the payment was made. */
+  date: string;
+  amount: number;
+  /** How the payment was made, e.g. "Bank Transfer", "UPI". */
+  method: string;
+  /** Transaction / reference id. */
+  reference: string;
+  status: PaymentStatus;
+}
+
+/**
+ * A document in the `projectBilling` collection — a client's project billing,
+ * authored by an admin and shown on the client dashboard's Payments section.
+ * Addressed by the client's (lowercased) email, the only identifier shared
+ * between the admin and the client's auth. The client derives amount-paid /
+ * remaining from `payments`; only `totalCost` and `payments` are stored.
+ */
+export interface ProjectBilling {
+  id: string;
+  clientEmail: string;
+  totalCost: number;
+  payments: ProjectPayment[];
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
 /** A document in the `clients` collection. */
 export interface Client {
   id: string;

@@ -57,29 +57,11 @@ export const DEMO_PROJECT: Project = {
       assignedTo: "",
     },
   },
-  totalCost: 30000,
-  amountPaid: 15000,
-  // Updates are no longer mocked here — the client dashboard reads real,
-  // admin-authored updates from the `projectUpdates` collection (issue #167).
+  // Updates and payments are no longer mocked here — the client dashboard reads
+  // real, admin-authored updates from the `projectUpdates` collection (issue
+  // #167) and real billing/payments from the `projectBilling` collection
+  // (issue #178), each addressed by the client's verified email.
   updates: [],
-  payments: [
-    {
-      id: "p1",
-      date: "2026-05-01",
-      amount: 10000,
-      method: "Bank Transfer",
-      status: "completed",
-      reference: "TXN-2026-001",
-    },
-    {
-      id: "p2",
-      date: "2026-06-01",
-      amount: 5000,
-      method: "UPI",
-      status: "completed",
-      reference: "TXN-2026-002",
-    },
-  ],
   invoices: [
     {
       id: "inv1",

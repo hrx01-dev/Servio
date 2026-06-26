@@ -106,6 +106,8 @@ This satisfies the issue's examples:
 | --- | --- | --- |
 | `admins` | Firebase Auth `uid` | Admin profile, role, hashed PIN |
 | `projects` | auto | Delivery projects |
+| `projectUpdates` | auto | Admin→client progress updates (by client email) |
+| `projectBilling` | client email | Admin→client project cost + payments (by client email) |
 | `clients` | auto | Client directory |
 | `messages` | auto | Inbound contact/quote submissions |
 | `audit_logs` | auto | Append-only record of sensitive actions |
@@ -141,6 +143,22 @@ This satisfies the issue's examples:
 // client dashboard reads only the updates whose clientEmail matches their own
 // verified auth-token email. Admins with projects:edit post/remove updates
 // (Admin → Updates); writes are shape- and size-validated by the rules.
+```
+
+### `projectBilling/{id}`
+```ts
+{ clientEmail, totalCost, payments: ProjectPayment[], createdAt, updatedAt }
+// ProjectPayment: { id, date: 'YYYY-MM-DD', amount, method, reference, status }
+// status: 'completed' | 'pending' | 'failed'
+//
+// The doc id IS the client's lowercased email (one billing record per client).
+// clientEmail addresses it to that client; the client dashboard reads only the
+// billing whose clientEmail matches their own verified auth-token email, and
+// DERIVES amount-paid / remaining / percentage from the completed payments —
+// only totalCost and payments are stored. Admins with projects:edit author it
+// (Admin → Billing). Rules pin the top-level shape and bound the payments list;
+// individual payment entries are validated by the client parser
+// (src/dashboard/lib/payments.ts) since rules cannot iterate a list.
 ```
 
 ### `clients/{id}`
@@ -313,6 +331,8 @@ data across every page.
 | `/admin/unauthorized` | public (shown to non-admins) |
 | `/admin/dashboard` | any admin |
 | `/admin/projects` | `projects:view` |
+| `/admin/updates` | `projects:view` |
+| `/admin/billing` | `projects:view` |
 | `/admin/clients` | `clients:view` |
 | `/admin/messages` | `messages:view` |
 | `/admin/audit` | `audit:view` (super_admin + backend_dev) |

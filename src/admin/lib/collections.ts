@@ -7,7 +7,10 @@ import {
   Client,
   ContactMessage,
   MessageStatus,
+  PaymentStatus,
   Project,
+  ProjectBilling,
+  ProjectPayment,
   ProjectStatus,
   ProjectUpdate,
   UpdateType,
@@ -18,6 +21,7 @@ export const COLLECTIONS = {
   admins: "admins",
   projects: "projects",
   projectUpdates: "projectUpdates",
+  projectBilling: "projectBilling",
   clients: "clients",
   messages: "messages",
   auditLogs: "audit_logs",
@@ -28,6 +32,10 @@ export const projectsCollection = collection(db, COLLECTIONS.projects);
 export const projectUpdatesCollection = collection(
   db,
   COLLECTIONS.projectUpdates,
+);
+export const projectBillingCollection = collection(
+  db,
+  COLLECTIONS.projectBilling,
 );
 export const clientsCollection = collection(db, COLLECTIONS.clients);
 export const messagesCollection = collection(db, COLLECTIONS.messages);
@@ -52,9 +60,18 @@ const MESSAGE_STATUSES: readonly MessageStatus[] = [
   "replied",
   "archived",
 ];
+const PAYMENT_STATUSES: readonly PaymentStatus[] = [
+  "completed",
+  "pending",
+  "failed",
+];
 
 function str(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
+}
+
+function num(value: unknown, fallback = 0): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
 }
 
 function optionalStr(value: unknown): string | undefined {
@@ -125,6 +142,47 @@ export function parseProjectUpdate(
     description: str(data.description),
     type,
     createdAt: ts(data.createdAt),
+  };
+}
+
+function parseProjectPayment(
+  raw: unknown,
+  index: number,
+): ProjectPayment | null {
+  if (!raw || typeof raw !== "object") return null;
+  const data = raw as DocumentData;
+  if (typeof data.amount !== "number" || !Number.isFinite(data.amount)) {
+    return null;
+  }
+  const status = PAYMENT_STATUSES.includes(data.status as PaymentStatus)
+    ? (data.status as PaymentStatus)
+    : "pending";
+  return {
+    id: typeof data.id === "string" && data.id ? data.id : `payment-${index}`,
+    date: str(data.date),
+    amount: data.amount,
+    method: str(data.method),
+    reference: str(data.reference),
+    status,
+  };
+}
+
+export function parseProjectBilling(
+  id: string,
+  data: DocumentData,
+): ProjectBilling {
+  const payments = Array.isArray(data.payments)
+    ? data.payments
+        .map((p, i) => parseProjectPayment(p, i))
+        .filter((p): p is ProjectPayment => p !== null)
+    : [];
+  return {
+    id,
+    clientEmail: str(data.clientEmail),
+    totalCost: num(data.totalCost),
+    payments,
+    createdAt: ts(data.createdAt),
+    updatedAt: ts(data.updatedAt),
   };
 }
 

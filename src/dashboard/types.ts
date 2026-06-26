@@ -34,15 +34,6 @@ export interface ProjectUpdate {
   type: "feature" | "bugfix" | "milestone" | "info";
 }
 
-export interface PaymentRecord {
-  id: string;
-  date: string;
-  amount: number;
-  method: string;
-  status: "completed" | "pending" | "failed";
-  reference: string;
-}
-
 export interface Invoice {
   id: string;
   number: string;
@@ -67,10 +58,7 @@ export interface Project {
   status: "active" | "completed" | "on_hold";
   currentStage: ProjectStage;
   stages: Record<ProjectStage, StageDetail>;
-  totalCost: number;
-  amountPaid: number;
   updates: ProjectUpdate[];
-  payments: PaymentRecord[];
   invoices: Invoice[];
   resources: ProjectResource[];
   createdAt: string;
