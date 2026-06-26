@@ -16,21 +16,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [userRole, setUserRole] = useState<AuthContextType['userRole']>(null);
 
     useEffect(() => {
+        let currentAuthId = 0;
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            const authId = ++currentAuthId;
             if (user) {
                 try {
                     const adminDoc = await getDoc(doc(db, 'admins', user.uid));
+                    if (authId !== currentAuthId) return;
                     if (adminDoc.exists() && adminDoc.data().disabled !== true) {
                         setUserRole('admin');
                     } else {
                         setUserRole('client');
                     }
                 } catch {
-                    setUserRole('client');
+                    if (authId !== currentAuthId) return;
+                    await auth.signOut();
+                    setUserRole(null);
+                    setCurrentUser(null);
+                    setLoading(false);
+                    return;
                 }
             } else {
                 setUserRole(null);
             }
+            if (authId !== currentAuthId) return;
             setCurrentUser(user);
             setLoading(false);
         });

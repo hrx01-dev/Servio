@@ -28,12 +28,20 @@ export function SignIn() {
         setError('');
         try {
             const userCred = await signInWithEmailAndPassword(auth, email, password);
-            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+            
+            try {
+                const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
+                if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                    await auth.signOut();
+                    setError('This account is authorized for admin access only. Please use the admin login page.');
+                    return;
+                }
+            } catch (lookupErr) {
                 await auth.signOut();
-                setError('This account is authorized for admin access only. Please use the admin login page.');
+                setError('An error occurred while verifying access.');
                 return;
             }
+            
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -49,12 +57,20 @@ export function SignIn() {
         try {
             const provider = new GoogleAuthProvider();
             const userCred = await signInWithPopup(auth, provider);
-            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+            
+            try {
+                const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
+                if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                    await auth.signOut();
+                    setError('This account is authorized for admin access only. Please use the admin login page.');
+                    return;
+                }
+            } catch (lookupErr) {
                 await auth.signOut();
-                setError('This account is authorized for admin access only. Please use the admin login page.');
+                setError('An error occurred while verifying access.');
                 return;
             }
+            
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
