@@ -15,6 +15,8 @@
 // missing extension or an undeployed `mail` rule must never fail the user's
 // submission (losing leads is the bug we are fixing — see issue #9).
 
+import { addDoc, collection, doc, getDoc, serverTimestamp, writeBatch } from "firebase/firestore";
+import { db } from "@/Firebase/firebase";
 import type { QuoteFormData } from "./quoteValidation";
 
 /**
@@ -23,6 +25,9 @@ import type { QuoteFormData } from "./quoteValidation";
  * it requires editing both places (and is documented in docs/QUOTE_FORM.md).
  */
 export const QUOTE_NOTIFY_EMAIL = "hello@servio.dev";
+
+const MESSAGES_COLLECTION = "messages";
+const MAIL_COLLECTION = "mail";
 
 export type QuoteSummary = {
   name: string;
@@ -108,9 +113,6 @@ export function buildMailData(summary: QuoteSummary) {
   };
 }
 
-import { db } from "@/Firebase/firebase";
-import { collection, doc, addDoc, writeBatch, serverTimestamp, getDoc } from "firebase/firestore";
-
 // Retrieve or generate a persistent session ID for rate limiting
 function getSessionId(): string {
   let sessionId = localStorage.getItem("servio:quote:session");
@@ -123,7 +125,8 @@ function getSessionId(): string {
 
 /**
  * Persist the lead, then queue the notification email, using a Firestore batch
- * to also update the rate_limits document.
+ * to also update the rate_limits document. Rejects only if the lead itself could
+ * not be saved; a failed email queue write is logged and swallowed.
  */
 export async function submitQuote(form: QuoteFormData, honeypot: string = ""): Promise<void> {
   // Honeypot triggered — log to spam_logs (append-only, no read rule for clients)
@@ -149,19 +152,19 @@ export async function submitQuote(form: QuoteFormData, honeypot: string = ""): P
   const sessionId = getSessionId();
 
   try {
-    // We do a small pre-check of the rate limit to provide a friendly error message, 
+    // We do a small pre-check of the rate limit to provide a friendly error message,
     // although the authoritative enforcement happens in Firestore Rules during the batch commit.
     const rateLimitRef = doc(db, "rate_limits", sessionId);
     const rateLimitSnap = await getDoc(rateLimitRef);
-    
+
     let nextCount = 1;
     let windowStart = serverTimestamp();
-    
+
     if (rateLimitSnap.exists()) {
       const data = rateLimitSnap.data();
       const now = Date.now();
       const windowStartMs = data.windowStart?.toMillis?.() ?? now;
-      
+
       if (now - windowStartMs <= 60000) {
         if (data.count >= 5) {
           throw new Error("Too many submissions. Please wait a minute before trying again.");
@@ -173,29 +176,29 @@ export async function submitQuote(form: QuoteFormData, honeypot: string = ""): P
     }
 
     const batch = writeBatch(db);
-    
+
     // 1. Write the message
-    const messageRef = doc(collection(db, "messages"));
+    const messageRef = doc(collection(db, MESSAGES_COLLECTION));
     batch.set(messageRef, {
       ...messageData,
       sessionId,
       honeypot: "",
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
-    // 2. Queue the email notification
-    const mailRef = doc(collection(db, "mail"));
+    // 2. Queue the email notification — best-effort; never block lead capture on it.
+    const mailRef = doc(collection(db, MAIL_COLLECTION));
     batch.set(mailRef, {
       ...mailData,
       sessionId,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
     // 3. Update the rate limits
     batch.set(rateLimitRef, {
       count: nextCount,
       windowStart: windowStart,
-      lastWrite: serverTimestamp()
+      lastWrite: serverTimestamp(),
     });
 
     await batch.commit();
@@ -204,7 +207,7 @@ export async function submitQuote(form: QuoteFormData, honeypot: string = ""): P
     if (err instanceof Error && err.message.includes("Too many submissions")) {
       throw err;
     }
-    
+
     // Narrowing for Firestore-specific error codes
     if (typeof err === "object" && err !== null && "code" in err) {
       if ((err as { code: string }).code === "permission-denied") {
