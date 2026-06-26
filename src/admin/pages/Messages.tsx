@@ -181,7 +181,7 @@ function getRowHeight(index: number, rowProps: MessageRowProps): number {
 
 export function Messages() {
   const { admin, can } = useAdmin();
-  const { data: messages, loading } = useMessages();
+  const { data: messages, loading, hasMore, loadMore } = useMessages();
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
@@ -301,16 +301,25 @@ export function Messages() {
           }
         />
       ) : (
-        <div style={{ height: Math.min(600, visible.length * COLLAPSED_H) }}>
-          <List
-            listRef={listRef}
-            rowCount={visible.length}
-            rowHeight={getRowHeight}
-            rowProps={rowProps}
-            rowComponent={MessageRow}
-            overscanCount={3}
-          />
-        </div>
+        <>
+          <div style={{ height: Math.min(600, visible.length * COLLAPSED_H) }}>
+            <List
+              listRef={listRef}
+              rowCount={visible.length}
+              rowHeight={getRowHeight}
+              rowProps={rowProps}
+              rowComponent={MessageRow}
+              overscanCount={3}
+            />
+          </div>
+          {hasMore && (
+            <div className="flex justify-center pt-4">
+              <Button variant="outline" size="sm" onClick={loadMore}>
+                Load more
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

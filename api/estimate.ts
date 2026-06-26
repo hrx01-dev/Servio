@@ -122,8 +122,7 @@ export default async function handler(
 ) {
   // 1. Configure CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  // In production, you can replace '*' with your Firebase hosting URL for better security
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || 'https://servio-0.web.app');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
   res.setHeader(
     'Access-Control-Allow-Headers',

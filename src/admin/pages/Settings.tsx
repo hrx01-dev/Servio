@@ -173,6 +173,7 @@ export function Settings() {
               description="Admin accounts will appear here once they are provisioned."
             />
           ) : (
+            <>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
@@ -266,6 +267,14 @@ export function Settings() {
                 </tbody>
               </table>
             </div>
+            {admins.hasMore && (
+              <div className="flex justify-center pt-4">
+                <Button variant="outline" size="sm" onClick={admins.loadMore}>
+                  Load more
+                </Button>
+              </div>
+            )}
+            </>
           )}
         </div>
       )}

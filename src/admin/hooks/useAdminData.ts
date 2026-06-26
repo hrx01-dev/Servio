@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import {
   CollectionReference,
   DocumentData,
+  limit as firestoreLimit,
   onSnapshot,
+  query,
   Timestamp,
 } from "firebase/firestore";
 import {
@@ -45,10 +47,14 @@ import {
   MOCK_PROJECTS,
 } from "../lib/devMock";
 
+const PAGE_SIZE = 50;
+
 export interface CollectionState<T> {
   data: T[];
   loading: boolean;
   error: string | null;
+  hasMore: boolean;
+  loadMore: () => void;
 }
 
 function millis(value?: Timestamp): number {
@@ -79,9 +85,8 @@ function byOrder(
 
 /**
  * Subscribe to a whole collection in real time, parsing + sorting client-side.
- * Collections are small for the admin foundation, so this avoids composite
- * indexes and the orderBy "missing field" pitfall. `ref`/`parse`/`compare` are
- * stable module-level values, so the subscription is set up once.
+ * Queries are limited to PAGE_SIZE (50) documents; callers surface a `loadMore`
+ * function that raises the cap by another page when there may be more results.
  */
 function useCollectionData<T>(
   ref: CollectionReference<DocumentData>,
@@ -90,27 +95,35 @@ function useCollectionData<T>(
   mock?: T[],
   enabled = true,
 ): CollectionState<T> {
-  const [state, setState] = useState<CollectionState<T>>({
+  const [pageLimit, setPageLimit] = useState(PAGE_SIZE);
+  const [state, setState] = useState<{
+    data: T[];
+    loading: boolean;
+    error: string | null;
+    hasMore: boolean;
+  }>({
     data: [],
     loading: true,
     error: null,
+    hasMore: false,
   });
 
   useEffect(() => {
     if (!enabled) {
-      setState({ data: [], loading: false, error: null });
+      setState({ data: [], loading: false, error: null, hasMore: false });
       return;
     }
     // Local preview: serve demo data instead of subscribing to Firestore.
     if (DEV_MOCK_ENABLED) {
       const data = mock ? [...mock] : [];
       if (compare) data.sort(compare);
-      setState({ data, loading: false, error: null });
+      setState({ data, loading: false, error: null, hasMore: false });
       return;
     }
 
+    const q = query(ref, firestoreLimit(pageLimit));
     const unsubscribe = onSnapshot(
-      ref,
+      q,
       (snapshot) => {
         const data: T[] = [];
         snapshot.forEach((docSnap) => {
@@ -118,14 +131,14 @@ function useCollectionData<T>(
           if (item) data.push(item);
         });
         if (compare) data.sort(compare);
-        setState({ data, loading: false, error: null });
+        setState({ data, loading: false, error: null, hasMore: snapshot.size >= pageLimit });
       },
-      (err) => setState({ data: [], loading: false, error: err.message }),
+      (err) => setState({ data: [], loading: false, error: err.message, hasMore: false }),
     );
     return unsubscribe;
-  }, [ref, parse, compare, mock, enabled]);
+  }, [ref, parse, compare, mock, enabled, pageLimit]);
 
-  return state;
+  return { ...state, loadMore: () => setPageLimit((p) => p + PAGE_SIZE) };
 }
 
 // The mock args are gated on DEV_MOCK_ENABLED (which folds to `false` in a

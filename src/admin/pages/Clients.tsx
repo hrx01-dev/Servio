@@ -173,6 +173,7 @@ export function Clients() {
           }
         />
       ) : (
+        <>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {clients.data.map((client) => (
             <div
@@ -230,6 +231,14 @@ export function Clients() {
             </div>
           ))}
         </div>
+        {clients.hasMore && (
+          <div className="flex justify-center pt-4">
+            <Button variant="outline" size="sm" onClick={clients.loadMore}>
+              Load more
+            </Button>
+          </div>
+        )}
+        </>
       )}
 
       <Dialog

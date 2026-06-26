@@ -388,6 +388,7 @@ export function ProjectBilling() {
           action={addButton}
         />
       ) : (
+        <>
         <div className="overflow-hidden rounded-xl border bg-card text-card-foreground">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -457,6 +458,14 @@ export function ProjectBilling() {
             </table>
           </div>
         </div>
+        {billing.hasMore && (
+          <div className="flex justify-center pt-2">
+            <Button variant="outline" size="sm" onClick={billing.loadMore}>
+              Load more
+            </Button>
+          </div>
+        )}
+        </>
       )}
 
       <Dialog

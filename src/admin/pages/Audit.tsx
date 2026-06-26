@@ -1,5 +1,6 @@
 import { List, RowComponentProps } from "react-window";
 import { ClipboardList } from "lucide-react";
+import { Button } from "@/app/components/ui/button";
 import { PageHeader } from "../components/PageHeader";
 import { EmptyState } from "../components/EmptyState";
 import { useAuditLogs } from "../hooks/useAdminData";
@@ -74,6 +75,13 @@ export function Audit() {
                 overscanCount={5}
               />
             </div>
+            {auditLogs.hasMore && (
+              <div className="flex justify-center pt-4">
+                <Button variant="outline" size="sm" onClick={auditLogs.loadMore}>
+                  Load more
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>
