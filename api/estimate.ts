@@ -75,6 +75,9 @@ function validateClassification(
   // usable feature below so the estimate stays meaningful.
   const features: AIFeature[] = [];
   for (const f of obj.features) {
+    if (typeof f !== "object" || f === null) {
+      continue;
+    }
     const feat = f as Record<string, unknown>;
     if (
       typeof feat.name !== "string" ||
