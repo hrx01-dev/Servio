@@ -131,10 +131,10 @@ service cloud.firestore {
         && request.resource.data.clientEmail == request.resource.data.clientEmail.lower()
         && request.resource.data.clientEmail.matches('^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$')
         && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
+        && request.resource.data.title.matches('.*\\S.*')
         && request.resource.data.title.size() < 200
         && request.resource.data.description is string
-        && request.resource.data.description.size() > 0
+        && request.resource.data.description.matches('.*\\S.*')
         && request.resource.data.description.size() < 5000
         && request.resource.data.type in ['feature', 'bugfix', 'milestone', 'info']
         && request.resource.data.createdAt == request.time;

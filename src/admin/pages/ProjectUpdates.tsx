@@ -69,8 +69,8 @@ function TypePill({ type }: { type: UpdateType }) {
 export function ProjectUpdates() {
   const { admin, can } = useAdmin();
   const updates = useProjectUpdates();
-  const clients = useClients();
   const canEdit = can("projects:edit");
+  const clients = useClients(canEdit);
   const { markDirty, markClean, blocker } = useUnsavedChanges();
 
   const [dialogOpen, setDialogOpen] = useState(false);

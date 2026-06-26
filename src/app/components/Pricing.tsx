@@ -6,7 +6,8 @@ import { scrollToSection } from '../lib/scrollToSection';
 const plans = [
   {
     name: 'Starter',
-    price: '$999',
+    price: '₹7999– ₹25,000',
+    priceText: 'Project-based Pricing',
     description: 'Perfect for small businesses and startups',
     features: [
       'Single Landing Page',
@@ -20,7 +21,8 @@ const plans = [
   },
   {
     name: 'Business',
-    price: '$2,499',
+    price: '₹65,000 – ₹1,20,000',
+    priceText: 'Project-based Pricing',
     description: 'Most popular for growing businesses',
     features: [
       'Multi-page Website (Up to 5 pages)',
@@ -36,7 +38,8 @@ const plans = [
   },
   {
     name: 'Premium',
-    price: '$4,999+',
+    price: '₹1,60,000 – ₹2,00,000',
+    priceText: 'Project-based Pricing',
     description: 'For complex web applications',
     features: [
       'Custom Web Application',
@@ -88,11 +91,10 @@ export function Pricing() {
               whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: reduce ? 0 : 0.5, delay: index * 0.1 }}
-              className={`relative bg-white dark:bg-slate-900 rounded-2xl p-8 ${
-                plan.highlighted
+              className={`relative bg-white dark:bg-slate-900 rounded-2xl p-8 ${plan.highlighted
                   ? 'border-2 border-indigo-600 shadow-2xl shadow-indigo-500/20 dark:shadow-indigo-900/30 md:-mt-4 md:mb-4'
                   : 'border-2 border-gray-200 dark:border-slate-800 shadow-lg dark:shadow-slate-900/50'
-              }`}
+                }`}
             >
               {/* Popular Badge */}
               {plan.highlighted && (
@@ -110,24 +112,22 @@ export function Pricing() {
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 text-sm mb-6">{plan.description}</p>
                 <div className="mb-2">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                  <span className="text-3xl xl:text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                     {plan.price}
                   </span>
                 </div>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">One-time payment</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">{plan.priceText}</p>
               </div>
 
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
-                      plan.highlighted
+                    <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${plan.highlighted
                         ? 'bg-indigo-600'
                         : 'bg-indigo-100'
-                    }`}>
-                      <Check className={`w-3 h-3 ${
-                        plan.highlighted ? 'text-white' : 'text-indigo-600'
-                      }`} />
+                      }`}>
+                      <Check className={`w-3 h-3 ${plan.highlighted ? 'text-white' : 'text-indigo-600'
+                        }`} />
                     </div>
                     <span className="text-gray-700 dark:text-gray-200">{feature}</span>
                   </li>
@@ -136,11 +136,10 @@ export function Pricing() {
 
               <button
                 onClick={() => scrollToSection('contact')}
-                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${
-                  plan.highlighted
+                className={`w-full py-3 px-6 rounded-lg font-semibold transition-all duration-300 ${plan.highlighted
                     ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg hover:shadow-indigo-500/50 hover:scale-105'
                     : 'bg-gray-100 dark:bg-slate-800 text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-slate-700'
-                }`}
+                  }`}
               >
                 Get Started
               </button>
