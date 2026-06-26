@@ -28,8 +28,6 @@ export function SignIn() {
         setError('');
         try {
             const userCred = await signInWithEmailAndPassword(auth, email, password);
-<<<<<<< HEAD
-            
             try {
                 const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
                 if (adminDoc.exists() && adminDoc.data().disabled !== true) {
@@ -42,15 +40,6 @@ export function SignIn() {
                 setError('An error occurred while verifying access.');
                 return;
             }
-            
-=======
-            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
-                await auth.signOut();
-                setError('This account is authorized for admin access only. Please use the admin login page.');
-                return;
-            }
->>>>>>> 07a4698abb1d7dea1060526dd1dee91a247dc343
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -66,8 +55,6 @@ export function SignIn() {
         try {
             const provider = new GoogleAuthProvider();
             const userCred = await signInWithPopup(auth, provider);
-<<<<<<< HEAD
-            
             try {
                 const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
                 if (adminDoc.exists() && adminDoc.data().disabled !== true) {
@@ -80,15 +67,6 @@ export function SignIn() {
                 setError('An error occurred while verifying access.');
                 return;
             }
-            
-=======
-            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
-                await auth.signOut();
-                setError('This account is authorized for admin access only. Please use the admin login page.');
-                return;
-            }
->>>>>>> 07a4698abb1d7dea1060526dd1dee91a247dc343
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
