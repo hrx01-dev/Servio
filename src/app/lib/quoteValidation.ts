@@ -29,11 +29,11 @@ export type FieldErrors = Partial<Record<QuoteField, string>>;
 // authoritatively reject anything that isn't one of these — a browser can POST
 // arbitrary strings regardless of what the <select> offered.
 export const BUDGET_OPTIONS = [
-  "Under $1,000",
-  "$1,000 – $2,500",
-  "$2,500 – $5,000",
-  "$5,000 – $10,000",
-  "$10,000+",
+  "Under ₹25,000",
+  "₹25,000 – ₹75,000",
+  "₹75,000 – ₹2,00,000",
+  "₹2,00,000 – ₹5,00,000",
+  "₹5,00,000+",
 ] as const;
 
 export const WEBSITE_TYPES = [
