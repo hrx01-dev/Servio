@@ -101,6 +101,7 @@ export function AdminLogin() {
     setBusy(true);
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
+<<<<<<< HEAD
 
       try {
         const adminDoc = await getDoc(doc(db, "admins", userCred.user.uid));
@@ -117,6 +118,15 @@ export function AdminLogin() {
         return;
       }
 
+=======
+      const adminDoc = await getDoc(doc(db, "admins", userCred.user.uid));
+      if (!adminDoc.exists() || adminDoc.data().disabled === true) {
+        await signOut(auth);
+        setError("403 Forbidden: This account is not authorized for admin access.");
+        setBusy(false);
+        return;
+      }
+>>>>>>> 07a4698abb1d7dea1060526dd1dee91a247dc343
       clearLoginLockout(email);
       // Redirect is handled by the effect once the admin profile resolves.
     } catch (err) {
