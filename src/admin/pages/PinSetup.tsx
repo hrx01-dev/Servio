@@ -167,15 +167,15 @@ export function PinSetup() {
     setBusy(true);
 
     try {
-      // 1. Hash the PIN in the Web Worker (non-blocking, runs at 600k iterations).
-      const cred = await createPinCredential(pin);
-
-      // 2. Persist the credential to Firestore FIRST — the PIN MUST be saved
-      //    before session access is granted. If this fails, the user is shown
-      //    an error and no access is granted.
       if (DEV_MOCK_ENABLED) {
-        console.log("[PinSetup] DEV_MOCK_ENABLED: skipping Firestore write for PIN.");
+        console.log("[PinSetup] DEV_MOCK_ENABLED: skipping PIN hash and Firestore write.");
       } else {
+        // 1. Hash the PIN in the Web Worker (non-blocking, runs at 600k iterations).
+        const cred = await createPinCredential(pin);
+
+        // 2. Persist the credential to Firestore FIRST — the PIN MUST be saved
+        //    before session access is granted. If this fails, the user is shown
+        //    an error and no access is granted.
         await updateDoc(doc(db, COLLECTIONS.admins, admin.uid), {
           pinHash: cred.hash,
           pinSalt: cred.salt,
