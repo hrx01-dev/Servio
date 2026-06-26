@@ -48,7 +48,8 @@ Use this exact schema:
   "hasSignificantUnknowns": boolean
 }
 
-Do NOT include any cost estimates, pricing, or monetary values.`;
+Do NOT include any cost estimates, pricing, or monetary values.
+Ensure all string values are properly escaped and that the output is strictly valid JSON.`;
 }
 
 function validateClassification(
@@ -163,7 +164,14 @@ export default async function handler(
       throw new Error("AI returned an empty response.");
     }
 
-    const parsed = JSON.parse(responseText);
+    let parsed;
+    try {
+      parsed = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response. Raw response was:");
+      console.error(responseText);
+      throw parseError;
+    }
     const classification = validateClassification(parsed, new Set(featureCategories));
 
     return res.status(200).json(classification);
