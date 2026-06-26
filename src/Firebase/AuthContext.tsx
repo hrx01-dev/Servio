@@ -4,6 +4,7 @@ import { useEffect, useState, ReactNode } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { parseAdminProfile } from '../admin/lib/collections';
 import { AuthContext, AuthContextType } from './AuthContextObject';
 
 interface AuthProviderProps {
@@ -23,7 +24,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 try {
                     const adminDoc = await getDoc(doc(db, 'admins', user.uid));
                     if (authId !== currentAuthId) return;
-                    if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                    const parsed = adminDoc.exists() ? parseAdminProfile(user.uid, adminDoc.data()) : null;
+                    if (parsed && parsed.disabled !== true) {
                         setUserRole('admin');
                     } else {
                         setUserRole('client');

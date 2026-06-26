@@ -9,6 +9,7 @@ import { useAdmin } from "../context/useAdmin";
 import { usePinGate } from "../context/usePinGate";
 import { AdminLoading } from "../components/AdminLoading";
 import { authErrorMessage } from "../lib/authError";
+import { parseAdminProfile } from "../lib/collections";
 import {
   readLoginLockout,
   recordLoginFailure,
@@ -103,7 +104,8 @@ export function AdminLogin() {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       try {
         const adminDoc = await getDoc(doc(db, "admins", userCred.user.uid));
-        if (!adminDoc.exists() || adminDoc.data().disabled === true) {
+        const parsed = adminDoc.exists() ? parseAdminProfile(userCred.user.uid, adminDoc.data()) : null;
+        if (!parsed || parsed.disabled === true) {
           await signOut(auth);
           setError("403 Forbidden: This account is not authorized for admin access.");
           setBusy(false);

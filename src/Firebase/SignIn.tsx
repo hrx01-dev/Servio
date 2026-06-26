@@ -4,6 +4,7 @@ import { motion } from 'motion/react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { parseAdminProfile } from '../admin/lib/collections';
 import { Home } from 'lucide-react';
 
 function GoogleLogo() {
@@ -30,7 +31,8 @@ export function SignIn() {
             const userCred = await signInWithEmailAndPassword(auth, email, password);
             try {
                 const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-                if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                const parsed = adminDoc.exists() ? parseAdminProfile(userCred.user.uid, adminDoc.data()) : null;
+                if (parsed && parsed.disabled !== true) {
                     await auth.signOut();
                     setError('This account is authorized for admin access only. Please use the admin login page.');
                     return;
@@ -57,7 +59,8 @@ export function SignIn() {
             const userCred = await signInWithPopup(auth, provider);
             try {
                 const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
-                if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                const parsed = adminDoc.exists() ? parseAdminProfile(userCred.user.uid, adminDoc.data()) : null;
+                if (parsed && parsed.disabled !== true) {
                     await auth.signOut();
                     setError('This account is authorized for admin access only. Please use the admin login page.');
                     return;
