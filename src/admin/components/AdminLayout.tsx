@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, Moon, Sun } from "lucide-react";
 import { cn } from "@/app/components/ui/utils";
 import { Toaster } from "@/app/components/ui/sonner";
 import { AdminSidebar } from "./AdminSidebar";
 import { AdminCommandPalette } from "./AdminCommandPalette";
 import { isTyping } from "../lib/keyboard";
+import { useTheme } from "../../app/hooks/useTheme";
 
 export function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   // Press "/" anywhere (outside a text field) to open the search palette
   useEffect(() => {
@@ -74,19 +76,31 @@ export function AdminLayout() {
             Admin Portal
           </span>
 
-          {/* Search trigger — clicking works on mobile, "/" works on desktop */}
-          <button
-            type="button"
-            onClick={() => setPaletteOpen(true)}
-            className="ml-auto flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted"
-            aria-label="Open search"
-          >
-            <Search className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="hidden sm:inline">Search…</span>
-            <kbd className="hidden rounded bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground ring-1 ring-border sm:inline">
-              /
-            </kbd>
-          </button>
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted/50 text-muted-foreground transition-colors hover:bg-muted"
+              aria-pressed={isDarkMode}
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
+
+            {/* Search trigger — clicking works on mobile, "/" works on desktop */}
+            <button
+              type="button"
+              onClick={() => setPaletteOpen(true)}
+              className="flex items-center gap-2 rounded-md border border-border bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted"
+              aria-label="Open search"
+            >
+              <Search className="h-3.5 w-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Search…</span>
+              <kbd className="hidden rounded bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground ring-1 ring-border sm:inline">
+                /
+              </kbd>
+            </button>
+          </div>
         </header>
 
         <main className="p-4 sm:p-6 lg:p-8">
