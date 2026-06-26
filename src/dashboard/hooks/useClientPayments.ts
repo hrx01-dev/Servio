@@ -4,7 +4,7 @@ import { useAuth } from "../../Firebase/useAuth";
 import { subscribeClientBilling } from "../services/paymentsService";
 import type { ClientBilling } from "../lib/payments";
 
-function paymentErrorMessage(code: FirestoreError["code"]): string {
+export function paymentErrorMessage(code: FirestoreError["code"]): string {
   switch (code) {
     case "permission-denied":
       return "You don't have permission to view payment data. Try signing out and back in.";
