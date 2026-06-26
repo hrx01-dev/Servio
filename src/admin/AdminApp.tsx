@@ -16,6 +16,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard').then(m => ({ default: m
 const Projects = lazy(() => import('./pages/Projects').then(m => ({ default: m.Projects })));
 const ProjectUpdates = lazy(() => import('./pages/ProjectUpdates').then(m => ({ default: m.ProjectUpdates })));
 const ProjectBilling = lazy(() => import('./pages/ProjectBilling').then(m => ({ default: m.ProjectBilling })));
+const ProjectInvoices = lazy(() => import('./pages/ProjectInvoices').then(m => ({ default: m.ProjectInvoices })));
 const PortfolioManagement = lazy(() => import('./pages/PortfolioManagement').then(m => ({ default: m.PortfolioManagement })));
 const Clients = lazy(() => import('./pages/Clients').then(m => ({ default: m.Clients })));
 const Messages = lazy(() => import('./pages/Messages').then(m => ({ default: m.Messages })));
@@ -89,6 +90,14 @@ export function AdminApp() {
                   element={
                     <RequirePermission permission="projects:view">
                       <ProjectBilling />
+                    </RequirePermission>
+                  }
+                />
+                <Route
+                  path="invoices"
+                  element={
+                    <RequirePermission permission="projects:view">
+                      <ProjectInvoices />
                     </RequirePermission>
                   }
                 />

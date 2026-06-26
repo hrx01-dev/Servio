@@ -6,6 +6,8 @@ import {
   AuditLogEntry,
   Client,
   ContactMessage,
+  InvoiceLineItem,
+  InvoiceStatus,
   MessageStatus,
   PaymentStatus,
   PortfolioCategory,
@@ -13,6 +15,7 @@ import {
   PORTFOLIO_CATEGORIES,
   Project,
   ProjectBilling,
+  ProjectInvoice,
   ProjectPayment,
   ProjectStatus,
   ProjectUpdate,
@@ -25,6 +28,7 @@ export const COLLECTIONS = {
   projects: "projects",
   projectUpdates: "projectUpdates",
   projectBilling: "projectBilling",
+  projectInvoices: "projectInvoices",
   portfolio: "portfolio",
   clients: "clients",
   messages: "messages",
@@ -40,6 +44,10 @@ export const projectUpdatesCollection = collection(
 export const projectBillingCollection = collection(
   db,
   COLLECTIONS.projectBilling,
+);
+export const projectInvoicesCollection = collection(
+  db,
+  COLLECTIONS.projectInvoices,
 );
 export const portfolioCollection = collection(db, COLLECTIONS.portfolio);
 export const clientsCollection = collection(db, COLLECTIONS.clients);
@@ -70,6 +78,7 @@ const PAYMENT_STATUSES: readonly PaymentStatus[] = [
   "pending",
   "failed",
 ];
+const INVOICE_STATUSES: readonly InvoiceStatus[] = ["paid", "unpaid", "overdue"];
 
 function str(value: unknown, fallback = ""): string {
   return typeof value === "string" ? value : fallback;
@@ -186,6 +195,40 @@ export function parseProjectBilling(
     clientEmail: str(data.clientEmail),
     totalCost: num(data.totalCost),
     payments,
+    createdAt: ts(data.createdAt),
+    updatedAt: ts(data.updatedAt),
+  };
+}
+
+function parseInvoiceLineItem(raw: unknown): InvoiceLineItem | null {
+  if (!raw || typeof raw !== "object") return null;
+  const data = raw as DocumentData;
+  if (typeof data.amount !== "number" || !Number.isFinite(data.amount)) {
+    return null;
+  }
+  return { description: str(data.description), amount: data.amount };
+}
+
+export function parseProjectInvoice(
+  id: string,
+  data: DocumentData,
+): ProjectInvoice {
+  const status = INVOICE_STATUSES.includes(data.status as InvoiceStatus)
+    ? (data.status as InvoiceStatus)
+    : "unpaid";
+  const items = Array.isArray(data.items)
+    ? data.items
+        .map(parseInvoiceLineItem)
+        .filter((i): i is InvoiceLineItem => i !== null)
+    : [];
+  return {
+    id,
+    clientEmail: str(data.clientEmail),
+    number: str(data.number),
+    date: str(data.date),
+    dueDate: str(data.dueDate),
+    status,
+    items,
     createdAt: ts(data.createdAt),
     updatedAt: ts(data.updatedAt),
   };

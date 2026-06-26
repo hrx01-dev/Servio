@@ -208,6 +208,64 @@ service cloud.firestore {
       allow delete: if can('projects:edit');
     }
 
+    // ---- project invoices (admin -> client invoices) -------------------
+
+    // Invoices an admin issues to a client, shown on the client dashboard's
+    // Invoices section. Addressed by the client's lowercased email (the only
+    // identifier shared between admin and client). A client may read ONLY their
+    // own invoices, and only once their email is VERIFIED (the same pre-claimed
+    // -address risk as the other email-addressed collections). projects:view
+    // admins read all. projects:edit admins issue/edit/delete with the shape
+    // pinned and timestamps server-stamped; the total is derived by the client
+    // from the items, so only the items are stored.
+    match /projectInvoices/{id} {
+      function validInvoiceData(data) {
+        return data.clientEmail is string
+          && data.clientEmail.size() > 0
+          && data.clientEmail.size() < 320
+          && data.clientEmail == data.clientEmail.lower()
+          && data.clientEmail.matches('^[^[:space:]@]+@[^[:space:]@]+[.][^[:space:]@]+$')
+          && data.number is string
+          && data.number.matches('.*\\S.*')
+          && data.number.size() < 100
+          && data.date is string
+          && data.date.size() < 40
+          && data.dueDate is string
+          && data.dueDate.size() < 40
+          && data.status in ['paid', 'unpaid', 'overdue']
+          && data.items is list
+          && data.items.size() < 100;
+      }
+
+      allow read: if can('projects:view')
+        || (
+          isSignedIn()
+          && request.auth.token.email != null
+          && request.auth.token.email_verified == true
+          && resource.data.clientEmail == request.auth.token.email.lower()
+        );
+
+      allow create: if can('projects:edit')
+        && request.resource.data.keys().hasOnly(
+             ['clientEmail', 'number', 'date', 'dueDate', 'status', 'items',
+              'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(
+             ['clientEmail', 'number', 'date', 'dueDate', 'status', 'items',
+              'createdAt', 'updatedAt'])
+        && validInvoiceData(request.resource.data)
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Editable (e.g. mark paid); clientEmail and createdAt are immutable.
+      allow update: if can('projects:edit')
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+             ['number', 'date', 'dueDate', 'status', 'items', 'updatedAt'])
+        && validInvoiceData(request.resource.data)
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if can('projects:edit');
+    }
+
     // ---- portfolio (admin-managed public showcase) ---------------------
 
     // Showcase projects managed from the admin dashboard and rendered on the

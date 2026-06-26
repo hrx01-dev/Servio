@@ -17,9 +17,11 @@ import {
   parsePortfolioItem,
   parseProject,
   parseProjectBilling,
+  parseProjectInvoice,
   parseProjectUpdate,
   portfolioCollection,
   projectBillingCollection,
+  projectInvoicesCollection,
   projectsCollection,
   projectUpdatesCollection,
 } from "../lib/collections";
@@ -31,6 +33,7 @@ import {
   PortfolioItem,
   Project,
   ProjectBilling,
+  ProjectInvoice,
   ProjectUpdate,
 } from "../types";
 import {
@@ -153,6 +156,15 @@ export function useProjectBilling(): CollectionState<ProjectBilling> {
     projectBillingCollection,
     parseProjectBilling,
     byClientEmail,
+  );
+}
+
+export function useProjectInvoices(): CollectionState<ProjectInvoice> {
+  // Newest first. No dev-mock dataset — local preview shows an empty list.
+  return useCollectionData(
+    projectInvoicesCollection,
+    parseProjectInvoice,
+    byCreatedDesc,
   );
 }
 

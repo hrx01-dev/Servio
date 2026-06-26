@@ -57,46 +57,12 @@ export const DEMO_PROJECT: Project = {
       assignedTo: "",
     },
   },
-  // Updates and payments are no longer mocked here — the client dashboard reads
-  // real, admin-authored updates from the `projectUpdates` collection (issue
-  // #167) and real billing/payments from the `projectBilling` collection
-  // (issue #178), each addressed by the client's verified email.
+  // Updates, payments and invoices are no longer mocked here — the client
+  // dashboard reads real, admin-authored data: updates from `projectUpdates`
+  // (issue #167), billing/payments from `projectBilling` (issue #178), and
+  // invoices from `projectInvoices` (issue #165), each addressed by the
+  // client's verified email.
   updates: [],
-  invoices: [
-    {
-      id: "inv1",
-      number: "INV-2026-001",
-      date: "2026-05-01",
-      dueDate: "2026-05-15",
-      amount: 10000,
-      status: "paid",
-      items: [
-        { description: "Project Setup & Requirements", amount: 5000 },
-        { description: "UI/UX Design - Phase 1", amount: 5000 },
-      ],
-    },
-    {
-      id: "inv2",
-      number: "INV-2026-002",
-      date: "2026-06-01",
-      dueDate: "2026-06-15",
-      amount: 5000,
-      status: "paid",
-      items: [{ description: "Development - Milestone 1", amount: 5000 }],
-    },
-    {
-      id: "inv3",
-      number: "INV-2026-003",
-      date: "2026-06-20",
-      dueDate: "2026-07-05",
-      amount: 15000,
-      status: "unpaid",
-      items: [
-        { description: "Development - Milestone 2", amount: 10000 },
-        { description: "Testing & Deployment", amount: 5000 },
-      ],
-    },
-  ],
   resources: [
     {
       id: "r1",
