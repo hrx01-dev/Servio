@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
 
-const portfolioImage2 = "https://images.unsplash.com/photo-1487014679447-9f8336841d58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjB3ZWJzaXRlJTIwbW9ja3VwfGVufDF8fHx8MTc4MTcwMjY2MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
+const portfolioImage2 = "https://images.unsplash.com/photo-1441986300917-64674bd600d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080";
 const portfolioImage3 = "https://images.unsplash.com/photo-1561070791-2526d30994b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3J0Zm9saW8lMjBjcmVhdGl2ZSUyMGRlc2lnbnxlbnwxfHx8fDE3ODE3MDI2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const portfolioImage4 = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
 const portfolioImage5 = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
@@ -20,12 +20,12 @@ const projects = [
   },
   {
     id: 2,
-    title: 'Online Store',
+    title: 'ApexMart',
     category: 'E-Commerce',
-    industry: 'Retail',
+    industry: 'Retail & MLM',
     image: portfolioImage2,
-    tech: ['Next.js', 'Stripe', 'Shopify'],
-    url: '',
+    tech: ['Next.js 16', 'React 19', 'Node.js', 'Express.js', 'MySQL 8'],
+    url: 'https://www.apexmart.in/shop',
   },
   {
     id: 3,
