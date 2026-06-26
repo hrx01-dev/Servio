@@ -2,15 +2,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { ExternalLink } from 'lucide-react';
 
-// A web-development workstation (code + a site in the browser) — depicts the
-// actual deliverable. Replaces an earlier generic stock portrait of a person,
-// which did not show any website/landing-page work.
-const portfolioImage1 = "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
 const portfolioImage2 = "https://images.unsplash.com/photo-1487014679447-9f8336841d58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjB3ZWJzaXRlJTIwbW9ja3VwfGVufDF8fHx8MTc4MTcwMjY2MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
 const portfolioImage3 = "https://images.unsplash.com/photo-1561070791-2526d30994b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwb3J0Zm9saW8lMjBjcmVhdGl2ZSUyMGRlc2lnbnxlbnwxfHx8fDE3ODE3MDI2NjB8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral";
-// Generic analytics-dashboard photo (no third-party branding). Replaces an
-// earlier image that was a screenshot of Adalo's marketing site — shipping a
-// real third-party product as our own portfolio work was a trademark/honesty risk.
 const portfolioImage4 = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
 const portfolioImage5 = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
 const portfolioImage6 = "https://images.unsplash.com/photo-1558655146-9f40138edfeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080&auto=format";
@@ -18,11 +11,12 @@ const portfolioImage6 = "https://images.unsplash.com/photo-1558655146-9f40138edf
 const projects = [
   {
     id: 1,
-    title: 'TechStart Landing',
-    category: 'Business',
-    industry: 'Technology',
-    image: portfolioImage1,
-    tech: ['React', 'Tailwind', 'Vercel'],
+    title: 'VeritasAI',
+    category: 'SaaS',
+    industry: 'AI & Cybersecurity',
+    image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    tech: ['React', 'Vite', 'FastAPI', 'PyTorch', 'FaceForensics+'],
+    url: 'https://veritasai-6e4ac.web.app',
   },
   {
     id: 2,
@@ -31,6 +25,7 @@ const projects = [
     industry: 'Retail',
     image: portfolioImage2,
     tech: ['Next.js', 'Stripe', 'Shopify'],
+    url: '',
   },
   {
     id: 3,
@@ -39,6 +34,7 @@ const projects = [
     industry: 'Design',
     image: portfolioImage3,
     tech: ['React', 'Framer Motion', 'Firebase'],
+    url: '',
   },
   {
     id: 4,
@@ -47,6 +43,7 @@ const projects = [
     industry: 'Software',
     image: portfolioImage4,
     tech: ['React', 'Node.js', 'PostgreSQL'],
+    url: '',
   },
   {
     id: 5,
@@ -55,6 +52,7 @@ const projects = [
     industry: 'Food & Beverage',
     image: portfolioImage5,
     tech: ['WordPress', 'WooCommerce'],
+    url: '',
   },
   {
     id: 6,
@@ -63,6 +61,7 @@ const projects = [
     industry: 'Creative',
     image: portfolioImage6,
     tech: ['Webflow', 'Custom CSS'],
+    url: '',
   },
 ];
 
@@ -97,7 +96,7 @@ export function Portfolio() {
             </span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            A look at the kind of sites we craft — sample concepts that show our range and quality.
+            Real projects we have built — from AI-powered SaaS platforms to business websites and e-commerce stores.
           </p>
         </motion.div>
 
@@ -147,10 +146,21 @@ export function Portfolio() {
 
                   {/* View Project Button */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button className="px-6 py-3 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform">
-                      View Project
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
+                    {project.url ? (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg font-semibold flex items-center gap-2 hover:scale-105 transition-transform"
+                      >
+                        View Project
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <span className="px-6 py-3 bg-white/80 dark:bg-slate-800/80 text-gray-500 dark:text-gray-400 rounded-lg font-semibold flex items-center gap-2 cursor-default">
+                        Coming Soon
+                      </span>
+                    )}
                   </div>
                 </div>
 
