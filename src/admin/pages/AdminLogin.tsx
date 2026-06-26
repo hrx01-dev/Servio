@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { Home, Loader2, ShieldCheck } from "lucide-react";
-import { auth } from "@/Firebase/firebase";
+import { auth, db } from "@/Firebase/firebase";
 import { Button } from "@/app/components/ui/button";
 import { useAdmin } from "../context/useAdmin";
 import { usePinGate } from "../context/usePinGate";
@@ -99,7 +100,14 @@ export function AdminLogin() {
 
     setBusy(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const adminDoc = await getDoc(doc(db, "admins", userCred.user.uid));
+      if (!adminDoc.exists() || adminDoc.data().disabled === true) {
+        await signOut(auth);
+        setError("403 Forbidden: This account is not authorized for admin access.");
+        setBusy(false);
+        return;
+      }
       clearLoginLockout(email);
       // Redirect is handled by the effect once the admin profile resolves.
     } catch (err) {
