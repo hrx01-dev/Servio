@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
 import { Home } from 'lucide-react';
 
 function GoogleLogo() {
@@ -26,7 +27,13 @@ export function SignIn() {
         e.preventDefault();
         setError('');
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            const userCred = await signInWithEmailAndPassword(auth, email, password);
+            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
+            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                await auth.signOut();
+                setError('This account is authorized for admin access only. Please use the admin login page.');
+                return;
+            }
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
@@ -41,7 +48,13 @@ export function SignIn() {
         setError('');
         try {
             const provider = new GoogleAuthProvider();
-            await signInWithPopup(auth, provider);
+            const userCred = await signInWithPopup(auth, provider);
+            const adminDoc = await getDoc(doc(db, 'admins', userCred.user.uid));
+            if (adminDoc.exists() && adminDoc.data().disabled !== true) {
+                await auth.signOut();
+                setError('This account is authorized for admin access only. Please use the admin login page.');
+                return;
+            }
             navigate('/dashboard');
         } catch (err: unknown) {
             if (typeof err === 'object' && err !== null && 'code' in err && 'message' in err) {
