@@ -593,7 +593,7 @@ export function PortfolioManagement() {
                   }}
                 />
               </div>
-              {imageUrl && (
+              {imageUrl && /^(https?:\/\/|\/)/i.test(imageUrl) && (
                 <div className="mt-2">
                   <img src={imageUrl} alt="Cover preview" className="h-24 w-36 rounded-md object-cover ring-1 ring-border" />
                 </div>
