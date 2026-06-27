@@ -60,6 +60,21 @@ function parseTechnologies(value: string): string[] {
     .filter(Boolean);
 }
 
+/** Allow only safe image URL forms for DOM sinks like <img src>. */
+function sanitizeImageUrl(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.toString() : "";
+  } catch {
+    return "";
+  }
+}
+
 function StatusBadge({ published }: { published: boolean }) {
   return (
     <span
@@ -593,9 +608,9 @@ export function PortfolioManagement() {
                   }}
                 />
               </div>
-              {imageUrl && /^(https?:\/\/|\/)/i.test(imageUrl) && (
+              {imageUrl && sanitizeImageUrl(imageUrl) && (
                 <div className="mt-2">
-                  <img src={imageUrl} alt="Cover preview" className="h-24 w-36 rounded-md object-cover ring-1 ring-border" />
+                  <img src={sanitizeImageUrl(imageUrl)} alt="Cover preview" className="h-24 w-36 rounded-md object-cover ring-1 ring-border" />
                 </div>
               )}
             </div>
