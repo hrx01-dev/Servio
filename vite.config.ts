@@ -32,6 +32,18 @@ export default defineConfig({
   },
 
   server: {
+    headers: {
+      // Prevents browsers from guessing the MIME type, forcing them to use the declared type
+      'X-Content-Type-Options': 'nosniff',
+      // Prevents the site from being framed, protecting against clickjacking attacks
+      'X-Frame-Options': 'DENY',
+      // Enables cross-site scripting (XSS) filtering in the browser and blocks the page if an attack is detected
+      'X-XSS-Protection': '1; mode=block',
+      // Controls how much referrer information is included with requests, protecting user privacy
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      // Restricts where resources can be loaded from, mitigating XSS and data injection attacks
+      'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https: wss: ws:; frame-src 'self' https:; object-src 'none';",
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
