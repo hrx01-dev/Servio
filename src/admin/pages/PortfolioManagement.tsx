@@ -495,13 +495,17 @@ export function PortfolioManagement() {
       )}
 
       <Dialog
+        modal={false}
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}
       >
-        <DialogContent className="max-h-[88vh] max-w-2xl overflow-y-auto">
+        <DialogContent 
+          className="max-h-[88vh] max-w-2xl overflow-y-auto"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle>
               {editingId ? "Edit project" : "Add project"}
