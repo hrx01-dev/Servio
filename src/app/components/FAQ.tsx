@@ -96,7 +96,9 @@ export function FAQ() {
                     transition={{ duration: reduce ? 0 : 0.3, ease: "easeInOut" }}
                   >
                     <div className="px-6 pb-5">
-                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
+                      <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                        <TypingText text={faq.a} speed={15} cursorColor="bg-gray-400 dark:bg-gray-500" />
+                      </p>
                     </div>
                   </motion.div>
                 )}
