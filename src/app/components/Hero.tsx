@@ -223,7 +223,7 @@ export function Hero() {
                 </GlassPanel>
                 <GlassPanel tier="thin" className="rounded-xl px-3 py-4 text-center lg:text-left">
                   <div className="font-display text-2xl lg:text-3xl leading-tight text-gradient-brand">
-                    Mobile&#8209;First
+                    Mobile First
                   </div>
                   <div className="mt-1 text-sm text-muted-foreground">Responsive Design</div>
                 </GlassPanel>
