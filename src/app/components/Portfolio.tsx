@@ -267,6 +267,7 @@ export function Portfolio() {
         {loading ? (
           <div
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:auto-rows-fr lg:grid-cols-3"
+            role="status"
             aria-busy="true"
             aria-label="Loading portfolio"
           >

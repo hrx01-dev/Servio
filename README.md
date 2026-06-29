@@ -10,6 +10,7 @@ A modern SaaS website built with React, Vite, and Tailwind CSS. This project is 
 - **Components:** shadcn/ui
 - **Icons:** Lucide React
 - **Animations:** Motion
+- **Testing:** Vitest + Testing Library + axe-core (accessibility)
 
 ## 🛠️ Getting Started
 
@@ -29,6 +30,19 @@ A modern SaaS website built with React, Vite, and Tailwind CSS. This project is 
    ```bash
    npm run dev
    ```
+
+## 🧪 Testing
+
+Unit, component, and accessibility tests run with Vitest + Testing Library.
+
+```bash
+npm test            # run the full suite
+npm run test:a11y   # accessibility checks only (axe-core)
+```
+
+Accessibility is enforced in CI: axe-core scans the public components and pages
+on every push and pull request, and a new WCAG violation fails the build. See
+[docs/ACCESSIBILITY_TESTING.md](docs/ACCESSIBILITY_TESTING.md).
 
 ## 🚀 Deployment
 

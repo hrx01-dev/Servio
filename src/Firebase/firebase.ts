@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -16,4 +16,12 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-export const analytics = getAnalytics(app);
+
+// Analytics needs a browser environment with IndexedDB. Guarding init behind
+// isSupported() (Firebase's own recommendation) keeps it silent during SSR,
+// unit tests (jsdom), and unsupported browsers instead of logging an
+// "IndexedDB unavailable" warning. Init is for auto page-view collection only —
+// nothing reads this export — so a deferred, best-effort value is fine.
+export const analytics = isSupported()
+  .then((ok) => (ok ? getAnalytics(app) : null))
+  .catch(() => null);

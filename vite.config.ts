@@ -96,8 +96,12 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: [],
+    setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
+    // Pin the admin dev-mock OFF so component tests exercise the real
+    // (production-like) signed-out UI deterministically, regardless of any
+    // VITE_ADMIN_DEV_MOCK in a local .env.local.
+    env: { VITE_ADMIN_DEV_MOCK: '' },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
