@@ -98,7 +98,9 @@ ARIA, per-fragment heading order, list structure, and duplicate IDs.
 ## Adding a test
 
 1. Add a case to an existing `src/test/a11y/*.a11y.test.tsx` file (or create a
-   new one — anything matching `src/**/*.test.{ts,tsx}` is picked up).
+   new one **under `src/test/a11y/`** — `npm run test:a11y` only runs that
+   directory; the full `npm test` would still pick up a spec elsewhere, but the
+   dedicated a11y job would not).
 2. Render with `renderWithProviders(...)` and assert
    `expect(await axeCheck(container)).toHaveNoViolations()`.
 3. If a component needs async data to render its real markup (e.g. `Portfolio`),

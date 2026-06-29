@@ -21,8 +21,8 @@ interface TypingTextProps {
  * Renders text character-by-character with a blinking cursor.
  * Stops animating once all characters are displayed.
  * Respects prefers-reduced-motion — shows the full string instantly when set.
- * Screen readers receive the complete text once via the element's `img`-role
- * label; the half-typed characters are presentational and never announced.
+ * Screen readers receive the complete text as plain text via a visually-hidden
+ * copy; the half-typed characters are hidden from the accessibility tree.
  */
 export function TypingText({
   text,
@@ -89,11 +89,12 @@ export function TypingText({
   }
 
   return (
-    // role="img" lets us label the animated text with the full string (aria-label
-    // is prohibited on a roleless <span>) and makes the half-typed characters
-    // presentational — so the phrase is announced once, never mid-type, and the
-    // DOM text isn't duplicated the way a visually-hidden copy would.
-    <span ref={ref} role="img" aria-label={text}>
+    <span ref={ref}>
+      {/* Expose the full phrase to assistive tech as plain text. aria-label on a
+          roleless <span> is prohibited, and role="img" would make a heading
+          announce as a graphic — so use a visually-hidden copy and hide the
+          half-typed characters from the a11y tree. */}
+      <span className="sr-only">{text}</span>
       <span aria-hidden="true">{displayed}</span>
       {showCursor && !done && (
         <span
