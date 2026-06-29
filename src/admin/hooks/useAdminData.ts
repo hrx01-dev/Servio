@@ -5,7 +5,9 @@ import {
   limit as firestoreLimit,
   onSnapshot,
   query,
+  QueryConstraint,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import {
   adminsCollection,
@@ -32,6 +34,7 @@ import {
   AuditLogEntry,
   Client,
   ContactMessage,
+  MessageStatus,
   PortfolioItem,
   Project,
   ProjectBilling,
@@ -197,13 +200,51 @@ export function useClients(enabled = true): CollectionState<Client> {
   );
 }
 
-export function useMessages(): CollectionState<ContactMessage> {
-  return useCollectionData(
-    messagesCollection,
-    parseMessage,
-    byCreatedDesc,
-    DEV_MOCK_ENABLED ? MOCK_MESSAGES : undefined,
-  );
+export function useMessages(status?: MessageStatus): CollectionState<ContactMessage> {
+  const [pageLimit, setPageLimit] = useState(PAGE_SIZE);
+  const [state, setState] = useState<{
+    data: ContactMessage[];
+    loading: boolean;
+    error: string | null;
+    hasMore: boolean;
+  }>({ data: [], loading: true, error: null, hasMore: false });
+
+  // Reset to the first page whenever the status filter changes.
+  useEffect(() => {
+    setPageLimit(PAGE_SIZE);
+  }, [status]);
+
+  useEffect(() => {
+    if (DEV_MOCK_ENABLED) {
+      const data = status
+        ? MOCK_MESSAGES.filter((m) => m.status === status)
+        : [...MOCK_MESSAGES];
+      data.sort(byCreatedDesc);
+      setState({ data, loading: false, error: null, hasMore: false });
+      return;
+    }
+
+    const constraints: QueryConstraint[] = [];
+    if (status) constraints.push(where("status", "==", status));
+    constraints.push(firestoreLimit(pageLimit));
+
+    const unsubscribe = onSnapshot(
+      query(messagesCollection, ...constraints),
+      (snapshot) => {
+        const data: ContactMessage[] = [];
+        snapshot.forEach((docSnap) => {
+          const item = parseMessage(docSnap.id, docSnap.data());
+          if (item) data.push(item);
+        });
+        data.sort(byCreatedDesc);
+        setState({ data, loading: false, error: null, hasMore: snapshot.size >= pageLimit });
+      },
+      (err) => setState({ data: [], loading: false, error: err.message, hasMore: false }),
+    );
+    return unsubscribe;
+  }, [status, pageLimit]);
+
+  return { ...state, loadMore: () => setPageLimit((p) => p + PAGE_SIZE) };
 }
 
 export function useAuditLogs(): CollectionState<AuditLogEntry> {

@@ -1,7 +1,21 @@
 import { useEffect, useState } from "react";
+import type { FirestoreError } from "firebase/firestore";
 import { useAuth } from "../../Firebase/useAuth";
 import { subscribeClientBilling } from "../services/paymentsService";
 import type { ClientBilling } from "../lib/payments";
+
+export function paymentErrorMessage(code: FirestoreError["code"]): string {
+  switch (code) {
+    case "permission-denied":
+      return "You don't have permission to view payment data. Try signing out and back in.";
+    case "unauthenticated":
+      return "Your session has expired. Please sign in again.";
+    case "unavailable":
+      return "Payment service is temporarily unavailable. Please try again in a moment.";
+    default:
+      return "Couldn't load your payments. Please check your connection and try again.";
+  }
+}
 
 export interface ClientPaymentsState {
   /** The client's billing, or null when no billing document exists yet. */
@@ -79,7 +93,7 @@ export function useClientPayments(): ClientPaymentsState {
         setState({
           billing: null,
           loading: false,
-          error: err.message,
+          error: paymentErrorMessage(err.code),
           needsEmailVerification: false,
         }),
     );
