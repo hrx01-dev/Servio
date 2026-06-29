@@ -98,10 +98,22 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
-    // Pin the admin dev-mock OFF so component tests exercise the real
-    // (production-like) signed-out UI deterministically, regardless of any
-    // VITE_ADMIN_DEV_MOCK in a local .env.local.
-    env: { VITE_ADMIN_DEV_MOCK: '' },
+    // Deterministic test env, independent of any local .env(.local):
+    //  - Pin the admin dev-mock OFF so component tests exercise the real
+    //    (production-like) signed-out UI.
+    //  - Provide dummy Firebase config so getAuth()/getFirestore() initialise
+    //    instead of throwing `auth/invalid-api-key` where no secrets exist
+    //    (e.g. CI). These only satisfy the SDK's init-time validation — no
+    //    network call is made (no auth/firestore listener is mounted in tests).
+    env: {
+      VITE_ADMIN_DEV_MOCK: '',
+      VITE_FIREBASE_API_KEY: 'test-api-key',
+      VITE_FIREBASE_AUTH_DOMAIN: 'servio-test.firebaseapp.com',
+      VITE_FIREBASE_PROJECT_ID: 'servio-test',
+      VITE_FIREBASE_STORAGE_BUCKET: 'servio-test.appspot.com',
+      VITE_FIREBASE_MESSAGING_SENDER_ID: '1234567890',
+      VITE_FIREBASE_APP_ID: '1:1234567890:web:serviotest',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
