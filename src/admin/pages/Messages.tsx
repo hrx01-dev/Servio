@@ -181,35 +181,15 @@ function getRowHeight(index: number, rowProps: MessageRowProps): number {
 
 export function Messages() {
   const { admin, can } = useAdmin();
-  const { data: messages, loading, hasMore, loadMore } = useMessages();
   const [filter, setFilter] = useState<StatusFilter>("all");
+  const { data: messages, loading, hasMore, loadMore } = useMessages(
+    filter !== "all" ? filter : undefined,
+  );
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
 
   const canReply = can("messages:reply");
   const listRef = useRef<ListImperativeAPI | null>(null);
-
-  const counts = useMemo(() => {
-    const base: Record<StatusFilter, number> = {
-      all: messages.length,
-      new: 0,
-      read: 0,
-      replied: 0,
-      archived: 0,
-    };
-    for (const message of messages) {
-      base[message.status] += 1;
-    }
-    return base;
-  }, [messages]);
-
-  const visible = useMemo(
-    () =>
-      filter === "all"
-        ? messages
-        : messages.filter((m) => m.status === filter),
-    [messages, filter],
-  );
 
   // Reset expansion and scroll to top when the filter changes
   useEffect(() => {
@@ -248,14 +228,14 @@ export function Messages() {
 
   const rowProps = useMemo<MessageRowProps>(
     () => ({
-      messages: visible,
+      messages,
       expandedId,
       pendingId,
       canReply,
       onToggle: handleToggle,
       onSetStatus: handleSetStatus,
     }),
-    [visible, expandedId, pendingId, canReply, handleToggle, handleSetStatus],
+    [messages, expandedId, pendingId, canReply, handleToggle, handleSetStatus],
   );
 
   return (
@@ -274,23 +254,13 @@ export function Messages() {
             onClick={() => setFilter(value)}
           >
             {STATUS_LABELS[value]}
-            <span
-              className={cn(
-                "ml-1 rounded-full px-1.5 text-xs",
-                filter === value
-                  ? "bg-primary-foreground/20 text-primary-foreground"
-                  : "bg-muted text-muted-foreground",
-              )}
-            >
-              {counts[value]}
-            </span>
           </Button>
         ))}
       </div>
 
       {loading ? (
         <p className="text-sm text-muted-foreground">Loading messages…</p>
-      ) : visible.length === 0 ? (
+      ) : messages.length === 0 ? (
         <EmptyState
           icon={MessageSquare}
           title="No messages"
@@ -302,10 +272,10 @@ export function Messages() {
         />
       ) : (
         <>
-          <div style={{ height: Math.min(600, visible.length * COLLAPSED_H) }}>
+          <div style={{ height: Math.min(600, messages.length * COLLAPSED_H) }}>
             <List
               listRef={listRef}
-              rowCount={visible.length}
+              rowCount={messages.length}
               rowHeight={getRowHeight}
               rowProps={rowProps}
               rowComponent={MessageRow}

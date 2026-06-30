@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../../Firebase/useAuth";
 import { subscribeClientBilling } from "../services/paymentsService";
+import { paymentErrorMessage } from "../lib/payments";
 import type { ClientBilling } from "../lib/payments";
 
 export interface ClientPaymentsState {
@@ -16,6 +17,8 @@ export interface ClientPaymentsState {
    * query that the rules would deny.
    */
   needsEmailVerification: boolean;
+  /** Re-run the billing subscription in place (no full page reload). */
+  retry: () => void;
 }
 
 /**
@@ -30,7 +33,11 @@ export function useClientPayments(): ClientPaymentsState {
   const email = currentUser?.email ?? null;
   const emailVerified = currentUser?.emailVerified ?? false;
 
-  const [state, setState] = useState<ClientPaymentsState>({
+  // Bumped by retry() to re-trigger the subscription effect without a reload.
+  const [retryCount, setRetryCount] = useState(0);
+  const retry = useCallback(() => setRetryCount((c) => c + 1), []);
+
+  const [state, setState] = useState<Omit<ClientPaymentsState, "retry">>({
     billing: null,
     loading: true,
     error: null,
@@ -79,12 +86,12 @@ export function useClientPayments(): ClientPaymentsState {
         setState({
           billing: null,
           loading: false,
-          error: err.message,
+          error: paymentErrorMessage(err),
           needsEmailVerification: false,
         }),
     );
     return unsubscribe;
-  }, [email, emailVerified]);
+  }, [email, emailVerified, retryCount]);
 
-  return state;
+  return { ...state, retry };
 }

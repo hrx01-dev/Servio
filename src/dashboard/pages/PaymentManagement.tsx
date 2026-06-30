@@ -109,7 +109,7 @@ function loadRazorpay() {
 }
 
 export function PaymentManagement() {
-  const { billing, loading, error, needsEmailVerification } =
+  const { billing, loading, error, needsEmailVerification, retry } =
     useClientPayments();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
@@ -185,9 +185,16 @@ export function PaymentManagement() {
           <p className="text-gray-700 dark:text-gray-200 font-medium">
             We couldn&apos;t load your payments
           </p>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Please check your connection and try again in a moment.
+          <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
+            {error}
           </p>
+          <button
+            type="button"
+            onClick={retry}
+            className="mt-4 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          >
+            Try again
+          </button>
         </div>
       </div>
     );
