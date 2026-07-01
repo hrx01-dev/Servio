@@ -22,6 +22,13 @@ const MAX_DESCRIPTION_LENGTH = 5000;
 const MAX_FEATURE_CATEGORIES = 200;
 const MAX_CATEGORY_LENGTH = 100;
 
+// These values are interpolated verbatim into the model prompt (as `"${c}"` in
+// buildClassificationPrompt), so constrain them to a safe slug charset. Real
+// pricing keys look like "payment_gateway" / "real_time_features"; rejecting
+// anything with quotes, braces, backticks or newlines closes the prompt-injection
+// break-out while still accepting every legitimate category.
+const CATEGORY_PATTERN = /^[a-zA-Z0-9 _/&-]+$/;
+
 interface AIFeature {
   name: string;
   category: string;
@@ -183,7 +190,8 @@ export default async function handler(
         (c) =>
           typeof c === "string" &&
           c.trim().length > 0 &&
-          c.length <= MAX_CATEGORY_LENGTH,
+          c.length <= MAX_CATEGORY_LENGTH &&
+          CATEGORY_PATTERN.test(c),
       )
     ) {
       return res.status(400).json({ error: "Invalid feature categories" });
