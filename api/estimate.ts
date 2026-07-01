@@ -9,6 +9,19 @@ const COMPLEXITIES = new Set(["low", "medium", "high", "enterprise"]);
 // anywhere near this many features anyway).
 const MAX_FEATURES = 60;
 
+// Server-side input bounds. These mirror the client checks in
+// src/dashboard/services/estimationService.ts (analyzeProject) so a request that
+// bypasses the browser is rejected with the same limits — the endpoint must
+// never trust that the browser already validated the payload.
+const MIN_DESCRIPTION_LENGTH = 10;
+const MAX_DESCRIPTION_LENGTH = 5000;
+
+// featureCategories is the server-provided pricing key set (Object.keys of
+// pricingConfig.featurePricing). Bound the count and per-item length so a direct
+// caller can't inflate the model prompt or smuggle oversized strings into it.
+const MAX_FEATURE_CATEGORIES = 200;
+const MAX_CATEGORY_LENGTH = 100;
+
 interface AIFeature {
   name: string;
   category: string;
@@ -140,13 +153,40 @@ export default async function handler(
   }
 
   try {
+    // A POST with no body or a non-JSON Content-Type leaves req.body undefined;
+    // reject it as a malformed request (400) rather than letting the destructure
+    // throw into the catch and surface as a 500.
+    if (typeof req.body !== "object" || req.body === null) {
+      return res.status(400).json({ error: "Invalid request body" });
+    }
     const { description, featureCategories } = req.body;
 
-    if (!description || typeof description !== "string") {
+    if (typeof description !== "string") {
       return res.status(400).json({ error: "Missing project description" });
     }
-    if (!Array.isArray(featureCategories)) {
-      return res.status(400).json({ error: "Missing feature categories" });
+    const trimmedDescription = description.trim();
+    if (trimmedDescription.length < MIN_DESCRIPTION_LENGTH) {
+      return res.status(400).json({
+        error: `Project description must be at least ${MIN_DESCRIPTION_LENGTH} characters`,
+      });
+    }
+    if (trimmedDescription.length > MAX_DESCRIPTION_LENGTH) {
+      return res.status(400).json({
+        error: `Project description must be at most ${MAX_DESCRIPTION_LENGTH} characters`,
+      });
+    }
+    if (
+      !Array.isArray(featureCategories) ||
+      featureCategories.length === 0 ||
+      featureCategories.length > MAX_FEATURE_CATEGORIES ||
+      !featureCategories.every(
+        (c) =>
+          typeof c === "string" &&
+          c.trim().length > 0 &&
+          c.length <= MAX_CATEGORY_LENGTH,
+      )
+    ) {
+      return res.status(400).json({ error: "Invalid feature categories" });
     }
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -166,7 +206,7 @@ export default async function handler(
           role: "user",
           parts: [
             {
-              text: `${classificationPrompt}\n\nProject description:\n${description}`,
+              text: `${classificationPrompt}\n\nProject description:\n${trimmedDescription}`,
             },
           ],
         },
