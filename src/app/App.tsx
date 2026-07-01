@@ -6,18 +6,19 @@ import { GlobalErrorBoundary } from "./components/GlobalErrorBoundary";
 function lazy<T extends React.ComponentType<unknown>>(
   componentImport: () => Promise<{ default: T }>
 ) {
+  const storageKey = `force-refresh-${componentImport.toString()}`;
   return reactLazy(async () => {
     const pageHasAlreadyBeenForceRefreshed = JSON.parse(
-      window.sessionStorage.getItem("page-has-been-force-refreshed") || "false"
+      window.sessionStorage.getItem(storageKey) || "false"
     );
 
     try {
       const component = await componentImport();
-      window.sessionStorage.setItem("page-has-been-force-refreshed", "false");
+      window.sessionStorage.removeItem(storageKey);
       return component;
     } catch (error) {
       if (!pageHasAlreadyBeenForceRefreshed) {
-        window.sessionStorage.setItem("page-has-been-force-refreshed", "true");
+        window.sessionStorage.setItem(storageKey, "true");
         window.location.reload();
         return new Promise<{ default: T }>(() => {});
       }
