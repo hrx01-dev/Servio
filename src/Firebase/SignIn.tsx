@@ -135,13 +135,10 @@ export function SignIn() {
                         </motion.button>
                     </form>
                     <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-border" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-card text-muted-foreground">Or continue with</span>
-                            </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                            <span>Or continue with</span>
+                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
                         </div>
                         <div className="mt-6">
                             <motion.button
