@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup,
 import { auth } from './firebase';
 import { notifyWelcome } from '../dashboard/notifications/notificationTriggers';
 import { Home, Check, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Aurora } from '@/app/components/Aurora';
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 import { UnsavedChangesDialog } from '@/app/components/UnsavedChangesDialog';
 import {
@@ -291,20 +292,9 @@ export function SignUp() {
   return (
     <>
     <UnsavedChangesDialog blocker={blocker} />
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950 px-4 py-10">
-      {/* Animated gradient background blobs */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-32 -right-24 w-[560px] h-[560px] rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-300/25 dark:from-purple-500/20 dark:to-fuchsia-400/10 blur-3xl"
-          animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-[-160px] left-[-120px] w-[520px] h-[520px] rounded-full bg-gradient-to-br from-indigo-400/40 to-cyan-300/25 dark:from-indigo-500/20 dark:to-cyan-400/10 blur-3xl"
-          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-4 py-10">
+      {/* Warm ambient glow — the same drifting aurora the landing page uses */}
+      <Aurora intensity={0.6} />
 
       {/* Home button */}
       <Link
