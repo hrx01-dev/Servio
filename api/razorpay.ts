@@ -204,11 +204,15 @@ export default async function handler(
       let payments: Record<string, unknown>[] = data?.payments || [];
 
       if (pendingPaymentId) {
-        // Update the existing pending payment
+        // Update the existing pending payment with the authenticated amount, so
+        // the completion path is as authoritative as the ad-hoc append path.
+        let matchedPendingPayment = false;
         payments = payments.map((p) => {
           if (p.id === pendingPaymentId) {
+            matchedPendingPayment = true;
             return {
               ...p,
+              amount: authenticatedAmount,
               status: "completed",
               method: "Razorpay",
               reference: razorpay_payment_id,
@@ -217,6 +221,9 @@ export default async function handler(
           }
           return p;
         });
+        if (!matchedPendingPayment) {
+          return res.status(404).json({ error: "Pending payment not found" });
+        }
       } else {
         // Append a new payment
         const newPayment = {
