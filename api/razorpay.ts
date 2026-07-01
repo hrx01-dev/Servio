@@ -162,8 +162,11 @@ export default async function handler(
         if (rzpPayment.order_id !== razorpay_order_id) {
           return res.status(400).json({ error: "Payment does not match order" });
         }
-        if (rzpPayment.status !== "captured" && rzpPayment.status !== "authorized") {
-          return res.status(400).json({ error: "Payment has not been completed" });
+        // Require `captured`, not `authorized`: an authorized payment only
+        // reserves the funds (they can still auto-refund if never captured), so
+        // recording it as "completed" would overstate the paid balance.
+        if (rzpPayment.status !== "captured") {
+          return res.status(400).json({ error: "Payment has not been captured" });
         }
 
         const paidPaisa = Number(rzpPayment.amount);
