@@ -4,8 +4,11 @@ import {
   DocumentData,
   limit as firestoreLimit,
   onSnapshot,
+  orderBy,
   query,
+  QueryConstraint,
   Timestamp,
+  where,
 } from "firebase/firestore";
 import {
   adminsCollection,
@@ -32,6 +35,7 @@ import {
   AuditLogEntry,
   Client,
   ContactMessage,
+  MessageStatus,
   PortfolioItem,
   Project,
   ProjectBilling,
@@ -48,6 +52,15 @@ import {
 } from "../lib/devMock";
 
 const PAGE_SIZE = 50;
+
+// Module-level constants so the array references are stable across renders,
+// preventing the useCollectionData effect from re-firing on every render.
+const ORDER_CREATED_DESC: QueryConstraint[] = [orderBy("createdAt", "desc")];
+const ORDER_CLIENT_EMAIL_ASC: QueryConstraint[] = [orderBy("clientEmail", "asc")];
+const ORDER_DISPLAY_ORDER: QueryConstraint[] = [
+  orderBy("order", "asc"),
+  orderBy("createdAt", "asc"),
+];
 
 export interface CollectionState<T> {
   data: T[];
@@ -84,14 +97,15 @@ function byOrder(
 }
 
 /**
- * Subscribe to a whole collection in real time, parsing + sorting client-side.
- * Queries are limited to PAGE_SIZE (50) documents; callers surface a `loadMore`
- * function that raises the cap by another page when there may be more results.
+ * Subscribe to a Firestore collection in real time, parsing + sorting.
+ * serverOrder is applied before the limit so Firestore returns the correct
+ * page window; the client-side compare handles any remaining tie-breaking.
  */
 function useCollectionData<T>(
   ref: CollectionReference<DocumentData>,
   parse: (id: string, data: DocumentData) => T | null,
   compare?: (a: T, b: T) => number,
+  serverOrder?: QueryConstraint[],
   mock?: T[],
   enabled = true,
 ): CollectionState<T> {
@@ -121,7 +135,7 @@ function useCollectionData<T>(
       return;
     }
 
-    const q = query(ref, firestoreLimit(pageLimit));
+    const q = query(ref, ...(serverOrder ?? []), firestoreLimit(pageLimit));
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
@@ -136,7 +150,7 @@ function useCollectionData<T>(
       (err) => setState({ data: [], loading: false, error: err.message, hasMore: false }),
     );
     return unsubscribe;
-  }, [ref, parse, compare, mock, enabled, pageLimit]);
+  }, [ref, parse, compare, serverOrder, mock, enabled, pageLimit]);
 
   return { ...state, loadMore: () => setPageLimit((p) => p + PAGE_SIZE) };
 }
@@ -149,42 +163,45 @@ export function useProjects(): CollectionState<Project> {
     projectsCollection,
     parseProject,
     byCreatedDesc,
+    ORDER_CREATED_DESC,
     DEV_MOCK_ENABLED ? MOCK_PROJECTS : undefined,
   );
 }
 
 export function useProjectUpdates(): CollectionState<ProjectUpdate> {
-  // No dev-mock dataset — in local preview this simply shows an empty feed.
   return useCollectionData(
     projectUpdatesCollection,
     parseProjectUpdate,
     byCreatedDesc,
+    ORDER_CREATED_DESC,
   );
 }
 
 export function useProjectBilling(): CollectionState<ProjectBilling> {
-  // One billing document per client, sorted by email for easy scanning. No
-  // dev-mock dataset — in local preview this simply shows an empty list.
   return useCollectionData(
     projectBillingCollection,
     parseProjectBilling,
     byClientEmail,
+    ORDER_CLIENT_EMAIL_ASC,
   );
 }
 
 export function useProjectInvoices(): CollectionState<ProjectInvoice> {
-  // Newest first. No dev-mock dataset — local preview shows an empty list.
   return useCollectionData(
     projectInvoicesCollection,
     parseProjectInvoice,
     byCreatedDesc,
+    ORDER_CREATED_DESC,
   );
 }
 
 export function usePortfolio(): CollectionState<PortfolioItem> {
-  // Sorted by display order (then oldest-first) to match the public page. No
-  // dev-mock dataset — in local preview this simply shows an empty list.
-  return useCollectionData(portfolioCollection, parsePortfolioItem, byOrder);
+  return useCollectionData(
+    portfolioCollection,
+    parsePortfolioItem,
+    byOrder,
+    ORDER_DISPLAY_ORDER,
+  );
 }
 
 export function useClients(enabled = true): CollectionState<Client> {
@@ -192,18 +209,57 @@ export function useClients(enabled = true): CollectionState<Client> {
     clientsCollection,
     parseClient,
     byCreatedDesc,
+    ORDER_CREATED_DESC,
     DEV_MOCK_ENABLED ? MOCK_CLIENTS : undefined,
     enabled,
   );
 }
 
-export function useMessages(): CollectionState<ContactMessage> {
-  return useCollectionData(
-    messagesCollection,
-    parseMessage,
-    byCreatedDesc,
-    DEV_MOCK_ENABLED ? MOCK_MESSAGES : undefined,
-  );
+export function useMessages(status?: MessageStatus): CollectionState<ContactMessage> {
+  const [pageLimit, setPageLimit] = useState(PAGE_SIZE);
+  const [state, setState] = useState<{
+    data: ContactMessage[];
+    loading: boolean;
+    error: string | null;
+    hasMore: boolean;
+  }>({ data: [], loading: true, error: null, hasMore: false });
+
+  // Reset to the first page whenever the status filter changes.
+  useEffect(() => {
+    setPageLimit(PAGE_SIZE);
+  }, [status]);
+
+  useEffect(() => {
+    if (DEV_MOCK_ENABLED) {
+      const data = status
+        ? MOCK_MESSAGES.filter((m) => m.status === status)
+        : [...MOCK_MESSAGES];
+      data.sort(byCreatedDesc);
+      setState({ data, loading: false, error: null, hasMore: false });
+      return;
+    }
+
+    const constraints: QueryConstraint[] = [];
+    if (status) constraints.push(where("status", "==", status));
+    constraints.push(orderBy("createdAt", "desc"));
+    constraints.push(firestoreLimit(pageLimit));
+
+    const unsubscribe = onSnapshot(
+      query(messagesCollection, ...constraints),
+      (snapshot) => {
+        const data: ContactMessage[] = [];
+        snapshot.forEach((docSnap) => {
+          const item = parseMessage(docSnap.id, docSnap.data());
+          if (item) data.push(item);
+        });
+        setState({ data, loading: false, error: null, hasMore: snapshot.size >= pageLimit });
+      },
+      (err) => setState({ data: [], loading: false, error: err.message, hasMore: false }),
+    );
+    return unsubscribe;
+  }, [status, pageLimit]);
+
+  return { ...state, loadMore: () => setPageLimit((p) => p + PAGE_SIZE) };
 }
 
 export function useAuditLogs(): CollectionState<AuditLogEntry> {
@@ -211,6 +267,7 @@ export function useAuditLogs(): CollectionState<AuditLogEntry> {
     auditLogsCollection,
     parseAuditLog,
     byCreatedDesc,
+    ORDER_CREATED_DESC,
     DEV_MOCK_ENABLED ? MOCK_AUDIT : undefined,
   );
 }
@@ -219,6 +276,7 @@ export function useAdmins(): CollectionState<AdminProfile> {
   return useCollectionData(
     adminsCollection,
     parseAdminProfile,
+    undefined,
     undefined,
     DEV_MOCK_ENABLED ? MOCK_ADMINS : undefined,
   );

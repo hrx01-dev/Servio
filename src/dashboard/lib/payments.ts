@@ -156,6 +156,32 @@ export function computeBilling(
 }
 
 /**
+ * Map a Firestore (or unknown) error to a user-friendly message.
+ * Duck-typed so the module stays free of the Firebase SDK and remains trivially
+ * unit-testable.
+ */
+export function paymentErrorMessage(err: unknown): string {
+  const code =
+    err !== null &&
+    typeof err === "object" &&
+    "code" in err &&
+    typeof (err as Record<string, unknown>).code === "string"
+      ? (err as Record<string, unknown>).code
+      : null;
+
+  switch (code) {
+    case "permission-denied":
+      return "You don't have permission to view your payment data.";
+    case "unauthenticated":
+      return "Please sign in again to view your payments.";
+    case "unavailable":
+      return "The payment service is temporarily unavailable. Please try again in a moment.";
+    default:
+      return "Something went wrong loading your payments. Please try again.";
+  }
+}
+
+/**
  * Parse a raw `projectBilling` document into a `ClientBilling`, dropping
  * malformed payment entries and computing the derived figures. Returns null only
  * when there is genuinely nothing to show (no cost and no valid payments) so the

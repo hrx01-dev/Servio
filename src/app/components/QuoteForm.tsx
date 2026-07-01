@@ -8,7 +8,7 @@ import {
   BUDGET_OPTIONS as budgetOptions,
   WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
-import { submitQuote } from "../lib/submitQuote";
+import { submitQuote, RateLimitError } from "../lib/submitQuote";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { UnsavedChangesDialog } from "./UnsavedChangesDialog";
 import { GlassPanel } from "./GlassPanel";
@@ -128,9 +128,11 @@ export function QuoteForm() {
       await submitQuote(form);
       markClean();
       setSubmitted(true);
-    } catch {
+    } catch (err) {
       showFormError(
-        "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
+        err instanceof RateLimitError
+          ? err.message
+          : "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
       );
     } finally {
       setLoading(false);

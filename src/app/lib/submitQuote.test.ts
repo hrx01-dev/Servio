@@ -1,24 +1,24 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { addDoc, collection } from "firebase/firestore";
+/**
+ * submitQuote.test.ts
+ * ─────────────────────────────────────────────────────────────────────────────
+ * Unit tests for the quote submission helpers.
+ *
+ * The pure functions (buildQuoteSummary, buildMailData) are tested directly.
+ * submitQuote() is tested by mocking fetch — actual Firestore writes happen
+ * server-side in api/quote.ts which re-uses the same pure helpers.
+ *
+ * Run with: npx vitest run src/app/lib/submitQuote.test.ts
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import type { QuoteFormData } from "./quoteValidation";
-
-// The real module pulls in Firebase app/analytics init; stub it out.
-vi.mock("@/Firebase/firebase", () => ({ db: { __mock: true } }));
-vi.mock("firebase/firestore", () => ({
-  addDoc: vi.fn(),
-  collection: vi.fn((_db: unknown, name: string) => ({ __collection: name })),
-  serverTimestamp: vi.fn(() => "__ts__"),
-}));
-
 import {
   submitQuote,
   buildQuoteSummary,
   buildMailData,
   QUOTE_NOTIFY_EMAIL,
+  RateLimitError,
 } from "./submitQuote";
-
-const mockedAddDoc = vi.mocked(addDoc);
-const mockedCollection = vi.mocked(collection);
 
 const validForm: QuoteFormData = {
   name: "  Sarah Chen  ",
@@ -30,18 +30,7 @@ const validForm: QuoteFormData = {
   description: "Need a new marketing site.",
 };
 
-function collName(call: number): string {
-  return (mockedAddDoc.mock.calls[call][0] as unknown as { __collection: string })
-    .__collection;
-}
-
-function payload(call: number): Record<string, unknown> {
-  return mockedAddDoc.mock.calls[call][1] as unknown as Record<string, unknown>;
-}
-
-beforeEach(() => {
-  vi.clearAllMocks();
-});
+// ── buildQuoteSummary ─────────────────────────────────────────────────────────
 
 describe("buildQuoteSummary", () => {
   it("trims fields and composes subject + text", () => {
@@ -71,6 +60,8 @@ describe("buildQuoteSummary", () => {
   });
 });
 
+// ── buildMailData ─────────────────────────────────────────────────────────────
+
 describe("buildMailData", () => {
   it("pins the recipient and replies to the prospect", () => {
     const mail = buildMailData(buildQuoteSummary(validForm));
@@ -82,47 +73,76 @@ describe("buildMailData", () => {
   });
 });
 
+// ── submitQuote ───────────────────────────────────────────────────────────────
+
 describe("submitQuote", () => {
-  it("writes the lead to messages, then queues the email to mail", async () => {
-    mockedAddDoc.mockResolvedValue({ id: "x" } as never);
-    await submitQuote(validForm);
+  beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
+  });
 
-    expect(mockedAddDoc).toHaveBeenCalledTimes(2);
-    expect(collName(0)).toBe("messages");
-    expect(collName(1)).toBe("mail");
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
 
-    const message = payload(0);
-    expect(message.status).toBe("new");
-    expect(message.createdAt).toBe("__ts__"); // serverTimestamp(), required by rules
-    expect(message.name).toBe("Sarah Chen");
-    // body + subject are rule-load-bearing on the `messages` write — pin the mapping.
-    expect(message.body).toBe(buildQuoteSummary(validForm).text);
-    expect(message.subject).toBe(
-      "New quote request: Business Website — TechStart Inc.",
+  it("POSTs to /api/quote and resolves on 200", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ success: true }), { status: 200 }),
     );
-
-    const mail = payload(1);
-    expect(mail.to).toEqual([QUOTE_NOTIFY_EMAIL]);
-    expect(mail.createdAt).toBe("__ts__");
-
-    expect(mockedCollection).toHaveBeenCalledWith({ __mock: true }, "messages");
-  });
-
-  it("still resolves when the email queue write fails (lead is already saved)", async () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
-    mockedAddDoc
-      .mockResolvedValueOnce({ id: "msg" } as never) // messages OK
-      .mockRejectedValueOnce(new Error("mail rule not deployed")); // mail fails
-
     await expect(submitQuote(validForm)).resolves.toBeUndefined();
-    expect(mockedAddDoc).toHaveBeenCalledTimes(2);
-    expect(warn).toHaveBeenCalled();
-    warn.mockRestore();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/quote",
+      expect.objectContaining({ method: "POST" }),
+    );
   });
 
-  it("rejects when the lead itself cannot be persisted", async () => {
-    mockedAddDoc.mockRejectedValueOnce(new Error("permission-denied"));
-    await expect(submitQuote(validForm)).rejects.toThrow("permission-denied");
-    expect(mockedAddDoc).toHaveBeenCalledTimes(1); // never tries to email
+  it("sends the form data as JSON in the request body", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ success: true }), { status: 200 }),
+    );
+    await submitQuote(validForm);
+    const call = vi.mocked(fetch).mock.calls[0];
+    const body = JSON.parse(call[1]?.body as string) as Record<string, unknown>;
+    expect(body.name).toBe("  Sarah Chen  ");
+    expect(body.email).toBe(" sarah@company.com ");
+  });
+
+  it("throws RateLimitError on 429 with retryAfterMs from the response", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({ error: "Too many submissions.", retryAfterMs: 5 * 60 * 1000 }),
+        { status: 429 },
+      ),
+    );
+    const err = await submitQuote(validForm).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(RateLimitError);
+    expect((err as RateLimitError).retryAfterMs).toBe(5 * 60 * 1000);
+    expect((err as RateLimitError).message).toContain("5 minutes");
+  });
+
+  it("throws RateLimitError on 429 even when retryAfterMs is absent", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ error: "Too many submissions." }), { status: 429 }),
+    );
+    const err = await submitQuote(validForm).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(RateLimitError);
+    expect((err as RateLimitError).message).toContain("try again shortly");
+  });
+
+  it("throws a plain Error (not RateLimitError) on 500 with the server message", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 }),
+    );
+    const err = await submitQuote(validForm).catch((e: unknown) => e);
+    expect(err).toBeInstanceOf(Error);
+    expect(err).not.toBeInstanceOf(RateLimitError);
+    expect((err as Error).message).toBe("Internal server error");
+  });
+
+  it("falls back to a generic message when the 500 body has no error string", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response("{}", { status: 500 }),
+    );
+    const err = await submitQuote(validForm).catch((e: unknown) => e);
+    expect((err as Error).message).toBe("Failed to submit your request.");
   });
 });

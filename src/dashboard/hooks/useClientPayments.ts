@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../Firebase/useAuth";
 import { subscribeClientBilling } from "../services/paymentsService";
+import { paymentErrorMessage } from "../lib/payments";
 import type { ClientBilling } from "../lib/payments";
 
 export interface ClientPaymentsState {
@@ -79,7 +80,7 @@ export function useClientPayments(): ClientPaymentsState {
         setState({
           billing: null,
           loading: false,
-          error: err.message,
+          error: paymentErrorMessage(err),
           needsEmailVerification: false,
         }),
     );
