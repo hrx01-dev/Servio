@@ -83,13 +83,13 @@ export function SignIn() {
                         Welcome back to Servio.
                     </p>
                     {error && (
-                        <p role="alert" className="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 p-3 rounded-lg mb-4 text-sm">
+                        <p role="alert" className="bg-destructive/10 text-destructive border border-destructive/20 p-3 rounded-lg mb-4 text-sm">
                             {error}
                         </p>
                     )}
                     <form onSubmit={handleEmailSignIn} className="space-y-6" aria-label="Sign in with email and password">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                            <label htmlFor="email" className="block text-sm font-medium text-foreground">
                                 Email Address
                             </label>
                             <input
@@ -101,13 +101,13 @@ export function SignIn() {
                                 aria-required="true"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                                className="mt-1 block w-full px-3 py-2 bg-input-background border border-border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:border-primary sm:text-sm transition"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                                className="block text-sm font-medium text-foreground"
                             >
                                 Password
                             </label>
@@ -120,7 +120,7 @@ export function SignIn() {
                                 aria-required="true"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                                className="mt-1 block w-full px-3 py-2 bg-input-background border border-border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:border-primary sm:text-sm transition"
                             />
                         </div>
                         <motion.button
