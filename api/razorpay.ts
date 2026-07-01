@@ -152,6 +152,40 @@ export default async function handler(
         return res.status(400).json({ error: "Invalid signature" });
       }
 
+      // The signature only binds order_id|payment_id — NOT the amount. Fetch the
+      // payment from Razorpay and treat its captured amount as authoritative, so a
+      // tampered request body can't overstate what the client actually paid.
+      let authenticatedAmount: number;
+      try {
+        const rzpPayment = await razorpay.payments.fetch(razorpay_payment_id);
+
+        if (rzpPayment.order_id !== razorpay_order_id) {
+          return res.status(400).json({ error: "Payment does not match order" });
+        }
+        if (rzpPayment.status !== "captured" && rzpPayment.status !== "authorized") {
+          return res.status(400).json({ error: "Payment has not been completed" });
+        }
+
+        const paidPaisa = Number(rzpPayment.amount);
+        if (!Number.isFinite(paidPaisa) || paidPaisa <= 0) {
+          return res
+            .status(502)
+            .json({ error: "Could not verify the payment amount with Razorpay" });
+        }
+        // Reject a request whose amount doesn't match the captured payment.
+        if (Math.round(amount * 100) !== Math.round(paidPaisa)) {
+          return res
+            .status(400)
+            .json({ error: "Amount does not match the captured payment" });
+        }
+        authenticatedAmount = paidPaisa / 100;
+      } catch (err) {
+        console.error("Failed to fetch Razorpay payment:", err);
+        return res
+          .status(502)
+          .json({ error: "Could not verify the payment with Razorpay" });
+      }
+
       // Record successful payment in Firestore
       const normalizedEmail = clientEmail.trim().toLowerCase();
       const billingRef = db.collection("projectBilling").doc(normalizedEmail);
@@ -184,7 +218,7 @@ export default async function handler(
         // Append a new payment
         const newPayment = {
           id: razorpay_payment_id, // Use razorpay payment id for new ad-hoc payments
-          amount: Number(amount),
+          amount: authenticatedAmount,
           method: "Razorpay",
           reference: razorpay_payment_id,
           status: "completed",
