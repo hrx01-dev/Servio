@@ -44,6 +44,15 @@ Accessibility is enforced in CI: axe-core scans the public components and pages
 on every push and pull request, and a new WCAG violation fails the build. See
 [docs/ACCESSIBILITY_TESTING.md](docs/ACCESSIBILITY_TESTING.md).
 
+Bundle size is also enforced in CI. After a production build, run:
+
+```bash
+npm run bundle:budget
+```
+
+The check writes `dist/bundle-report.md` and fails when initial, total, or
+per-chunk JS/CSS budgets are exceeded.
+
 ## 🚀 Deployment
 
 This project uses **Firebase Hosting** for production deployments.
