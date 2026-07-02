@@ -46,6 +46,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check bundle size budget
+        run: npm run bundle:budget
+
+      - name: Upload bundle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-report
+          path: dist/bundle-report.md
+          if-no-files-found: ignore
+
   # Dedicated, named check so the accessibility gate is visible on every PR.
   # The full suite in `verify` already runs these tests; this job surfaces them
   # as their own status check (mark it required in branch protection to block

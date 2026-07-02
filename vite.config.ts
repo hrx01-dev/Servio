@@ -56,6 +56,7 @@ export default defineConfig({
   assetsInclude: ['**/*.svg', '**/*.csv'],
 
   build: {
+    manifest: true,
     rollupOptions: {
       output: {
         // Group large vendor libraries into stable named chunks so browsers
