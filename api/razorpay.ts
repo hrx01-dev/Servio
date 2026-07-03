@@ -54,16 +54,6 @@ export default async function handler(
   });
 
   try {
-    // Initialize Firebase Admin if not already initialized
-    if (!getApps().length) {
-      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        initializeApp({ credential: cert(serviceAccount) });
-      } else {
-        initializeApp();
-      }
-    }
-
     // A POST with no body or a non-JSON Content-Type leaves req.body undefined;
     // reject it as a malformed request (400) rather than letting the destructure
     // throw into the catch and surface as a 500.
@@ -107,6 +97,15 @@ export default async function handler(
     }
 
     if (action === "verifyPayment") {
+      // Initialize Firebase Admin if not already initialized
+      if (!getApps().length) {
+        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+          const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+          initializeApp({ credential: cert(serviceAccount) });
+        } else {
+          initializeApp();
+        }
+      }
       const {
         razorpay_order_id,
         razorpay_payment_id,
