@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { OTPInput, OTPInputContext, REGEXP_ONLY_DIGITS } from "input-otp";
 import { doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { Loader2, ShieldCheck } from "lucide-react";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import {
   Dialog,
   DialogContent,

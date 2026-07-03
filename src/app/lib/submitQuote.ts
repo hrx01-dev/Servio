@@ -15,8 +15,12 @@
 // missing extension or an undeployed `mail` rule must never fail the user's
 // submission (losing leads is the bug we are fixing — see issue #9).
 
+// NOTE (#234): QuoteForm reaches this module via dynamic import only, so these
+// static SDK imports stay out of the render-blocking landing bundle while
+// remaining tree-shakeable (a dynamic `import("firebase/firestore")` would
+// retain the SDK's whole namespace).
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import { LIMITS, validateFields, hasErrors, type QuoteFormData } from "./quoteValidation";
 
 /**

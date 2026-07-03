@@ -66,8 +66,25 @@ export default defineConfig({
             if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) {
               return 'vendor-react';
             }
-            if (id.includes('/firebase/')) {
-              return 'vendor-firebase';
+            // Firebase is split per SDK product (issue #234) so a page only
+            // downloads the products it imports: auth-only screens skip
+            // Firestore (the heaviest product), and nothing Firebase-related
+            // is reachable from the entry chunk — the app code imports these
+            // SDKs via dynamic import only. `@firebase/*` holds the real
+            // implementations; `firebase/*` is the umbrella re-export.
+            if (id.includes('/firebase/') || id.includes('/@firebase/')) {
+              // webchannel-wrapper is Firestore's transport layer.
+              if (id.includes('firestore') || id.includes('webchannel-wrapper')) {
+                return 'vendor-firebase-firestore';
+              }
+              if (id.includes('auth')) {
+                return 'vendor-firebase-auth';
+              }
+              if (id.includes('analytics')) {
+                return 'vendor-firebase-analytics';
+              }
+              // app, util, component, logger, installations, …
+              return 'vendor-firebase-core';
             }
             if (id.includes('/motion/') || id.includes('/framer-motion/')) {
               return 'vendor-motion';

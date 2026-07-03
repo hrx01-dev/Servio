@@ -1,12 +1,9 @@
 import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { doc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore";
-import { db } from "@/Firebase/firebase";
 import { useAuth } from "@/Firebase/useAuth";
 import { AdminContext, AdminContextValue } from "./AdminContextObject";
-import { COLLECTIONS, parseAdminProfile } from "../lib/collections";
 import { hasPermission, Permission } from "../rbac/permissions";
 import { DEV_MOCK_ENABLED, MOCK_ADMIN, MOCK_USER } from "../lib/devMock";
-import { AdminProfile } from "../types";
+import type { AdminProfile } from "../types";
 
 /**
  * Loads the signed-in user's `admins/{uid}` document and exposes role +
@@ -14,6 +11,11 @@ import { AdminProfile } from "../types";
  * changes (e.g. an admin being disabled) take effect without a reload.
  *
  * Must be rendered inside the app-level <AuthProvider>.
+ *
+ * This provider is mounted on EVERY route (the shared Navbar reads isAdmin),
+ * so the Firestore SDK is reached only through the dynamic imports inside the
+ * effects below — and only once a user is actually signed in. Anonymous
+ * visitors never download Firestore for admin state (issue #234).
  */
 export function AdminProvider({ children }: { children: ReactNode }) {
   const { currentUser, loading: authLoading } = useAuth();
@@ -43,34 +45,44 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
     setDocLoading(true);
     setError(null);
-    const ref = doc(db, COLLECTIONS.admins, currentUser.uid);
-    const unsubscribe = onSnapshot(
-      ref,
-      (snapshot) => {
-        const exists = snapshot.exists();
-        const data = exists ? snapshot.data() : null;
-        const parsed = exists
-          ? parseAdminProfile(currentUser.uid, data!)
-          : null;
-        setDebug(
-          JSON.stringify({
-            uid: currentUser.uid,
-            docExists: exists,
-            rawData: data,
-            parsed: parsed ? "valid" : "null",
-          }),
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    import("../lib/adminProfile")
+      .then(({ subscribeAdminProfile }) => {
+        if (cancelled) return;
+        unsubscribe = subscribeAdminProfile(
+          currentUser.uid,
+          ({ exists, data, profile }) => {
+            setDebug(
+              JSON.stringify({
+                uid: currentUser.uid,
+                docExists: exists,
+                rawData: data,
+                parsed: profile ? "valid" : "null",
+              }),
+            );
+            setAdmin(profile);
+            setDocLoading(false);
+          },
+          (err) => {
+            setError(err.message || "Failed to load admin profile.");
+            setAdmin(null);
+            setDocLoading(false);
+          },
         );
-        setAdmin(parsed);
-        setDocLoading(false);
-      },
-      (err) => {
-        setError(err.message || "Failed to load admin profile.");
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : "Failed to load admin profile.");
         setAdmin(null);
         setDocLoading(false);
-      },
-    );
+      });
 
-    return unsubscribe;
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [currentUser, authLoading]);
 
   // Record lastLoginAt once per session when the admin profile resolves.
@@ -78,10 +90,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     if (DEV_MOCK_ENABLED || !admin || !currentUser) return;
     if (lastLoginRecorded.current === currentUser.uid) return;
     lastLoginRecorded.current = currentUser.uid;
-    const ref = doc(db, COLLECTIONS.admins, currentUser.uid);
-    updateDoc(ref, { lastLoginAt: serverTimestamp() }).catch(() => {
-      // Best-effort; swallow errors (e.g. offline).
-    });
+    import("../lib/adminProfile")
+      .then(({ recordAdminLastLogin }) => recordAdminLastLogin(currentUser.uid))
+      .catch(() => {
+        // Best-effort; swallow errors (e.g. offline).
+      });
   }, [admin, currentUser]);
 
   // In mock mode the fake admin must be available synchronously on the first

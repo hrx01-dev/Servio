@@ -1,4 +1,6 @@
-import { Timestamp } from "firebase/firestore";
+// Type-only: must never become a value import — these types are used by
+// modules in the initial bundle, which stays free of Firebase code (#234).
+import type { Timestamp } from "firebase/firestore";
 
 /**
  * Domain types for the Servio admin portal.

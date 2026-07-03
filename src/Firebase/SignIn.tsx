@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from './auth';
 import { Home } from 'lucide-react';
 import { Aurora } from '@/app/components/Aurora';
 import { GlassPanel } from '@/app/components/GlassPanel';

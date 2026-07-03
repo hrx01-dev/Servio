@@ -2,7 +2,7 @@ import { useState, useId } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from './auth';
 import { notifyWelcome } from '../dashboard/notifications/notificationTriggers';
 import { Home, Check, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
 import { Aurora } from '@/app/components/Aurora';

@@ -5,7 +5,7 @@ import {
   where,
   type FirestoreError,
 } from "firebase/firestore";
-import { db } from "../../Firebase/firebase";
+import { db } from "../../Firebase/db";
 import {
   normalizeEmail,
   parseClientUpdate,

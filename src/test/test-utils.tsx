@@ -10,7 +10,7 @@
 //  - AdminProvider — the shared <Navbar> reads admin state via useAdmin().
 //
 // Firebase auth/firestore init is harmless in jsdom; analytics init is guarded
-// by isSupported() in src/Firebase/firebase.ts, so no Firebase mock is needed.
+// by isSupported() in src/Firebase/analytics.ts, so no Firebase mock is needed.
 
 import { type ReactElement } from 'react'
 import { render, type RenderOptions } from '@testing-library/react'

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Megaphone, Plus, Trash2, Users } from "lucide-react";
 import { addDoc, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { toast } from "sonner";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import { isTyping } from "../lib/keyboard";
 import { Button } from "@/app/components/ui/button";
 import {

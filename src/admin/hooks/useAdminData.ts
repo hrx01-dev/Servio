@@ -38,14 +38,13 @@ import {
   ProjectInvoice,
   ProjectUpdate,
 } from "../types";
+import { DEV_MOCK_ENABLED, MOCK_ADMINS } from "../lib/devMock";
 import {
-  DEV_MOCK_ENABLED,
-  MOCK_ADMINS,
   MOCK_AUDIT,
   MOCK_CLIENTS,
   MOCK_MESSAGES,
   MOCK_PROJECTS,
-} from "../lib/devMock";
+} from "../lib/devMockData";
 
 const PAGE_SIZE = 50;
 

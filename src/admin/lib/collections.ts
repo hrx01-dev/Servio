@@ -1,5 +1,5 @@
 import { collection, Timestamp, type DocumentData } from "firebase/firestore";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import { isAdminRole } from "../rbac/roles";
 import {
   AdminProfile,
