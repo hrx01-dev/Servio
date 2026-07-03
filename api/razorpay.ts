@@ -16,10 +16,19 @@ export default async function handler(
 ) {
   // CORS configuration must be the very first thing
   const origin = req.headers.origin;
-  const allowedOrigin = origin || process.env.ALLOWED_ORIGIN || "https://servio-0.web.app";
-  
+  const defaultAllowedOrigin = process.env.ALLOWED_ORIGIN || "https://servio-0.web.app";
+  const configuredOrigins = (process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
+  const allowedOrigins = new Set([defaultAllowedOrigin, ...configuredOrigins]);
+  const safeOrigin =
+    typeof origin === "string" && origin !== "null" && allowedOrigins.has(origin)
+      ? origin
+      : defaultAllowedOrigin;
+
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  res.setHeader("Access-Control-Allow-Origin", safeOrigin);
   res.setHeader("Access-Control-Allow-Methods", "OPTIONS,POST");
   res.setHeader(
     "Access-Control-Allow-Headers",
