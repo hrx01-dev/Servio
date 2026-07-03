@@ -3,10 +3,11 @@ import Razorpay from "razorpay";
 import crypto from "crypto";
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
-// Reuse the client's email rule verbatim so the server rejects exactly what the
-// browser would (see the module's own note on being the single source of truth).
-import { isValidEmail } from "../src/app/lib/quoteValidation";
-
+// Simple inline email validation to avoid Vercel bundling issues with cross-folder imports
+function isValidEmail(raw: string): boolean {
+  const v = raw.trim();
+  return v.length >= 5 && v.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+}
 // Firebase initialization moved inside handler to prevent top-level crashes
 
 export default async function handler(
@@ -14,11 +15,11 @@ export default async function handler(
   res: VercelResponse
 ) {
   // CORS configuration must be the very first thing
+  const origin = req.headers.origin;
+  const allowedOrigin = origin || process.env.ALLOWED_ORIGIN || "https://servio-0.web.app";
+  
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader(
-    "Access-Control-Allow-Origin",
-    process.env.ALLOWED_ORIGIN || "https://servio-0.web.app"
-  );
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
   res.setHeader("Access-Control-Allow-Methods", "OPTIONS,POST");
   res.setHeader(
     "Access-Control-Allow-Headers",
