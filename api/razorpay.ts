@@ -13,22 +13,7 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  // Initialize Firebase Admin if not already initialized
-  if (!getApps().length) {
-    try {
-      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        initializeApp({ credential: cert(serviceAccount) });
-      } else {
-        initializeApp();
-      }
-    } catch (error) {
-      console.error("Firebase admin initialization error:", error);
-    }
-  }
-  const db = getFirestore();
-  
-  // CORS configuration
+  // CORS configuration must be the very first thing
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Origin",
@@ -69,6 +54,16 @@ export default async function handler(
   });
 
   try {
+    // Initialize Firebase Admin if not already initialized
+    if (!getApps().length) {
+      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        initializeApp({ credential: cert(serviceAccount) });
+      } else {
+        initializeApp();
+      }
+    }
+
     // A POST with no body or a non-JSON Content-Type leaves req.body undefined;
     // reject it as a malformed request (400) rather than letting the destructure
     // throw into the catch and surface as a 500.
@@ -190,6 +185,7 @@ export default async function handler(
       }
 
       // Record successful payment in Firestore
+      const db = getFirestore();
       const normalizedEmail = clientEmail.trim().toLowerCase();
       const billingRef = db.collection("projectBilling").doc(normalizedEmail);
 
