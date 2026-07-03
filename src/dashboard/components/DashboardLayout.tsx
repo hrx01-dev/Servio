@@ -137,7 +137,7 @@ export function DashboardLayout() {
 
       <div className="mx-3 h-px bg-sidebar-border" />
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {NAV_ITEMS.map((item) => (
           <NavLink
             key={item.to}
