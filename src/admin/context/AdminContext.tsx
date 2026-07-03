@@ -54,11 +54,17 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         unsubscribe = subscribeAdminProfile(
           currentUser.uid,
           ({ exists, data, profile }) => {
+            // AdminLogin renders this diagnostic on screen, so field VALUES
+            // are redacted — the raw doc can hold secrets (pinHash/pinSalt).
+            // Field names + the role/disabled flags are enough to debug the
+            // usual "why am I not recognised as an admin" cases.
             setDebug(
               JSON.stringify({
                 uid: currentUser.uid,
                 docExists: exists,
-                rawData: data,
+                fields: data ? Object.keys(data).sort() : null,
+                role: typeof data?.role === "string" ? data.role : null,
+                disabled: data?.disabled === true,
                 parsed: profile ? "valid" : "null",
               }),
             );

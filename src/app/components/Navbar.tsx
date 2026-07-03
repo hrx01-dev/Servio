@@ -8,6 +8,7 @@ import {
   useScroll,
   useSpring,
 } from 'motion/react';
+import { toast } from 'sonner';
 import { useThrottledScroll } from '../hooks/useThrottledScroll';
 import { useTheme } from '../hooks/useTheme';
 import { useMagnetic } from '../hooks/useMagnetic';
@@ -170,7 +171,10 @@ export function Navbar() {
       setIsMobileMenuOpen(false);
       navigate('/');
     } catch (error) {
+      // Covers both the chunk fetch (offline) and the sign-out call. The menu
+      // stays open so the user can retry from where they were.
       console.error('Error signing out: ', error);
+      toast.error("Couldn't sign out. Please check your connection and try again.");
     }
   };
 
