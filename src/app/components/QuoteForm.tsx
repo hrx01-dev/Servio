@@ -8,7 +8,6 @@ import {
   BUDGET_OPTIONS as budgetOptions,
   WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
-import { submitQuote } from "../lib/submitQuote";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { UnsavedChangesDialog } from "./UnsavedChangesDialog";
 import { GlassPanel } from "./GlassPanel";
@@ -125,6 +124,9 @@ export function QuoteForm() {
     writeHistory(verdict.nextHistory);
     setLoading(true);
     try {
+      // Deferred import: submitQuote pulls the Firestore SDK, which must stay
+      // out of the landing bundle (#234) — it downloads on first submit.
+      const { submitQuote } = await import("../lib/submitQuote");
       await submitQuote(form);
       markClean();
       setSubmitted(true);

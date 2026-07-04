@@ -2,8 +2,8 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { addDoc, collection } from "firebase/firestore";
 import type { QuoteFormData } from "./quoteValidation";
 
-// The real module pulls in Firebase app/analytics init; stub it out.
-vi.mock("@/Firebase/firebase", () => ({ db: { __mock: true } }));
+// The real module pulls in the Firebase app init; stub it out.
+vi.mock("@/Firebase/db", () => ({ db: { __mock: true } }));
 vi.mock("firebase/firestore", () => ({
   addDoc: vi.fn(),
   collection: vi.fn((_db: unknown, name: string) => ({ __collection: name })),

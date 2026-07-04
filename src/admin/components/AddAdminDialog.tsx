@@ -11,7 +11,8 @@ import {
 } from "firebase/auth";
 import { Loader2, UserPlus } from "lucide-react";
 import { toast } from "sonner";
-import { auth, db } from "@/Firebase/firebase";
+import { auth } from "@/Firebase/auth";
+import { db } from "@/Firebase/db";
 import { Button } from "@/app/components/ui/button";
 import { COLLECTIONS } from "../lib/collections";
 import { writeAuditLog } from "../lib/audit";

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Sparkles, Bug, Flag, Info, Bell, AlertCircle, MailCheck } from "lucide-react";
 import { sendEmailVerification } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "../../app/components/ui/card";
 import { Badge } from "../../app/components/ui/badge";
 import { Skeleton } from "../../app/components/ui/skeleton";

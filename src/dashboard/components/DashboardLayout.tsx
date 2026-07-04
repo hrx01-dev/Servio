@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { signOut } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/auth";
 import { useAuth } from "../../Firebase/useAuth";
 import { useTheme } from "../../app/hooks/useTheme";
 import {

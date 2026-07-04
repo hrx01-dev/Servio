@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { LogOut, ShieldCheck } from "lucide-react";
-import { auth } from "@/Firebase/firebase";
+import { auth } from "@/Firebase/auth";
 import { cn } from "@/app/components/ui/utils";
 import { ADMIN_NAV } from "../rbac/navigation";
 import { useAdmin } from "../context/useAdmin";

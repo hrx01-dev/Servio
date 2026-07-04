@@ -10,8 +10,12 @@ const KIB = 1024
 const MIB = KIB * KIB
 
 const budgets = {
-  initialRawBytes: 1.75 * MIB,
-  initialGzipBytes: 475 * KIB,
+  // Tightened after #234 moved Firebase (~716 KiB raw / ~177 KiB gzip) out of
+  // the entry graph: initial is now ~932 KiB raw / ~266 KiB gzip. Kept ~15-20%
+  // above actuals so any single Firebase product statically imported from the
+  // initial bundle again (firestore ~519 KiB, auth ~123 KiB) fails the gate.
+  initialRawBytes: 1.1 * MIB,
+  initialGzipBytes: 310 * KIB,
   totalRawBytes: 2.25 * MIB,
   totalGzipBytes: 650 * KIB,
   maxChunkRawBytes: 800 * KIB,

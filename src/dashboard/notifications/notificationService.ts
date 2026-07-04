@@ -15,7 +15,7 @@ import {
   type QueryDocumentSnapshot,
   type DocumentData,
 } from "firebase/firestore";
-import { db } from "../../Firebase/firebase";
+import { db } from "../../Firebase/db";
 import type {
   Notification,
   NotificationType,

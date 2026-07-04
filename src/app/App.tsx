@@ -1,4 +1,4 @@
-import { lazy as reactLazy, Suspense, useLayoutEffect, useRef } from "react";
+import { lazy as reactLazy, Suspense, useEffect, useLayoutEffect, useRef } from "react";
 import { Route, createBrowserRouter, RouterProvider, createRoutesFromElements } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { GlobalErrorBoundary } from "./components/GlobalErrorBoundary";
@@ -229,6 +229,14 @@ function RootLayout() {
   const reduceMotion = useReducedMotion();
   const reduceData = useReducedData();
   useSmoothScroll(!reduceMotion && !reduceData);
+
+  // Kick off Firebase Analytics (auto page-view collection) after mount. It
+  // used to initialise as an import side effect of the monolithic firebase.ts;
+  // now nothing in the initial bundle touches Firebase (#234), so the always-
+  // mounted layout owns this fire-and-forget init instead.
+  useEffect(() => {
+    import("../Firebase/analytics").catch(() => {});
+  }, []);
 
   return (
     <ThemeProvider>
