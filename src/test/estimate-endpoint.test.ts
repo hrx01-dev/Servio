@@ -14,8 +14,15 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 // ── Firestore stand-in (shared across the mock) ───────────────────────────────
 const store = new Map<string, Record<string, unknown>>();
 
+// Mutable admin-init state, shared with the (hoisted) mock factory so a single
+// test can force the "not yet initialised" path and exercise initAdmin()'s
+// fail-closed branch.
+const adminState = vi.hoisted(() => ({ appsInitialized: true }));
+
 vi.mock("firebase-admin/app", () => ({
-  getApps: () => [{}], // pretend Admin is already initialised
+  // When appsInitialized is false, initAdmin() falls through to the
+  // FIREBASE_SERVICE_ACCOUNT → JSON.parse → cert() branch (and its catch).
+  getApps: () => (adminState.appsInitialized ? [{}] : []),
   initializeApp: vi.fn(),
   cert: vi.fn(),
 }));
@@ -108,6 +115,7 @@ function makeRes() {
 beforeEach(() => {
   store.clear();
   generateContent.mockClear();
+  adminState.appsInitialized = true; // default: Admin already initialised
   process.env.ALLOWED_ORIGIN = "https://servio-0.web.app";
   process.env.RATE_LIMIT_HASH_SECRET = "test-pepper";
   process.env.GEMINI_API_KEY = "test-key";
@@ -159,6 +167,20 @@ describe("api/estimate — fail closed", () => {
     delete process.env.RATE_LIMIT_HASH_SECRET;
     const res = makeRes();
     await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(500);
+    expect(generateContent).not.toHaveBeenCalled();
+  });
+
+  it("returns 500 (not an uncaught throw) when Firebase Admin init fails", async () => {
+    // Force the init path (Admin not yet initialised) with a malformed service
+    // account so JSON.parse throws inside initAdmin() — the handler must fail
+    // closed with a controlled 500, never crash or run the paid model.
+    adminState.appsInitialized = false;
+    process.env.FIREBASE_SERVICE_ACCOUNT = "{ not valid json";
+    const res = makeRes();
+    await expect(
+      handler(makeReq(validBody, "6.6.6.6"), res as never),
+    ).resolves.toBeDefined();
     expect(res.statusCode).toBe(500);
     expect(generateContent).not.toHaveBeenCalled();
   });
