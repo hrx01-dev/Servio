@@ -224,8 +224,11 @@ export function useMessages(status?: MessageStatus): CollectionState<ContactMess
     hasMore: boolean;
   }>({ data: [], loading: true, error: null, hasMore: false });
 
-  // Reset to the first page whenever the status filter changes.
+  // Reset to the first page AND clear stale rows whenever the status filter
+  // changes — otherwise the previous filter's data/loading linger until the
+  // next snapshot arrives and Messages briefly renders the wrong rows.
   useEffect(() => {
+    setState({ data: [], loading: true, error: null, hasMore: false });
     setPageLimit(PAGE_SIZE);
   }, [status]);
 
