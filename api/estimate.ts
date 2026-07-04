@@ -120,9 +120,17 @@ export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  // 1. Configure CORS headers
+  // 1. Configure CORS headers.
+  // Fail closed if ALLOWED_ORIGIN is unset: a hardcoded fallback would hide a
+  // misconfiguration and still advertise a production origin from any
+  // deployment that forgot to set the variable.
+  if (!process.env.ALLOWED_ORIGIN) {
+    return res
+      .status(500)
+      .json({ error: 'ALLOWED_ORIGIN is not configured on the server.' });
+  }
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || 'https://servio-0.web.app');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN);
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS,POST');
   res.setHeader(
     'Access-Control-Allow-Headers',
