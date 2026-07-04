@@ -56,6 +56,7 @@ export default defineConfig({
   assetsInclude: ['**/*.svg', '**/*.csv'],
 
   build: {
+    manifest: true,
     rollupOptions: {
       output: {
         // Group large vendor libraries into stable named chunks so browsers
@@ -65,8 +66,25 @@ export default defineConfig({
             if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router')) {
               return 'vendor-react';
             }
-            if (id.includes('/firebase/')) {
-              return 'vendor-firebase';
+            // Firebase is split per SDK product (issue #234) so a page only
+            // downloads the products it imports: auth-only screens skip
+            // Firestore (the heaviest product), and nothing Firebase-related
+            // is reachable from the entry chunk — the app code imports these
+            // SDKs via dynamic import only. `@firebase/*` holds the real
+            // implementations; `firebase/*` is the umbrella re-export.
+            if (id.includes('/firebase/') || id.includes('/@firebase/')) {
+              // webchannel-wrapper is Firestore's transport layer.
+              if (id.includes('firestore') || id.includes('webchannel-wrapper')) {
+                return 'vendor-firebase-firestore';
+              }
+              if (id.includes('auth')) {
+                return 'vendor-firebase-auth';
+              }
+              if (id.includes('analytics')) {
+                return 'vendor-firebase-analytics';
+              }
+              // app, util, component, logger, installations, …
+              return 'vendor-firebase-core';
             }
             if (id.includes('/motion/') || id.includes('/framer-motion/')) {
               return 'vendor-motion';
@@ -96,8 +114,24 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: [],
+    setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
+    // Deterministic test env, independent of any local .env(.local):
+    //  - Pin the admin dev-mock OFF so component tests exercise the real
+    //    (production-like) signed-out UI.
+    //  - Provide dummy Firebase config so getAuth()/getFirestore() initialise
+    //    instead of throwing `auth/invalid-api-key` where no secrets exist
+    //    (e.g. CI). These only satisfy the SDK's init-time validation — no
+    //    network call is made (no auth/firestore listener is mounted in tests).
+    env: {
+      VITE_ADMIN_DEV_MOCK: '',
+      VITE_FIREBASE_API_KEY: 'test-api-key',
+      VITE_FIREBASE_AUTH_DOMAIN: 'servio-test.firebaseapp.com',
+      VITE_FIREBASE_PROJECT_ID: 'servio-test',
+      VITE_FIREBASE_STORAGE_BUCKET: 'servio-test.appspot.com',
+      VITE_FIREBASE_MESSAGING_SENDER_ID: '1234567890',
+      VITE_FIREBASE_APP_ID: '1:1234567890:web:serviotest',
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from './auth';
 import { Home } from 'lucide-react';
+import { Aurora } from '@/app/components/Aurora';
+import { GlassPanel } from '@/app/components/GlassPanel';
 
 function GoogleLogo() {
     return (
@@ -53,25 +55,14 @@ export function SignIn() {
     };
 
     return (
-        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950 px-4">
-            {/* Animated gradient background blobs */}
-            <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-                <motion.div
-                    className="absolute -top-32 -left-24 w-[560px] h-[560px] rounded-full bg-gradient-to-br from-indigo-400/40 to-purple-400/30 dark:from-indigo-500/20 dark:to-purple-500/15 blur-3xl"
-                    animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
-                    transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-                />
-                <motion.div
-                    className="absolute bottom-[-160px] right-[-120px] w-[520px] h-[520px] rounded-full bg-gradient-to-br from-cyan-400/35 to-teal-300/25 dark:from-cyan-500/15 dark:to-teal-400/10 blur-3xl"
-                    animate={{ y: [0, -30, 0], x: [0, -20, 0] }}
-                    transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-                />
-            </div>
+        <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-4">
+            {/* Warm ambient glow — the same drifting aurora the landing page uses */}
+            <Aurora intensity={0.6} />
 
             <Link
                 to="/"
                 aria-label="Back to home"
-                className="absolute top-4 left-4 z-10 inline-flex items-center justify-center rounded-full p-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors"
+                className="absolute top-4 left-4 z-10 inline-flex items-center justify-center rounded-full p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
             >
                 <Home className="w-6 h-6" aria-hidden="true" />
             </Link>
@@ -80,25 +71,25 @@ export function SignIn() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="relative max-w-md w-full p-px rounded-2xl bg-gradient-to-br from-indigo-500/60 via-purple-500/40 to-cyan-400/50 shadow-xl shadow-indigo-500/10"
+                className="relative z-10 max-w-md w-full"
             >
-                <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 rounded-2xl">
-                    <h1 className="text-3xl font-bold text-center mb-2">
-                        <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
+                <GlassPanel tier="strong" className="p-8 rounded-2xl shadow-elev-3">
+                    <h1 className="font-display text-3xl font-bold text-center mb-2">
+                        <span className="text-gradient-brand">
                             Sign In
                         </span>
                     </h1>
-                    <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
+                    <p className="text-center text-muted-foreground mb-8">
                         Welcome back to Servio.
                     </p>
                     {error && (
-                        <p role="alert" className="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 p-3 rounded-lg mb-4 text-sm">
+                        <p role="alert" className="bg-destructive/10 text-destructive dark:text-red-300 border border-destructive/20 p-3 rounded-lg mb-4 text-sm">
                             {error}
                         </p>
                     )}
                     <form onSubmit={handleEmailSignIn} className="space-y-6" aria-label="Sign in with email and password">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                            <label htmlFor="email" className="block text-sm font-medium text-foreground">
                                 Email Address
                             </label>
                             <input
@@ -110,13 +101,13 @@ export function SignIn() {
                                 aria-required="true"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                                className="mt-1 block w-full px-3 py-2 bg-input-background border border-border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:border-primary sm:text-sm transition"
                             />
                         </div>
                         <div>
                             <label
                                 htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                                className="block text-sm font-medium text-foreground"
                             >
                                 Password
                             </label>
@@ -129,7 +120,7 @@ export function SignIn() {
                                 aria-required="true"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                                className="mt-1 block w-full px-3 py-2 bg-input-background border border-border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:border-primary sm:text-sm transition"
                             />
                         </div>
                         <motion.button
@@ -138,19 +129,16 @@ export function SignIn() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.96 }}
                             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                            className="w-full flex justify-center py-2.5 px-4 rounded-md shadow-lg shadow-indigo-500/30 text-sm font-medium text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[length:200%_auto] hover:bg-[position:right_center] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-[background-position] duration-500"
+                            className="w-full flex justify-center py-2.5 px-4 rounded-full shadow-elev-3 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 hover:[box-shadow:0_0_28px_-4px_var(--gold)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring transition-[box-shadow,transform] duration-300"
                         >
                             Sign In
                         </motion.button>
                     </form>
                     <div className="mt-6">
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div className="w-full border-t border-gray-300 dark:border-slate-600" />
-                            </div>
-                            <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400">Or continue with</span>
-                            </div>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
+                            <span>Or continue with</span>
+                            <span className="h-px flex-1 bg-border" aria-hidden="true" />
                         </div>
                         <div className="mt-6">
                             <motion.button
@@ -159,20 +147,20 @@ export function SignIn() {
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.96 }}
                                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-border rounded-full shadow-sm bg-card text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring transition-colors"
                             >
                                 <GoogleLogo />
                                 Sign in with Google
                             </motion.button>
                         </div>
                     </div>
-                    <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+                    <p className="mt-8 text-center text-sm text-muted-foreground">
                         Not a member?{' '}
-                        <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300">
+                        <Link to="/signup" className="font-medium text-primary hover:text-primary/80">
                             Sign up now
                         </Link>
                     </p>
-                </div>
+                </GlassPanel>
             </motion.div>
         </div>
     );

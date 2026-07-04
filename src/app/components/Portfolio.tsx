@@ -267,7 +267,7 @@ export function Portfolio() {
         {loading ? (
           <div
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:auto-rows-fr lg:grid-cols-3"
-            aria-busy="true"
+            role="status"
             aria-label="Loading portfolio"
           >
             <GlassPanel className="min-h-[440px] animate-pulse sm:col-span-2 lg:col-span-2 lg:row-span-2 lg:min-h-[560px]" />

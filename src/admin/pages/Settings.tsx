@@ -3,7 +3,7 @@ import { Settings as SettingsIcon, ShieldCheck, UserPlus, Users } from "lucide-r
 import { deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { Button } from "@/app/components/ui/button";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import { PageHeader } from "../components/PageHeader";
 import { RoleBadge } from "../components/RoleBadge";
 import { EmptyState } from "../components/EmptyState";

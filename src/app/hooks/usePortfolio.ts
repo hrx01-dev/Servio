@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { subscribePublishedPortfolio } from "../services/portfolioService";
 import type { PortfolioProject } from "../lib/portfolio";
 
 export interface PublishedPortfolioState {
@@ -21,12 +20,30 @@ export function usePublishedPortfolio(): PublishedPortfolioState {
     error: false,
   });
 
+  // The portfolio service (and with it the Firestore SDK) is loaded
+  // dynamically after mount: this hook renders on the landing page, and a
+  // static import would put Firestore into the render-blocking bundle (#234).
+  // The section already shows its loading state until the first snapshot.
   useEffect(() => {
-    const unsubscribe = subscribePublishedPortfolio(
-      (projects) => setState({ projects, loading: false, error: false }),
-      () => setState({ projects: [], loading: false, error: true }),
-    );
-    return unsubscribe;
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    import("../services/portfolioService")
+      .then((m) => {
+        if (cancelled) return;
+        unsubscribe = m.subscribePublishedPortfolio(
+          (projects) => setState({ projects, loading: false, error: false }),
+          () => setState({ projects: [], loading: false, error: true }),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setState({ projects: [], loading: false, error: true });
+      });
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   return state;

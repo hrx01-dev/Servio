@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { Home, LogOut, ShieldAlert } from "lucide-react";
-import { auth } from "@/Firebase/firebase";
+import { auth } from "@/Firebase/auth";
 import { Button } from "@/app/components/ui/button";
 import { useAdmin } from "../context/useAdmin";
 

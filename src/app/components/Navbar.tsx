@@ -8,12 +8,12 @@ import {
   useScroll,
   useSpring,
 } from 'motion/react';
+import { toast } from 'sonner';
 import { useThrottledScroll } from '../hooks/useThrottledScroll';
 import { useTheme } from '../hooks/useTheme';
 import { useMagnetic } from '../hooks/useMagnetic';
 import { useAuth } from '../../Firebase/useAuth';
 import { useAdmin } from '../../admin/context/useAdmin';
-import { auth } from '../../Firebase/firebase';
 import { scrollToSectionFromAnyRoute } from '../lib/scrollToSection';
 import { EASE } from '../lib/motion';
 import { KolamDots } from './motifs';
@@ -163,11 +163,18 @@ export function Navbar() {
 
   const handleSignOut = async () => {
     try {
+      // Dynamic import keeps the Auth SDK out of the landing bundle (#234);
+      // by the time a user can sign out, AuthContext has already loaded it,
+      // so this resolves from the module cache.
+      const { auth } = await import('../../Firebase/auth');
       await auth.signOut();
       setIsMobileMenuOpen(false);
       navigate('/');
     } catch (error) {
+      // Covers both the chunk fetch (offline) and the sign-out call. The menu
+      // stays open so the user can retry from where they were.
       console.error('Error signing out: ', error);
+      toast.error("Couldn't sign out. Please check your connection and try again.");
     }
   };
 

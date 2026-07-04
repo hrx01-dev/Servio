@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { Home, Loader2, ShieldCheck } from "lucide-react";
-import { auth } from "@/Firebase/firebase";
+import { auth } from "@/Firebase/auth";
 import { Button } from "@/app/components/ui/button";
 import { useAdmin } from "../context/useAdmin";
 import { usePinGate } from "../context/usePinGate";

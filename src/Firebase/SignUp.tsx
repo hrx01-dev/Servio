@@ -2,9 +2,11 @@ import { useState, useId } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth } from './auth';
 import { notifyWelcome } from '../dashboard/notifications/notificationTriggers';
 import { Home, Check, X, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Aurora } from '@/app/components/Aurora';
+import { GlassPanel } from '@/app/components/GlassPanel';
 import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 import { UnsavedChangesDialog } from '@/app/components/UnsavedChangesDialog';
 import {
@@ -72,7 +74,7 @@ function StrengthMeter({ password, strength, score, visible }: StrengthMeterProp
                 <motion.div
                   key={i}
                   className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                    i < score ? barColor : 'bg-gray-200 dark:bg-slate-700'
+                    i < score ? barColor : 'bg-muted'
                   }`}
                   initial={{ scaleX: 0, originX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -87,7 +89,7 @@ function StrengthMeter({ password, strength, score, visible }: StrengthMeterProp
                 {password.length > 0 ? strength : ''}
               </span>
               {password.length > 0 && (
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {score}/{totalBars} criteria
                 </span>
               )}
@@ -121,7 +123,7 @@ function RequirementsChecklist({ password, visible }: RequirementsChecklistProps
           className="overflow-hidden"
         >
           <ul
-            className="mt-3 space-y-1.5 p-3 rounded-lg bg-gray-50 dark:bg-slate-800/60 border border-gray-200 dark:border-slate-700"
+            className="mt-3 space-y-1.5 p-3 rounded-lg bg-muted/40 border border-border"
             aria-label="Password requirements checklist"
             role="list"
           >
@@ -147,7 +149,7 @@ function RequirementsChecklist({ password, visible }: RequirementsChecklistProps
                     />
                   ) : (
                     <X
-                      className="w-3.5 h-3.5 text-gray-400 dark:text-slate-500 flex-shrink-0"
+                      className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0"
                       strokeWidth={2.5}
                     />
                   )}
@@ -156,7 +158,7 @@ function RequirementsChecklist({ password, visible }: RequirementsChecklistProps
                   className={`transition-colors duration-200 ${
                     req.met
                       ? 'text-emerald-600 dark:text-emerald-400'
-                      : 'text-gray-500 dark:text-gray-400'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   {req.label}
@@ -191,7 +193,7 @@ function WeakPasswordAlert({ visible, missingLabels }: WeakPasswordAlertProps) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2 }}
-          className="flex items-start gap-2 p-3 rounded-lg bg-red-50 dark:bg-red-900/25 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-xs"
+          className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive dark:text-red-300 text-xs"
         >
           <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div>
@@ -291,26 +293,15 @@ export function SignUp() {
   return (
     <>
     <UnsavedChangesDialog blocker={blocker} />
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-white via-indigo-50/40 to-white dark:from-slate-950 dark:via-indigo-950/20 dark:to-slate-950 px-4 py-10">
-      {/* Animated gradient background blobs */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-32 -right-24 w-[560px] h-[560px] rounded-full bg-gradient-to-br from-purple-400/40 to-fuchsia-300/25 dark:from-purple-500/20 dark:to-fuchsia-400/10 blur-3xl"
-          animate={{ y: [0, 30, 0], x: [0, -20, 0] }}
-          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        <motion.div
-          className="absolute bottom-[-160px] left-[-120px] w-[520px] h-[520px] rounded-full bg-gradient-to-br from-indigo-400/40 to-cyan-300/25 dark:from-indigo-500/20 dark:to-cyan-400/10 blur-3xl"
-          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-        />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background px-4 py-10">
+      {/* Warm ambient glow — the same drifting aurora the landing page uses */}
+      <Aurora intensity={0.6} />
 
       {/* Home button */}
       <Link
         to="/"
         aria-label="Back to home"
-        className="absolute top-4 left-4 z-10 inline-flex items-center justify-center rounded-full p-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors"
+        className="absolute top-4 left-4 z-10 inline-flex items-center justify-center rounded-full p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
       >
         <Home className="w-6 h-6" aria-hidden="true" />
       </Link>
@@ -319,15 +310,15 @@ export function SignUp() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative max-w-md w-full p-px rounded-2xl bg-gradient-to-br from-indigo-500/60 via-purple-500/40 to-cyan-400/50 shadow-xl shadow-indigo-500/10"
+        className="relative z-10 max-w-md w-full"
       >
-        <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl p-8 rounded-2xl">
-          <h1 className="text-3xl font-bold text-center mb-2">
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-500 bg-clip-text text-transparent">
+        <GlassPanel tier="strong" className="p-8 rounded-2xl shadow-elev-3">
+          <h1 className="font-display text-3xl font-bold text-center mb-2">
+            <span className="text-gradient-brand">
               Create an Account
             </span>
           </h1>
-          <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-center text-muted-foreground mb-8">
             Join Servio to get started.
           </p>
 
@@ -335,7 +326,7 @@ export function SignUp() {
           {error && (
             <p
               role="alert"
-              className="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 p-3 rounded-lg mb-4 text-sm"
+              className="bg-destructive/10 text-destructive dark:text-red-300 border border-destructive/20 p-3 rounded-lg mb-4 text-sm"
             >
               {error}
             </p>
@@ -351,7 +342,7 @@ export function SignUp() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                className="block text-sm font-medium text-foreground"
               >
                 Email Address
               </label>
@@ -364,7 +355,7 @@ export function SignUp() {
                 aria-required="true"
                 value={email}
                 onChange={(e) => { markDirty(); setEmail(e.target.value); }}
-                className="mt-1 block w-full px-3 py-2 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition"
+                className="mt-1 block w-full px-3 py-2 bg-input-background border border-border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 focus:border-primary sm:text-sm transition"
                 placeholder="you@example.com"
               />
             </div>
@@ -373,7 +364,7 @@ export function SignUp() {
             <div>
               <label
                 htmlFor={passwordId}
-                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                className="block text-sm font-medium text-foreground"
               >
                 Password
               </label>
@@ -397,14 +388,14 @@ export function SignUp() {
                   }}
                   onFocus={() => setPasswordFocused(true)}
                   onBlur={() => setPasswordFocused(false)}
-                  className={`block w-full pr-10 px-3 py-2 bg-white dark:bg-slate-800 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm transition ${
+                  className={`block w-full pr-10 px-3 py-2 bg-input-background border rounded-md shadow-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/60 sm:text-sm transition ${
                     weakAttempt
                       ? 'border-red-400 dark:border-red-600 focus:border-red-500'
                       : passwordTouched && strength === 'Strong'
                       ? 'border-emerald-400 dark:border-emerald-600 focus:border-emerald-500'
                       : passwordTouched && strength === 'Medium'
                       ? 'border-amber-400 dark:border-amber-600 focus:border-amber-500'
-                      : 'border-gray-300 dark:border-slate-600 focus:border-indigo-500'
+                      : 'border-border focus:border-primary'
                   }`}
                   placeholder="Create a strong password"
                 />
@@ -414,7 +405,7 @@ export function SignUp() {
                   type="button"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-r-md"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring rounded-r-md"
                   tabIndex={0}
                 >
                   {showPassword ? (
@@ -461,10 +452,10 @@ export function SignUp() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.96 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              className={`w-full flex justify-center py-2.5 px-4 rounded-md shadow-lg text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 ${
+              className={`w-full flex justify-center py-2.5 px-4 rounded-full shadow-elev-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring transition-all duration-300 ${
                 passwordTouched && strength === 'Weak'
-                  ? 'bg-gray-400 dark:bg-slate-600 shadow-none cursor-not-allowed opacity-70'
-                  : 'bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[length:200%_auto] hover:bg-[position:right_center] shadow-indigo-500/30'
+                  ? 'bg-muted text-muted-foreground shadow-none cursor-not-allowed opacity-70'
+                  : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:[box-shadow:0_0_28px_-4px_var(--gold)]'
               }`}
             >
               Sign Up
@@ -473,15 +464,10 @@ export function SignUp() {
 
           {/* ── Divider ───────────────────────────────────────────────────── */}
           <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center" aria-hidden="true">
-                <div className="w-full border-t border-gray-300 dark:border-slate-600" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400">
-                  Or sign up with
-                </span>
-              </div>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span className="h-px flex-1 bg-border" aria-hidden="true" />
+              <span>Or sign up with</span>
+              <span className="h-px flex-1 bg-border" aria-hidden="true" />
             </div>
 
             {/* Google Sign-Up */}
@@ -492,7 +478,7 @@ export function SignUp() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-gray-300 dark:border-slate-600 rounded-md shadow-sm bg-white dark:bg-slate-800 text-sm font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-border rounded-full shadow-sm bg-card text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-ring transition-colors"
               >
                 <GoogleLogo />
                 Sign up with Google
@@ -500,16 +486,16 @@ export function SignUp() {
             </div>
           </div>
 
-          <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-8 text-center text-sm text-muted-foreground">
             Already a member?{' '}
             <Link
               to="/signin"
-              className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
+              className="font-medium text-primary hover:text-primary/80"
             >
               Sign in
             </Link>
           </p>
-        </div>
+        </GlassPanel>
       </motion.div>
     </div>
     </>

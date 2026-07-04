@@ -6,12 +6,12 @@ import { Reveal } from "./motion/Reveal";
 import { Jali } from "./motifs";
 
 const services = [
-  { label: "Landing Pages",        slug: "landing-pages" },
-  { label: "Business Websites",    slug: "business-websites" },
-  { label: "Portfolio Websites",   slug: "portfolio-websites" },
-  { label: "E-Commerce Stores",    slug: "e-commerce-stores" },
-  { label: "Custom Web Apps",      slug: "custom-web-applications" },
-  { label: "Website Maintenance",  slug: "website-maintenance" },
+  { label: "Landing Pages", slug: "landing-pages" },
+  { label: "Business Websites", slug: "business-websites" },
+  { label: "Portfolio Websites", slug: "portfolio-websites" },
+  { label: "E-Commerce Stores", slug: "e-commerce-stores" },
+  { label: "Custom Web Apps", slug: "custom-web-applications" },
+  { label: "Website Maintenance", slug: "website-maintenance" },
 ];
 
 const company = [
@@ -23,10 +23,10 @@ const company = [
 ];
 
 const socials = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Github, href: "#", label: "GitHub" },
-  { icon: Instagram, href: "#", label: "Instagram" },
+  { icon: Twitter, href: "https://x.com/TM_Servio", label: "Twitter" },
+  { icon: Linkedin, href: "https://www.linkedin.com/company/servio-0/", label: "LinkedIn" },
+  { icon: Github, href: "", label: "GitHub" },
+  { icon: Instagram, href: "https://www.instagram.com/__servio?utm_source=qr&igsh=MTFnejZxc3NiODFjOQ==", label: "Instagram" },
 ];
 
 export function Footer() {
@@ -97,7 +97,7 @@ export function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="text-foreground font-semibold mb-5">Services</h4>
+            <h2 className="text-foreground font-semibold mb-5 text-base">Services</h2>
             <ul className="space-y-3">
               {services.map(({ label, slug }) => (
                 <li key={slug}>
@@ -111,7 +111,7 @@ export function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-foreground font-semibold mb-5">Company</h4>
+            <h2 className="text-foreground font-semibold mb-5 text-base">Company</h2>
             <ul className="space-y-3">
               {company.map(({ label, route, section }) => (
                 <li key={label}>
@@ -133,7 +133,7 @@ export function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-foreground font-semibold mb-5">Contact</h4>
+            <h2 className="text-foreground font-semibold mb-5 text-base">Contact</h2>
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-sm">
                 <Mail className="w-4 h-4 mt-0.5 text-gold flex-shrink-0" aria-hidden />

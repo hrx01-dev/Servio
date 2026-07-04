@@ -11,7 +11,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { sendEmailVerification } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/auth";
 import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "../../app/components/ui/card";
 import { Badge } from "../../app/components/ui/badge";

@@ -9,7 +9,7 @@ import {
 import { List, ListImperativeAPI, RowComponentProps } from "react-window";
 import { doc, updateDoc } from "firebase/firestore";
 import { toast } from "sonner";
-import { db } from "@/Firebase/firebase";
+import { db } from "@/Firebase/db";
 import { Badge } from "@/app/components/ui/badge";
 import { Button } from "@/app/components/ui/button";
 import { cn } from "@/app/components/ui/utils";

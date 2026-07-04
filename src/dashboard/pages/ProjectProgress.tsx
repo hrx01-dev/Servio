@@ -14,7 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { sendEmailVerification } from "firebase/auth";
-import { auth } from "../../Firebase/firebase";
+import { auth } from "../../Firebase/auth";
 import { Card, CardContent } from "../../app/components/ui/card";
 import { Skeleton } from "../../app/components/ui/skeleton";
 import { useClientUpdates } from "../hooks/useClientUpdates";

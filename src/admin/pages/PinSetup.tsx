@@ -11,8 +11,8 @@ import {
   LogOut,
   ShieldCheck,
 } from "lucide-react";
-import { auth } from "@/Firebase/firebase";
-import { db } from "@/Firebase/firebase";
+import { auth } from "@/Firebase/auth";
+import { db } from "@/Firebase/db";
 import { Button } from "@/app/components/ui/button";
 import { cn } from "@/app/components/ui/utils";
 import { useAdmin } from "../context/useAdmin";

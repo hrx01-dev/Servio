@@ -14,11 +14,16 @@ concurrency:
 
 jobs:
   verify:
-    name: Type check, lint & build
+    name: Type check, lint, test & build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # This job runs PR-provided code; don't leave the checkout token in
+          # the workspace git config.
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -35,5 +40,50 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
+
+      - name: Check bundle size budget
+        run: npm run bundle:budget
+
+      - name: Upload bundle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-report
+          path: dist/bundle-report.md
+          if-no-files-found: ignore
+
+  # Dedicated, named check so the accessibility gate is visible on every PR.
+  # The full suite in `verify` already runs these tests; this job surfaces them
+  # as their own status check (mark it required in branch protection to block
+  # merges on a violation).
+  accessibility:
+    name: Accessibility (axe-core)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # This job runs PR-provided code; don't leave the checkout token in
+          # the workspace git config.
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Renders the public components/pages in jsdom and runs axe-core against
+      # each. A new WCAG violation (missing label/alt, bad ARIA, skipped heading
+      # level, …) fails this job.
+      - name: Run accessibility tests
+        run: npm run test:a11y
