@@ -1,5 +1,80 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import crypto from "crypto";
+import { getApps, initializeApp, cert } from "firebase-admin/app";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
+
+// ── Per-IP rate limiting (issue #210) ─────────────────────────────────────────
+//
+// The estimate endpoint calls a paid AI model, so it must be throttled per IP or
+// a single caller could drain the quota. express-rate-limit's in-memory store is
+// useless on Vercel (each serverless invocation is a fresh process that shares no
+// memory), so the window is persisted in Firestore — the same durable, atomic
+// approach used by the quote endpoint. The logic is inlined (not imported from
+// src/) to avoid Vercel cross-folder bundling issues, matching api/razorpay.ts.
+const ESTIMATE_RATE_LIMIT = { maxRequests: 10, windowMs: 15 * 60 * 1000 };
+const RATE_LIMIT_COLLECTION = "estimateRateLimit";
+
+// Returns true only when the Admin SDK is ready; a bad FIREBASE_SERVICE_ACCOUNT
+// must not fall through to getFirestore() and crash mid-request.
+function initAdmin(): boolean {
+  if (getApps().length) return true;
+  try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      initializeApp({
+        credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+      });
+    } else {
+      initializeApp();
+    }
+    return true;
+  } catch (err) {
+    console.error("Firebase admin init error:", err);
+    return false;
+  }
+}
+
+function callerIp(req: VercelRequest): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  const raw = Array.isArray(forwarded) ? forwarded[0] : (forwarded ?? "");
+  return raw.split(",")[0].trim() || "unknown";
+}
+
+// Atomic sliding-window check keyed by a keyed-HMAC hash of the caller IP (so a
+// raw IP is never stored). Read → prune → check → consume happen in ONE Firestore
+// transaction, so parallel requests can't each slip past the cap.
+async function checkRateLimit(
+  ip: string,
+  secret: string,
+  now: number,
+): Promise<{ allowed: boolean; retryAfterMs: number }> {
+  const db = getFirestore();
+  const ipKey = crypto.createHmac("sha256", secret).update(ip).digest("hex");
+  const ref = db.collection(RATE_LIMIT_COLLECTION).doc(ipKey);
+
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const stored = snap.exists ? snap.get("timestamps") : undefined;
+    const history: number[] = Array.isArray(stored)
+      ? (stored as unknown[]).filter((t): t is number => typeof t === "number")
+      : [];
+    const recent = history.filter(
+      (t) => t > now - ESTIMATE_RATE_LIMIT.windowMs && t <= now,
+    );
+    if (recent.length >= ESTIMATE_RATE_LIMIT.maxRequests) {
+      const oldest = Math.min(...recent);
+      return {
+        allowed: false,
+        retryAfterMs: Math.max(0, oldest + ESTIMATE_RATE_LIMIT.windowMs - now),
+      };
+    }
+    tx.set(ref, {
+      timestamps: [...recent, now],
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return { allowed: true, retryAfterMs: 0 };
+  });
+}
 
 const COMPLEXITIES = new Set(["low", "medium", "high", "enterprise"]);
 
@@ -157,6 +232,36 @@ export default async function handler(
   // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  // Per-IP throttle (issue #210): 10 requests / 15 minutes. Runs BEFORE the paid
+  // Gemini call so a single caller can't drain the quota. Fails closed — if the
+  // limiter can't run, the request is rejected rather than allowed through.
+  const hashSecret = process.env.RATE_LIMIT_HASH_SECRET;
+  if (!hashSecret) {
+    return res
+      .status(500)
+      .json({ error: "Rate limiting is not configured on the server." });
+  }
+  if (!initAdmin()) {
+    return res
+      .status(500)
+      .json({ error: "Server is not configured correctly. Please try again later." });
+  }
+  try {
+    const verdict = await checkRateLimit(callerIp(req), hashSecret, Date.now());
+    if (!verdict.allowed) {
+      res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
+      return res.status(429).json({
+        error: "Too many estimate requests. Please try again in a few minutes.",
+        retryAfterMs: verdict.retryAfterMs,
+      });
+    }
+  } catch (err) {
+    console.error("Estimate rate-limit check failed:", err);
+    return res
+      .status(500)
+      .json({ error: "Could not process your request right now. Please try again." });
   }
 
   try {
