@@ -4,24 +4,34 @@ import crypto from "crypto";
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
-// Firebase initialization moved inside handler to prevent top-level crashes
+// Firebase initialization moved inside handler to prevent top-level crashes.
+// Returns true only when the Admin SDK is ready; a bad FIREBASE_SERVICE_ACCOUNT
+// must not fall through to getFirestore() and crash mid-request.
+function initAdmin(): boolean {
+  if (getApps().length) return true;
+  try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      initializeApp({ credential: cert(serviceAccount) });
+    } else {
+      initializeApp();
+    }
+    return true;
+  } catch (error) {
+    console.error("Firebase admin initialization error:", error);
+    return false;
+  }
+}
 
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse
 ) {
-  // Initialize Firebase Admin if not already initialized
-  if (!getApps().length) {
-    try {
-      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-        initializeApp({ credential: cert(serviceAccount) });
-      } else {
-        initializeApp();
-      }
-    } catch (error) {
-      console.error("Firebase admin initialization error:", error);
-    }
+  // Fail closed if Firebase Admin could not initialize.
+  if (!initAdmin()) {
+    return res
+      .status(500)
+      .json({ error: "Server is not configured correctly. Please try again later." });
   }
   const db = getFirestore();
   
