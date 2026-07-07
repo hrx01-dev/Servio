@@ -4,6 +4,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
 import { posts } from "../lib/blogData";
+import { SEO } from "./SEO";
 
 const categoryColors: Record<string, string> = {
   Business: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
@@ -19,7 +20,13 @@ export function Blog() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO 
+        title="Blog" 
+        description="Read the latest insights, tutorials, and news about web development, design, and growing your business online from the Servio team." 
+        canonical="/blog" 
+      />
       <Navbar />
+
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         {/* Back link */}
