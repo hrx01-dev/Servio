@@ -3,6 +3,7 @@ import { ArrowLeft, MapPin, Clock, Briefcase, Zap, Heart, Coffee, Globe } from "
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
+import { SEO } from "./SEO";
 
 const benefits = [
   {
@@ -77,7 +78,13 @@ export function Careers() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO 
+        title="Careers" 
+        description="Join the Servio team. We're always looking for talented developers, designers, and digital strategists." 
+        canonical="/careers" 
+      />
       <Navbar />
+
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         {/* Back link */}

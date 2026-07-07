@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion } from 'motion/react';
 import { Home, Compass, ArrowLeft } from 'lucide-react';
+import { SEO } from './SEO';
 
 export default function NotFound() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950 px-4 sm:px-6 lg:px-8">
+      <SEO title="Page Not Found" noIndex />
       {/* Decorative background blobs */}
       <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-indigo-500/10 dark:bg-indigo-500/5 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-purple-500/10 dark:bg-purple-500/5 blur-[80px] sm:blur-[120px] rounded-full pointer-events-none" />
