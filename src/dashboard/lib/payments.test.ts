@@ -15,9 +15,49 @@ import {
   normalizeEmail,
   parseClientBilling,
   parseClientPayment,
+  paymentErrorMessage,
   sortPaymentsByNewest,
   type ClientPayment,
 } from "./payments";
+
+describe("paymentErrorMessage", () => {
+  it("maps permission-denied to a permissions message", () => {
+    expect(paymentErrorMessage({ code: "permission-denied" })).toBe(
+      "You don't have permission to view your payment data.",
+    );
+  });
+
+  it("maps unauthenticated to a sign-in message", () => {
+    expect(paymentErrorMessage({ code: "unauthenticated" })).toBe(
+      "Please sign in again to view your payments.",
+    );
+  });
+
+  it("maps unavailable to a temporary-outage message", () => {
+    expect(paymentErrorMessage({ code: "unavailable" })).toBe(
+      "The payment service is temporarily unavailable. Please try again in a moment.",
+    );
+  });
+
+  it("falls back to a generic message for unrecognised codes", () => {
+    expect(paymentErrorMessage({ code: "internal" })).toBe(
+      "Something went wrong loading your payments. Please try again.",
+    );
+  });
+
+  it("falls back for non-object errors (string, null, undefined)", () => {
+    const fallback = "Something went wrong loading your payments. Please try again.";
+    expect(paymentErrorMessage("network error")).toBe(fallback);
+    expect(paymentErrorMessage(null)).toBe(fallback);
+    expect(paymentErrorMessage(undefined)).toBe(fallback);
+  });
+
+  it("falls back when the error has no code property", () => {
+    expect(paymentErrorMessage(new Error("Raw message"))).toBe(
+      "Something went wrong loading your payments. Please try again.",
+    );
+  });
+});
 
 describe("normalizeEmail", () => {
   it("lowercases and trims so addressing is case/whitespace-insensitive", () => {

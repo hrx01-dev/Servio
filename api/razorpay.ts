@@ -8,7 +8,25 @@ function isValidEmail(raw: string): boolean {
   const v = raw.trim();
   return v.length >= 5 && v.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 }
-// Firebase initialization moved inside handler to prevent top-level crashes
+
+// Firebase initialization moved inside handler to prevent top-level crashes.
+// Returns true only when the Admin SDK is ready; a bad FIREBASE_SERVICE_ACCOUNT
+// must not fall through to getFirestore() and crash mid-request.
+function initAdmin(): boolean {
+  if (getApps().length) return true;
+  try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      initializeApp({ credential: cert(serviceAccount) });
+    } else {
+      initializeApp();
+    }
+    return true;
+  } catch (error) {
+    console.error("Firebase admin initialization error:", error);
+    return false;
+  }
+}
 
 export default async function handler(
   req: VercelRequest,
@@ -107,14 +125,12 @@ export default async function handler(
     }
 
     if (action === "verifyPayment") {
-      // Initialize Firebase Admin if not already initialized
-      if (!getApps().length) {
-        if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-          const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-          initializeApp({ credential: cert(serviceAccount) });
-        } else {
-          initializeApp();
-        }
+      // Initialize Firebase Admin; fail closed if it can't start rather than
+      // crashing mid-request on the getFirestore() call below.
+      if (!initAdmin()) {
+        return res
+          .status(500)
+          .json({ error: "Server is not configured correctly. Please try again later." });
       }
       const {
         razorpay_order_id,

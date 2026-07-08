@@ -8,6 +8,7 @@ import {
   BUDGET_OPTIONS as budgetOptions,
   WEBSITE_TYPES as websiteTypes,
 } from "../lib/quoteValidation";
+import { submitQuote, RateLimitError } from "../lib/submitQuote";
 import { useUnsavedChanges } from "@/hooks/useUnsavedChanges";
 import { UnsavedChangesDialog } from "./UnsavedChangesDialog";
 import { GlassPanel } from "./GlassPanel";
@@ -124,15 +125,16 @@ export function QuoteForm() {
     writeHistory(verdict.nextHistory);
     setLoading(true);
     try {
-      // Deferred import: submitQuote pulls the Firestore SDK, which must stay
-      // out of the landing bundle (#234) — it downloads on first submit.
-      const { submitQuote } = await import("../lib/submitQuote");
+      // submitQuote now POSTs to /api/quote (no Firestore SDK in this module),
+      // so it no longer needs the #234 deferred import to stay out of the bundle.
       await submitQuote(form);
       markClean();
       setSubmitted(true);
-    } catch {
+    } catch (err) {
       showFormError(
-        "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
+        err instanceof RateLimitError
+          ? err.message
+          : "Something went wrong sending your request. Please try again, or email us directly at hello@servio.dev.",
       );
     } finally {
       setLoading(false);
