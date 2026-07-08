@@ -3,6 +3,7 @@ import { ArrowLeft, Zap, Target, Heart, Rocket, Globe, Code, Layers, Users } fro
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { motion, useReducedMotion } from "motion/react";
+import { SEO } from "./SEO";
 
 const values = [
   {
@@ -70,7 +71,13 @@ export function About() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
+      <SEO 
+        title="About" 
+        description="Learn about Servio, a boutique web studio helping businesses grow with fast, beautiful, and conversion-focused websites." 
+        canonical="/about" 
+      />
       <Navbar />
+
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
         {/* Back link */}
