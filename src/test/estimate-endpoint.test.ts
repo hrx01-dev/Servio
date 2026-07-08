@@ -191,3 +191,87 @@ describe("api/estimate — fail closed", () => {
     expect(res.statusCode).toBe(405);
   });
 });
+
+// ── Error handling & Edge cases ───────────────────────────────────────────────
+describe("api/estimate — API Keys and Error Handling", () => {
+  it("returns 500 when GEMINI_API_KEY is missing", async () => {
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.VITE_GEMINI_API_KEY;
+    const res = makeRes();
+    await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(500);
+    expect(res.payload).toEqual({ error: "AI service is not configured on the server." });
+  });
+
+  it("handles malformed Gemini response (invalid JSON)", async () => {
+    generateContent.mockResolvedValueOnce({
+      response: {
+        text: () => "I am not JSON",
+      },
+    } as never);
+    const res = makeRes();
+    await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(500);
+  });
+
+  it("repairs JSON with conversational text, markdown, and trailing commas", async () => {
+    generateContent.mockResolvedValueOnce({
+      response: {
+        text: () => `Here is your result:
+\`\`\`json
+{
+  "projectType": "Repaired",
+  "overallComplexity": "low",
+  "features": [
+    { "name": "f1", "category": "forms", "complexity": "low", }
+  ],
+  "hasSignificantUnknowns": false,
+}
+\`\`\`
+Hope this helps!`,
+      },
+    } as never);
+    const res = makeRes();
+    await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(200);
+    expect((res.payload as Record<string, unknown>).projectType).toBe("Repaired");
+  });
+
+  it("fails validateClassification if projectType is missing", async () => {
+    generateContent.mockResolvedValueOnce({
+      response: {
+        text: () => JSON.stringify({
+          overallComplexity: "low",
+          features: [{ name: "f1", category: "forms", "complexity": "low" }],
+          hasSignificantUnknowns: false
+        })
+      },
+    } as never);
+    const res = makeRes();
+    await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(500); // Invalid classification structure
+  });
+
+  it("skips invalid features but succeeds if at least one is valid", async () => {
+    generateContent.mockResolvedValueOnce({
+      response: {
+        text: () => JSON.stringify({
+          projectType: "Valid",
+          overallComplexity: "low",
+          features: [
+            { name: "f1", category: "invalid_category", complexity: "low" }, // unknown category
+            { name: "f2", category: "forms", complexity: "low" }, // valid
+            { name: "f3", category: "forms", complexity: "invalid" }, // invalid complexity
+          ],
+          hasSignificantUnknowns: false
+        })
+      },
+    } as never);
+    const res = makeRes();
+    await handler(makeReq(validBody), res as never);
+    expect(res.statusCode).toBe(200);
+    const payload = res.payload as { features: Array<{ name: string }> };
+    expect(payload.features).toHaveLength(1);
+    expect(payload.features[0].name).toBe("f2");
+  });
+});
