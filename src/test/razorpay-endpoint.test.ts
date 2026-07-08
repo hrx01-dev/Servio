@@ -22,7 +22,7 @@ vi.mock("firebase-admin/firestore", () => {
             data: () => data,
           };
         },
-        update: async (updates: any) => {
+        update: async (updates: Record<string, unknown>) => {
           const existing = store.get(`${name}/${id}`) || {};
           store.set(`${name}/${id}`, { ...existing, ...updates });
         },
@@ -157,7 +157,7 @@ describe("api/razorpay", () => {
   });
 
   describe("verifyPayment", () => {
-    let validVerifyBody: any;
+    let validVerifyBody: Record<string, unknown>;
 
     beforeEach(() => {
       validVerifyBody = {
@@ -224,7 +224,7 @@ describe("api/razorpay", () => {
       const res = makeRes();
       await handler(makeReq(validVerifyBody, { action: "verifyPayment" }), res as never);
       expect(res.statusCode).toBe(200);
-      const data = store.get("projectBilling/test@example.com") as any;
+      const data = store.get("projectBilling/test@example.com") as { payments: Array<Record<string, unknown>> };
       expect(data.payments[0].amount).toBe(100);
       expect(data.payments[0].id).toBe("pay_123");
     });
