@@ -144,6 +144,7 @@ describe("api/razorpay", () => {
     });
 
     it("creates an order successfully", async () => {
+      store.set("projectBilling/a@b.com", { totalCost: 1000, payments: [] });
       mockOrdersCreate.mockResolvedValueOnce({ id: "order_123", amount: 10000, currency: "INR" });
       const res = makeRes();
       await handler(makeReq({ amount: 100, clientEmail: "a@b.com" }, { action: "createOrder" }), res as never);
@@ -153,6 +154,37 @@ describe("api/razorpay", () => {
         currency: "INR",
         receipt: expect.any(String),
       });
+    });
+
+    it("rejects when billing record is missing", async () => {
+      const res = makeRes();
+      await handler(makeReq({ amount: 100, clientEmail: "nobody@example.com" }, { action: "createOrder" }), res as never);
+      expect(res.statusCode).toBe(404);
+      expect(res.payload).toEqual({ error: "Billing record not found for this client" });
+    });
+
+    it("rejects when amount exceeds outstanding balance", async () => {
+      store.set("projectBilling/a@b.com", {
+        totalCost: 500,
+        payments: [{ id: "p1", amount: 300, status: "completed" }],
+      });
+      const res = makeRes();
+      // remaining = 500 - 300 = 200, trying to pay 250
+      await handler(makeReq({ amount: 250, clientEmail: "a@b.com" }, { action: "createOrder" }), res as never);
+      expect(res.statusCode).toBe(400);
+      expect(res.payload).toEqual({ error: "Amount exceeds outstanding balance" });
+    });
+
+    it("allows amount within outstanding balance", async () => {
+      store.set("projectBilling/a@b.com", {
+        totalCost: 500,
+        payments: [{ id: "p1", amount: 300, status: "completed" }],
+      });
+      mockOrdersCreate.mockResolvedValueOnce({ id: "order_456", amount: 15000, currency: "INR" });
+      const res = makeRes();
+      // remaining = 200, trying to pay 150 — should succeed
+      await handler(makeReq({ amount: 150, clientEmail: "a@b.com" }, { action: "createOrder" }), res as never);
+      expect(res.statusCode).toBe(200);
     });
   });
 
@@ -227,6 +259,20 @@ describe("api/razorpay", () => {
       const data = store.get("projectBilling/test@example.com") as { payments: Array<Record<string, unknown>> };
       expect(data.payments[0].amount).toBe(100);
       expect(data.payments[0].id).toBe("pay_123");
+    });
+
+    it("rejects duplicate payment ID (replay protection)", async () => {
+      // Pre-populate with a payment that has the same reference
+      store.set("projectBilling/test@example.com", {
+        payments: [
+          { id: "pay_123", amount: 100, status: "completed", reference: "pay_123" },
+        ],
+      });
+      mockPaymentsFetch.mockResolvedValueOnce({ order_id: "order_123", status: "captured", amount: 10000 });
+      const res = makeRes();
+      await handler(makeReq(validVerifyBody, { action: "verifyPayment" }), res as never);
+      expect(res.statusCode).toBe(409);
+      expect(res.payload).toEqual({ error: "This payment has already been recorded" });
     });
   });
 });
