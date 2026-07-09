@@ -109,6 +109,43 @@ export default async function handler(
         return res.status(400).json({ error: "Amount is out of range" });
       }
 
+      // Defence-in-depth: validate the requested amount against the Firestore
+      // billing record so a client cannot create an order for an arbitrary
+      // (especially tiny) amount and later record a "fully paid" entry.
+      if (!initAdmin()) {
+        return res
+          .status(500)
+          .json({ error: "Server is not configured correctly. Please try again later." });
+      }
+      const db = getFirestore();
+      const normalizedEmail = clientEmail.trim().toLowerCase();
+      const billingDoc = await db
+        .collection("projectBilling")
+        .doc(normalizedEmail)
+        .get();
+
+      if (!billingDoc.exists) {
+        return res
+          .status(404)
+          .json({ error: "Billing record not found for this client" });
+      }
+
+      const billingData = billingDoc.data();
+      const totalCost: number = Number(billingData?.totalCost) || 0;
+      const payments: Array<Record<string, unknown>> =
+        billingData?.payments || [];
+      const paidSoFar = payments
+        .filter((p) => p.status === "completed")
+        .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+      const remaining = totalCost - paidSoFar;
+
+      // Allow a small tolerance (1 paisa) for floating-point rounding.
+      if (amount > remaining + 0.01) {
+        return res
+          .status(400)
+          .json({ error: "Amount exceeds outstanding balance" });
+      }
+
       const orderOptions = {
         amount: amountInPaisa,
         currency: "INR",
@@ -223,6 +260,17 @@ export default async function handler(
 
       const data = billingDoc.data();
       let payments: Record<string, unknown>[] = data?.payments || [];
+
+      // Replay protection: reject if this payment ID was already recorded so a
+      // captured payment can't be submitted twice to inflate the paid balance.
+      const alreadyRecorded = payments.some(
+        (p) => p.reference === razorpay_payment_id || p.id === razorpay_payment_id
+      );
+      if (alreadyRecorded) {
+        return res
+          .status(409)
+          .json({ error: "This payment has already been recorded" });
+      }
 
       if (pendingPaymentId) {
         // Update the existing pending payment with the authenticated amount, so
