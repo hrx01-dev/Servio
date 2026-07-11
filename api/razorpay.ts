@@ -19,7 +19,13 @@ function initAdmin(): boolean {
       const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
       initializeApp({ credential: cert(serviceAccount) });
     } else {
-      initializeApp();
+      if (process.env.NODE_ENV !== "production" && !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        console.error("Missing FIREBASE_SERVICE_ACCOUNT in local environment. Cannot connect to Firestore.");
+        return false;
+      }
+      initializeApp({
+        projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+      });
     }
     return true;
   } catch (error) {
