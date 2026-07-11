@@ -245,6 +245,9 @@ function BillingView({ billing }: { billing: ClientBilling }) {
 
       const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
       // Create Order on Backend
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
       const orderRes = await fetch(`${baseUrl}/api/razorpay?action=createOrder`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -252,7 +255,10 @@ function BillingView({ billing }: { billing: ClientBilling }) {
           amount: amountToPay,
           clientEmail: auth.currentUser.email,
         }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
+
       const orderData = await orderRes.json();
 
       if (!orderRes.ok) {

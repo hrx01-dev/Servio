@@ -25,7 +25,9 @@ function initAdmin(): boolean {
         credential: cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
       });
     } else {
-      initializeApp();
+      initializeApp({
+        projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
+      });
     }
     return true;
   } catch (err) {
