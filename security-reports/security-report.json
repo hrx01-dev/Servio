@@ -1,0 +1,228 @@
+{
+  "timestamp": "2026-07-27T14:00:53.503Z",
+  "summary": {
+    "status": "FAIL",
+    "durationMs": 2367,
+    "totalIssues": 25,
+    "critical": 1,
+    "high": 11,
+    "moderate": 12
+  },
+  "dependencyAudit": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 1,
+      "moderate": 12,
+      "high": 11,
+      "critical": 1,
+      "total": 25
+    },
+    "advisories": [
+      {
+        "package": "@google-cloud/storage",
+        "severity": "MODERATE",
+        "via": "retry-request, teeny-request",
+        "fixAvailable": true
+      },
+      {
+        "package": "@vercel/build-utils",
+        "severity": "HIGH",
+        "via": "@vercel/python-analysis",
+        "fixAvailable": true
+      },
+      {
+        "package": "@vercel/node",
+        "severity": "HIGH",
+        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, undici",
+        "fixAvailable": true
+      },
+      {
+        "package": "@vercel/python-analysis",
+        "severity": "HIGH",
+        "via": "js-yaml, minimatch, smol-toml",
+        "fixAvailable": true
+      },
+      {
+        "package": "@vercel/static-config",
+        "severity": "MODERATE",
+        "via": "ajv",
+        "fixAvailable": true
+      },
+      {
+        "package": "ajv",
+        "severity": "MODERATE",
+        "via": "ajv has ReDoS when using `$data` option",
+        "fixAvailable": true
+      },
+      {
+        "package": "brace-expansion",
+        "severity": "HIGH",
+        "via": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+        "fixAvailable": true
+      },
+      {
+        "package": "fast-xml-parser",
+        "severity": "HIGH",
+        "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits",
+        "fixAvailable": true
+      },
+      {
+        "package": "firebase-admin",
+        "severity": "MODERATE",
+        "via": "@google-cloud/storage",
+        "fixAvailable": true
+      },
+      {
+        "package": "gaxios",
+        "severity": "MODERATE",
+        "via": "uuid",
+        "fixAvailable": true
+      },
+      {
+        "package": "js-yaml",
+        "severity": "HIGH",
+        "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+        "fixAvailable": true
+      },
+      {
+        "package": "minimatch",
+        "severity": "HIGH",
+        "via": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+        "fixAvailable": true
+      },
+      {
+        "package": "path-to-regexp",
+        "severity": "HIGH",
+        "via": "path-to-regexp outputs backtracking regular expressions",
+        "fixAvailable": true
+      },
+      {
+        "package": "postcss",
+        "severity": "HIGH",
+        "via": "PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure",
+        "fixAvailable": true
+      },
+      {
+        "package": "protobufjs",
+        "severity": "MODERATE",
+        "via": "protobufjs: Denial of Service via infinite loop in .proto option parsing",
+        "fixAvailable": true
+      },
+      {
+        "package": "react-router",
+        "severity": "MODERATE",
+        "via": "React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass), React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration",
+        "fixAvailable": true
+      },
+      {
+        "package": "react-router-dom",
+        "severity": "MODERATE",
+        "via": "React Router: Open redirect leading to XSS, react-router",
+        "fixAvailable": true
+      },
+      {
+        "package": "retry-request",
+        "severity": "MODERATE",
+        "via": "teeny-request",
+        "fixAvailable": true
+      },
+      {
+        "package": "smol-toml",
+        "severity": "MODERATE",
+        "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines",
+        "fixAvailable": true
+      },
+      {
+        "package": "tar",
+        "severity": "CRITICAL",
+        "via": "node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection",
+        "fixAvailable": true
+      },
+      {
+        "package": "teeny-request",
+        "severity": "MODERATE",
+        "via": "uuid",
+        "fixAvailable": true
+      },
+      {
+        "package": "undici",
+        "severity": "HIGH",
+        "via": "Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching",
+        "fixAvailable": true
+      },
+      {
+        "package": "uuid",
+        "severity": "MODERATE",
+        "via": "uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided",
+        "fixAvailable": true
+      },
+      {
+        "package": "vite",
+        "severity": "HIGH",
+        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths",
+        "fixAvailable": true
+      }
+    ],
+    "error": null
+  },
+  "secretFindings": [],
+  "sastFindings": [
+    {
+      "file": "scripts/generate-icons.mjs",
+      "line": 184,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "return `<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\" role=\"img\" a"
+    },
+    {
+      "file": "src/app/components/Aurora.tsx",
+      "line": 10,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' "
+    },
+    {
+      "file": "src/app/components/Portfolio.tsx",
+      "line": 248,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' "
+    },
+    {
+      "file": "src/app/components/Pricing.tsx",
+      "line": 232,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' "
+    },
+    {
+      "file": "src/app/components/Services.tsx",
+      "line": 24,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' "
+    },
+    {
+      "file": "src/app/components/SplashScreen.tsx",
+      "line": 28,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' "
+    },
+    {
+      "file": "src/app/components/WhyChoose.tsx",
+      "line": 29,
+      "type": "Insecure HTTP URL",
+      "severity": "LOW",
+      "description": "Insecure HTTP endpoint detected; prefer HTTPS for external network calls.",
+      "snippet": "\"url(\\\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' "
+    }
+  ],
+  "configFindings": []
+}

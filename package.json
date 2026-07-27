@@ -8,6 +8,7 @@
     "icons": "node scripts/generate-icons.mjs",
     "build": "vite build",
     "bundle:budget": "node scripts/check-bundle-budget.mjs",
+    "security:check": "node scripts/run-security-check.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
