@@ -1,0 +1,61 @@
+name: Security Audit
+
+on:
+  schedule:
+    # Runs 6 times a day (every 4 hours: 00:00, 04:00, 08:00, 12:00, 16:00, 20:00 UTC)
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    name: Repo-wide Security Audit & Vulnerability Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run repository security audit
+        id: security_audit
+        run: npm run security:check
+
+      - name: Store security scan response (upload artifact)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: |
+            security-reports/security-report.md
+            security-reports/security-report.json
+          if-no-files-found: ignore
+
+      - name: Commit and push security audit report
+        if: always()
+        run: |
+          git config --global user.name "Jayam Srivastava"
+          git config --global user.email "jayamsrivastava99@gmail.com"
+          git add security-reports/
+          git commit -m "docs: update automated security audit report [skip ci]" || echo "No changes to commit"
+          git push
