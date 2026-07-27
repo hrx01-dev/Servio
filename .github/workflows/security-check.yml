@@ -56,7 +56,7 @@ jobs:
         if: always()
         uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
           author: Jayam Srivastava <jayamsrivastava99@gmail.com>
           committer: Jayam Srivastava <jayamsrivastava99@gmail.com>
           commit-message: "docs: update automated security audit report [skip ci]"
