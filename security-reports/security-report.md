@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-07-31T17:22:14.437Z  
+**Timestamp:** 2026-07-31T20:57:10.232Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -26,7 +26,7 @@ Found **25** vulnerabilities in dependencies.
 | `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml | ✅ Yes |
 | `@vercel/static-config` | **MODERATE** | ajv | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
-| `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash | ✅ Yes |
+| `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash | ✅ Yes |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |

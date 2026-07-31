@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-07-31T17:22:14.437Z",
+  "timestamp": "2026-07-31T20:57:10.232Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1283,
+    "durationMs": 1329,
     "totalIssues": 25,
     "critical": 1,
     "high": 11,
@@ -57,7 +57,7 @@
       {
         "package": "brace-expansion",
         "severity": "HIGH",
-        "via": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
+        "via": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash",
         "fixAvailable": true
       },
       {
