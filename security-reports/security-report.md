@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-08-03T14:22:24.486Z  
+**Timestamp:** 2026-08-03T17:45:18.547Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -26,14 +26,14 @@ Found **25** vulnerabilities in dependencies.
 | `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml | ✅ Yes |
 | `@vercel/static-config` | **MODERATE** | ajv | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
-| `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash | ✅ Yes |
+| `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation | ✅ Yes |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
 | `js-yaml` | **HIGH** | JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption | ✅ Yes |
 | `minimatch` | **HIGH** | minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions | ✅ Yes |
 | `path-to-regexp` | **HIGH** | path-to-regexp outputs backtracking regular expressions | ✅ Yes |
-| `postcss` | **HIGH** | PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure | ✅ Yes |
+| `postcss` | **HIGH** | PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure, PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset | ✅ Yes |
 | `protobufjs` | **MODERATE** | protobufjs: Denial of Service via infinite loop in .proto option parsing | ✅ Yes |
 | `react-router` | **MODERATE** | React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass), React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration | ✅ Yes |
 | `react-router-dom` | **MODERATE** | React Router: Open redirect leading to XSS, react-router | ✅ Yes |
