@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-08-06T13:47:02.169Z",
+  "timestamp": "2026-08-07T00:51:18.679Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1531,
+    "durationMs": 1399,
     "totalIssues": 25,
     "critical": 1,
     "high": 11,
@@ -81,7 +81,7 @@
       {
         "package": "js-yaml",
         "severity": "HIGH",
-        "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption",
+        "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported",
         "fixAvailable": true
       },
       {
