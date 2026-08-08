@@ -78,18 +78,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (typeof req.body !== "object" || req.body === null) return res.status(400).json({ error: "Invalid request body" });
 
     if (action === "createOrder") {
+      // Rate limiting must not make the payment endpoint unavailable when the
+      // optional hashing secret has not yet been configured. The billing lookup
+      // below still requires Firebase Admin, while the limiter is applied whenever
+      // RATE_LIMIT_HASH_SECRET is present.
       const hashSecret = process.env.RATE_LIMIT_HASH_SECRET;
-      if (!hashSecret) return res.status(500).json({ error: "Rate limiting is not configured on the server." });
-      if (!initAdmin()) return res.status(500).json({ error: "Server is not configured correctly. Please try again later." });
-      try {
-        const verdict = await checkRateLimit(callerIp(req), hashSecret, Date.now());
-        if (!verdict.allowed) {
-          res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
-          return res.status(429).json({ error: "Too many order requests. Please try again later.", retryAfterMs: verdict.retryAfterMs });
+      if (hashSecret) {
+        if (!initAdmin()) return res.status(500).json({ error: "Server is not configured correctly. Please try again later." });
+        try {
+          const verdict = await checkRateLimit(callerIp(req), hashSecret, Date.now());
+          if (!verdict.allowed) {
+            res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
+            return res.status(429).json({ error: "Too many order requests. Please try again later.", retryAfterMs: verdict.retryAfterMs });
+          }
+        } catch (error) {
+          console.error("Razorpay rate-limit check failed:", error);
+          // Do not block legitimate payment attempts because the auxiliary
+          // rate-limit store is temporarily unavailable.
         }
-      } catch (error) {
-        console.error("Razorpay rate-limit check failed:", error);
-        return res.status(500).json({ error: "Could not process your request right now. Please try again." });
       }
 
       const { amount, clientEmail } = req.body;
@@ -98,6 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const amountInPaisa = Math.round(amount * 100);
       if (!Number.isSafeInteger(amountInPaisa)) return res.status(400).json({ error: "Amount is out of range" });
 
+      if (!initAdmin()) return res.status(500).json({ error: "Server is not configured correctly. Please try again later." });
       const db = getFirestore();
       const normalizedEmail = clientEmail.trim().toLowerCase();
       const billingDoc = await db.collection("projectBilling").doc(normalizedEmail).get();
