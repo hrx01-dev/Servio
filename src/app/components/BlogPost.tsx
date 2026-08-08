@@ -1,18 +1,22 @@
-import { Link, useParams, Navigate } from 'react-router-dom';
-import { ArrowLeft, Clock, Tag } from 'lucide-react';
-import { Navbar } from './Navbar';
-import { Footer } from './Footer';
-import { SEO } from './SEO';
-import { motion, useReducedMotion } from 'motion/react';
-import { posts } from '../lib/blogData';
+import { Link, Navigate, useParams } from "react-router-dom";
+import { ArrowLeft, ArrowUpRight, Clock, Tag } from "lucide-react";
+import { Navbar } from "./Navbar";
+import { Footer } from "./Footer";
+import { SEO } from "./SEO";
+import { Aurora } from "./Aurora";
+import { GlassPanel } from "./GlassPanel";
+import { SectionFrame } from "./SectionFrame";
+import { TempleDivider } from "./TempleDivider";
+import { motion, useReducedMotion } from "motion/react";
+import { posts } from "../lib/blogData";
 
 const categoryColors: Record<string, string> = {
-  Business: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-  Design: 'bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300',
-  Performance: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300',
-  SEO: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
-  Strategy: 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300',
-  Copywriting: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300',
+  Business: "bg-saffron/10 text-saffron border-saffron/20",
+  Design: "bg-brand/10 text-brand border-brand/20",
+  Performance: "bg-gold/10 text-gold border-gold/20",
+  SEO: "bg-peacock/10 text-peacock border-peacock/20",
+  Strategy: "bg-brand/10 text-brand border-brand/20",
+  Copywriting: "bg-peacock/10 text-peacock border-peacock/20",
 };
 
 export function BlogPost() {
@@ -23,7 +27,7 @@ export function BlogPost() {
   if (!post) return <Navigate to="/blog" replace />;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen bg-background text-foreground">
       <SEO
         title={post.title}
         description={post.excerpt}
@@ -32,115 +36,126 @@ export function BlogPost() {
       />
       <Navbar />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        {/* Back link */}
-        <motion.div
-          initial={{ opacity: 0, x: -12 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: reduce ? 0 : 0.4 }}
-        >
-          <Link
-            to="/blog"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors mb-12"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Blog
-          </Link>
-        </motion.div>
+      <main className="relative overflow-hidden pt-28 pb-24">
+        <Aurora intensity={0.48} />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,transparent_0%,hsl(var(--background)/0.28)_48%,hsl(var(--background)/0.84)_100%)]"
+        />
 
-        {/* Header */}
-        <motion.header
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduce ? 0 : 0.55, delay: 0.08 }}
-          className="mb-12"
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <span
-              className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${categoryColors[post.category]}`}
+        <SectionFrame rails={false}>
+          <div className="relative z-10 mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: reduce ? 0 : 0.4 }}
             >
-              <Tag className="w-3 h-3" />
-              {post.category}
-            </span>
-            <span className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
-              <Clock className="w-3 h-3" />
-              {post.readTime}
-            </span>
-          </div>
+              <Link
+                to="/blog"
+                className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-foreground/[0.03] px-4 py-2 text-sm font-medium text-muted-foreground backdrop-blur transition-colors hover:border-brand/40 hover:text-foreground"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Blog
+              </Link>
+            </motion.div>
 
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
-            {post.title}
-          </h1>
-
-          <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
-            {post.excerpt}
-          </p>
-
-          <p className="text-sm text-gray-400 dark:text-gray-500">{post.date}</p>
-
-          <hr className="mt-8 border-gray-200 dark:border-slate-800" />
-        </motion.header>
-
-        {/* Body */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduce ? 0 : 0.5, delay: 0.2 }}
-          className="prose prose-gray dark:prose-invert prose-lg max-w-none"
-        >
-          {post.body.map((block, i) => {
-            if (block.type === 'h2') {
-              return (
-                <h2
-                  key={i}
-                  className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mt-10 mb-4"
+            <motion.header
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduce ? 0 : 0.55, delay: 0.08 }}
+              className="mx-auto max-w-4xl pb-10 pt-14 md:pb-14 md:pt-16"
+            >
+              <div className="mb-7 flex flex-wrap items-center gap-3">
+                <span
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${categoryColors[post.category]}`}
                 >
-                  {block.text}
-                </h2>
-              );
-            }
-            if (block.type === 'p') {
-              return (
-                <p key={i} className="text-gray-700 dark:text-gray-300 leading-relaxed mb-5">
-                  {block.text}
-                </p>
-              );
-            }
-            if (block.type === 'ul') {
-              return (
-                <ul key={i} className="space-y-2 mb-5 pl-5 list-disc">
-                  {block.items.map((item, j) => (
-                    <li key={j} className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              );
-            }
-            return null;
-          })}
-        </motion.div>
+                  <Tag className="h-3 w-3" />
+                  {post.category}
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" />
+                  {post.readTime}
+                </span>
+                <span className="text-xs text-muted-foreground">{post.date}</span>
+              </div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: reduce ? 0 : 0.5, delay: 0.35 }}
-          className="mt-16 rounded-3xl bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/40 dark:to-violet-950/40 border border-indigo-100 dark:border-indigo-900/50 p-8 text-center"
-        >
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-            Ready to build something great?
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm">
-            Get a free quote and see how Servio can help your business online.
-          </p>
-          <Link
-            to="/#contact"
-            className="inline-block px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200"
-          >
-            Get a Free Quote
-          </Link>
-        </motion.div>
+              <h1 className="font-display text-4xl font-semibold leading-[1.02] tracking-tight text-foreground md:text-5xl lg:text-6xl">
+                {post.title}
+              </h1>
+              <p className="text-lede mt-6 max-w-3xl text-muted-foreground">
+                {post.excerpt}
+              </p>
+            </motion.header>
+
+            <TempleDivider className="mb-10 pt-0" />
+
+            <motion.article
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduce ? 0 : 0.5, delay: 0.2 }}
+            >
+              <GlassPanel tier="strong" className="rounded-2xl p-6 md:p-10 lg:p-12">
+                <div className="prose prose-lg max-w-none dark:prose-invert prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-p:leading-relaxed prose-li:text-muted-foreground">
+                  {post.body.map((block, i) => {
+                    if (block.type === "h2") {
+                      return (
+                        <h2 key={i} className="!mb-4 !mt-10 text-2xl font-semibold md:text-3xl first:!mt-0">
+                          {block.text}
+                        </h2>
+                      );
+                    }
+                    if (block.type === "p") {
+                      return (
+                        <p key={i} className="!mb-5">
+                          {block.text}
+                        </p>
+                      );
+                    }
+                    if (block.type === "ul") {
+                      return (
+                        <ul key={i} className="mb-5 space-y-2 pl-5">
+                          {block.items.map((item, j) => (
+                            <li key={j}>{item}</li>
+                          ))}
+                        </ul>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </GlassPanel>
+            </motion.article>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduce ? 0 : 0.5, delay: 0.35 }}
+              className="mt-12"
+            >
+              <GlassPanel tier="strong" className="relative overflow-hidden rounded-2xl p-8 text-center md:p-12">
+                <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
+                <div className="relative">
+                  <span className="font-display text-sm font-semibold uppercase tracking-[0.16em] text-gold">
+                    Build what comes next
+                  </span>
+                  <h2 className="font-display mt-3 text-2xl font-semibold text-foreground md:text-3xl">
+                    Ready to build something great?
+                  </h2>
+                  <p className="mx-auto mb-7 mt-3 max-w-md text-sm leading-relaxed text-muted-foreground md:text-base">
+                    Get a free quote and see how Servio can help your business grow online.
+                  </p>
+                  <Link
+                    to="/#contact"
+                    className="bg-grad-brand inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white shadow-elev-2 transition-all hover:-translate-y-0.5 hover:shadow-elev-3"
+                  >
+                    Get a Free Quote
+                    <ArrowUpRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </GlassPanel>
+            </motion.div>
+          </div>
+        </SectionFrame>
       </main>
 
       <Footer />
