@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-08-07T20:32:55.204Z",
+  "timestamp": "2026-08-08T01:03:31.312Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1556,
-    "totalIssues": 25,
+    "durationMs": 1246,
+    "totalIssues": 26,
     "critical": 1,
-    "high": 11,
+    "high": 12,
     "moderate": 12
   },
   "dependencyAudit": {
@@ -13,9 +13,9 @@
       "info": 0,
       "low": 1,
       "moderate": 12,
-      "high": 11,
+      "high": 12,
       "critical": 1,
-      "total": 25
+      "total": 26
     },
     "advisories": [
       {
@@ -88,6 +88,12 @@
         "package": "minimatch",
         "severity": "HIGH",
         "via": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+        "fixAvailable": true
+      },
+      {
+        "package": "nanoid",
+        "severity": "HIGH",
+        "via": "nanoid: non-secure generators can loop indefinitely with negative size, nanoid: custom generators can loop indefinitely when size is zero",
         "fixAvailable": true
       },
       {

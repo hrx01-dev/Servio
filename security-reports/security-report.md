@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-08-07T20:32:55.204Z  
+**Timestamp:** 2026-08-08T01:03:31.312Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 11 | 12 | 1 | 25 |
+| **Dependencies (npm audit)** | 1 | 12 | 12 | 1 | 26 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,7 +16,7 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **25** vulnerabilities in dependencies.
+Found **26** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
@@ -32,6 +32,7 @@ Found **25** vulnerabilities in dependencies.
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
 | `js-yaml` | **HIGH** | JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported | ✅ Yes |
 | `minimatch` | **HIGH** | minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions | ✅ Yes |
+| `nanoid` | **HIGH** | nanoid: non-secure generators can loop indefinitely with negative size, nanoid: custom generators can loop indefinitely when size is zero | ✅ Yes |
 | `path-to-regexp` | **HIGH** | path-to-regexp outputs backtracking regular expressions | ✅ Yes |
 | `postcss` | **HIGH** | PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure, PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset | ✅ Yes |
 | `protobufjs` | **MODERATE** | protobufjs: Denial of Service via infinite loop in .proto option parsing | ✅ Yes |
