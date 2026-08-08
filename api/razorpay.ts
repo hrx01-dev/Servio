@@ -78,32 +78,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (typeof req.body !== "object" || req.body === null) return res.status(400).json({ error: "Invalid request body" });
 
     if (action === "createOrder") {
-      // Rate limiting must not make the payment endpoint unavailable when the
-      // optional hashing secret has not yet been configured. The billing lookup
-      // below still requires Firebase Admin, while the limiter is applied whenever
-      // RATE_LIMIT_HASH_SECRET is present.
-      const hashSecret = process.env.RATE_LIMIT_HASH_SECRET;
-      if (hashSecret) {
-        if (!initAdmin()) return res.status(500).json({ error: "Server is not configured correctly. Please try again later." });
-        try {
-          const verdict = await checkRateLimit(callerIp(req), hashSecret, Date.now());
-          if (!verdict.allowed) {
-            res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
-            return res.status(429).json({ error: "Too many order requests. Please try again later.", retryAfterMs: verdict.retryAfterMs });
-          }
-        } catch (error) {
-          console.error("Razorpay rate-limit check failed:", error);
-          // Do not block legitimate payment attempts because the auxiliary
-          // rate-limit store is temporarily unavailable.
-        }
-      }
-
       const { amount, clientEmail } = req.body;
       if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) return res.status(400).json({ error: "Invalid amount" });
       if (typeof clientEmail !== "string" || !isValidEmail(clientEmail)) return res.status(400).json({ error: "Invalid clientEmail" });
       const amountInPaisa = Math.round(amount * 100);
       if (!Number.isSafeInteger(amountInPaisa)) return res.status(400).json({ error: "Amount is out of range" });
 
+      // Keep the original billing validation/order flow intact. The rate limiter
+      // is deliberately applied only after the billing record is validated so a
+      // missing or unavailable rate-limit store cannot break checkout initialization.
       if (!initAdmin()) return res.status(500).json({ error: "Server is not configured correctly. Please try again later." });
       const db = getFirestore();
       const normalizedEmail = clientEmail.trim().toLowerCase();
@@ -114,6 +97,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const payments: Array<Record<string, unknown>> = billingData?.payments || [];
       const paidSoFar = payments.filter((p) => p.status === "completed").reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
       if (amount > totalCost - paidSoFar + 0.01) return res.status(400).json({ error: "Amount exceeds outstanding balance" });
+
+      // Use the already-required server-side Razorpay secret to hash the IP.
+      // No additional environment variable is needed. Rate-limit persistence is
+      // best-effort; only an actual limit violation blocks order creation.
+      try {
+        const verdict = await checkRateLimit(callerIp(req), razorpayKeySecret, Date.now());
+        if (!verdict.allowed) {
+          res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
+          return res.status(429).json({ error: "Too many order requests. Please try again later.", retryAfterMs: verdict.retryAfterMs });
+        }
+      } catch (error) {
+        console.error("Razorpay rate-limit check failed; continuing with payment creation:", error);
+      }
 
       const order = await razorpay.orders.create({ amount: amountInPaisa, currency: "INR", receipt: `receipt_${Date.now()}` });
       return res.status(200).json({ id: order.id, amount: order.amount, currency: order.currency });
