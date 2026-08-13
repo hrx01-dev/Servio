@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-08-13T16:48:04.149Z  
+**Timestamp:** 2026-08-13T20:34:28.200Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -34,7 +34,7 @@ Found **26** vulnerabilities in dependencies.
 | `minimatch` | **HIGH** | minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions | ✅ Yes |
 | `nanoid` | **HIGH** | nanoid: non-secure generators can loop indefinitely with negative size, nanoid: custom generators can loop indefinitely when size is zero | ✅ Yes |
 | `path-to-regexp` | **HIGH** | path-to-regexp outputs backtracking regular expressions | ✅ Yes |
-| `postcss` | **HIGH** | PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure, PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset | ✅ Yes |
+| `postcss` | **HIGH** | PostCSS: incomplete fix of GHSA-6g55-p6wh-862q — attacker-controlled sourceMappingURL reads arbitrary .map files when `from` is unset, PostCSS: Path Traversal in Previous Source Map Auto-Loading (sourceMappingURL) leads to Arbitrary .map File Disclosure | ✅ Yes |
 | `protobufjs` | **MODERATE** | protobufjs: Denial of Service via infinite loop in .proto option parsing | ✅ Yes |
 | `react-router` | **MODERATE** | React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass), React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration | ✅ Yes |
 | `react-router-dom` | **MODERATE** | React Router: Open redirect leading to XSS, react-router | ✅ Yes |
