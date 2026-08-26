@@ -1,4 +1,11 @@
 @import 'tailwindcss' source(none);
-@source '../**/*.{js,ts,jsx,tsx}';
+
+/* Scan only runtime source trees. The previous ../** glob also scanned tests
+   and other non-runtime files, which can generate utilities that never ship. */
+@source '../app/**/*.{js,ts,jsx,tsx}';
+@source '../admin/**/*.{js,ts,jsx,tsx}';
+@source '../dashboard/**/*.{js,ts,jsx,tsx}';
+@source '../Firebase/**/*.{js,ts,jsx,tsx}';
+@source '../main.tsx';
 
 @import 'tw-animate-css';
