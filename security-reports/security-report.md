@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-09-01T14:54:42.956Z  
+**Timestamp:** 2026-09-01T19:25:29.391Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 12 | 12 | 1 | 26 |
+| **Dependencies (npm audit)** | 1 | 13 | 12 | 1 | 27 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,7 +16,7 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **26** vulnerabilities in dependencies.
+Found **27** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
@@ -27,6 +27,7 @@ Found **26** vulnerabilities in dependencies.
 | `@vercel/static-config` | **MODERATE** | ajv | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
 | `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation | ✅ Yes |
+| `browserslist` | **HIGH** | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats) | ✅ Yes |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
