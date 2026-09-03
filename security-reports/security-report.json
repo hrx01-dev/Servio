@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-09-03T12:51:49.132Z",
+  "timestamp": "2026-09-03T19:19:12.824Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1602,
-    "totalIssues": 27,
+    "durationMs": 1152,
+    "totalIssues": 28,
     "critical": 1,
     "high": 13,
-    "moderate": 12
+    "moderate": 13
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 12,
+      "moderate": 13,
       "high": 13,
       "critical": 1,
-      "total": 27
+      "total": 28
     },
     "advisories": [
       {
@@ -70,6 +70,12 @@
         "package": "fast-xml-parser",
         "severity": "HIGH",
         "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits",
+        "fixAvailable": true
+      },
+      {
+        "package": "fflate",
+        "severity": "MODERATE",
+        "via": "fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives",
         "fixAvailable": true
       },
       {
