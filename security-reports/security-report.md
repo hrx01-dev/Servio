@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-09-03T12:51:49.132Z  
+**Timestamp:** 2026-09-03T19:19:12.824Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 13 | 12 | 1 | 27 |
+| **Dependencies (npm audit)** | 1 | 13 | 13 | 1 | 28 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,7 +16,7 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **27** vulnerabilities in dependencies.
+Found **28** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
@@ -29,6 +29,7 @@ Found **27** vulnerabilities in dependencies.
 | `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation | ✅ Yes |
 | `browserslist` | **HIGH** | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats) | ✅ Yes |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
+| `fflate` | **MODERATE** | fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
 | `js-yaml` | **HIGH** | JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported | ✅ Yes |
