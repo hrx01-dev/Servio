@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-09-08T19:27:11.573Z",
+  "timestamp": "2026-09-08T22:43:01.690Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1141,
-    "totalIssues": 28,
+    "durationMs": 1115,
+    "totalIssues": 33,
     "critical": 1,
-    "high": 13,
-    "moderate": 13
+    "high": 14,
+    "moderate": 17
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 13,
-      "high": 13,
+      "moderate": 17,
+      "high": 14,
       "critical": 1,
-      "total": 28
+      "total": 33
     },
     "advisories": [
       {
@@ -49,9 +49,27 @@
         "fixAvailable": true
       },
       {
+        "package": "@vitest/coverage-v8",
+        "severity": "MODERATE",
+        "via": "vitest",
+        "fixAvailable": true
+      },
+      {
+        "package": "@vitest/mocker",
+        "severity": "MODERATE",
+        "via": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+        "fixAvailable": true
+      },
+      {
         "package": "ajv",
         "severity": "MODERATE",
         "via": "ajv has ReDoS when using `$data` option",
+        "fixAvailable": true
+      },
+      {
+        "package": "baseline-browser-mapping",
+        "severity": "MODERATE",
+        "via": "baseline-browser-mapping process termination on invalid input causes denial of service",
         "fixAvailable": true
       },
       {
@@ -93,7 +111,7 @@
       {
         "package": "js-yaml",
         "severity": "HIGH",
-        "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported",
+        "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported, js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
         "fixAvailable": true
       },
       {
@@ -145,6 +163,12 @@
         "fixAvailable": true
       },
       {
+        "package": "sharp",
+        "severity": "HIGH",
+        "via": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545",
+        "fixAvailable": true
+      },
+      {
         "package": "smol-toml",
         "severity": "MODERATE",
         "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines",
@@ -178,6 +202,12 @@
         "package": "vite",
         "severity": "HIGH",
         "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths",
+        "fixAvailable": true
+      },
+      {
+        "package": "vitest",
+        "severity": "MODERATE",
+        "via": "@vitest/coverage-v8, @vitest/mocker, Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
         "fixAvailable": true
       }
     ],
