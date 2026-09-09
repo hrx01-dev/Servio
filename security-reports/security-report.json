@@ -1,19 +1,19 @@
 {
-  "timestamp": "2026-09-09T19:18:37.527Z",
+  "timestamp": "2026-09-09T22:35:55.669Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1530,
+    "durationMs": 1221,
     "totalIssues": 33,
     "critical": 1,
-    "high": 14,
-    "moderate": 17
+    "high": 15,
+    "moderate": 16
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 17,
-      "high": 14,
+      "moderate": 16,
+      "high": 15,
       "critical": 1,
       "total": 33
     },
@@ -170,8 +170,8 @@
       },
       {
         "package": "smol-toml",
-        "severity": "MODERATE",
-        "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines",
+        "severity": "HIGH",
+        "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents",
         "fixAvailable": true
       },
       {

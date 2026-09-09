@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-09-09T19:18:37.527Z  
+**Timestamp:** 2026-09-09T22:35:55.669Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 14 | 17 | 1 | 33 |
+| **Dependencies (npm audit)** | 1 | 15 | 16 | 1 | 33 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -45,7 +45,7 @@ Found **33** vulnerabilities in dependencies.
 | `react-router-dom` | **MODERATE** | React Router: Open redirect leading to XSS, react-router | ✅ Yes |
 | `retry-request` | **MODERATE** | teeny-request | ✅ Yes |
 | `sharp` | **HIGH** | sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545 | ✅ Yes |
-| `smol-toml` | **MODERATE** | smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines | ✅ Yes |
+| `smol-toml` | **HIGH** | smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents | ✅ Yes |
 | `tar` | **CRITICAL** | node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection | ✅ Yes |
 | `teeny-request` | **MODERATE** | uuid | ✅ Yes |
 | `undici` | **HIGH** | Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse | ✅ Yes |
