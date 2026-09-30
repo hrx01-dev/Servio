@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-09-30T14:57:37.014Z  
+**Timestamp:** 2026-09-30T20:50:56.771Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 15 | 16 | 1 | 33 |
+| **Dependencies (npm audit)** | 1 | 20 | 16 | 1 | 38 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,11 +16,14 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **33** vulnerabilities in dependencies.
+Found **38** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
+| `@firebase/firestore` | **HIGH** | @grpc/grpc-js | ✅ Yes |
+| `@firebase/firestore-compat` | **HIGH** | @firebase/firestore | ✅ Yes |
 | `@google-cloud/storage` | **MODERATE** | retry-request, teeny-request | ✅ Yes |
+| `@grpc/grpc-js` | **HIGH** | @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages | ✅ Yes |
 | `@vercel/build-utils` | **HIGH** | @vercel/python-analysis | ✅ Yes |
 | `@vercel/node` | **HIGH** | @vercel/build-utils, @vercel/static-config, path-to-regexp, undici | ✅ Yes |
 | `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml | ✅ Yes |
@@ -28,11 +31,13 @@ Found **33** vulnerabilities in dependencies.
 | `@vitest/coverage-v8` | **MODERATE** | vitest | ✅ Yes |
 | `@vitest/mocker` | **MODERATE** | Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
+| `axios` | **HIGH** | Axios: Prototype pollution gadget in fetch adapter can alter outbound requests, Axios: Prototype-Pollution Gadget in the Default Instance Allows Inherited Object.prototype.method to Override HTTP Method, Axios: ReDoS in fromDataURI data: URL parser freezes the Node event loop (DoS), Axios: ReDoS (O(N²)) in shouldBypassProxy host normalization, reachable via untrusted redirect Location, Axios: Prototype Pollution Gadget in axios toFormData Options, Axios: HTTP/2 adapter bypasses configured DNS lookup and proxy controls, Axios: Denial of Service via Unhandled 'error' Event in HTTP/2 ClientHttp2Session Initialization, Axios: Header Injection via Inherited headers After Minimal Interceptor, Axios: Fetch Adapter Header Injection via Inherited FormData getHeaders, Axios: Node HTTP adapter prototype-pollution gadget allows request socket hijack via inherited createConnection, Axios: CIDR-form NO_PROXY entries are ignored, causing proxy exclusion bypass for internal IP ranges, Axios: maxRedirects: 0 is not enforced by the fetch adapter, allowing redirect-based SSRF | ✅ Yes |
 | `baseline-browser-mapping` | **MODERATE** | baseline-browser-mapping process termination on invalid input causes denial of service | ✅ Yes |
 | `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion | ✅ Yes |
 | `browserslist` | **HIGH** | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats) | ✅ Yes |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
 | `fflate` | **MODERATE** | fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives | ✅ Yes |
+| `firebase` | **HIGH** | @firebase/firestore, @firebase/firestore-compat | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
 | `js-yaml` | **HIGH** | JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported, js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources | ✅ Yes |
