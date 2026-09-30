@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-09-29T23:45:24.311Z",
+  "timestamp": "2026-09-30T05:37:16.924Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1186,
+    "durationMs": 1176,
     "totalIssues": 33,
     "critical": 1,
     "high": 15,
@@ -75,7 +75,7 @@
       {
         "package": "brace-expansion",
         "severity": "HIGH",
-        "via": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation",
+        "via": "brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
         "fixAvailable": true
       },
       {
