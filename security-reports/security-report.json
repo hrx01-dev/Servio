@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-09-30T14:57:37.014Z",
+  "timestamp": "2026-09-30T20:50:56.771Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1228,
-    "totalIssues": 33,
+    "durationMs": 1900,
+    "totalIssues": 38,
     "critical": 1,
-    "high": 15,
+    "high": 20,
     "moderate": 16
   },
   "dependencyAudit": {
@@ -13,15 +13,33 @@
       "info": 0,
       "low": 1,
       "moderate": 16,
-      "high": 15,
+      "high": 20,
       "critical": 1,
-      "total": 33
+      "total": 38
     },
     "advisories": [
+      {
+        "package": "@firebase/firestore",
+        "severity": "HIGH",
+        "via": "@grpc/grpc-js",
+        "fixAvailable": true
+      },
+      {
+        "package": "@firebase/firestore-compat",
+        "severity": "HIGH",
+        "via": "@firebase/firestore",
+        "fixAvailable": true
+      },
       {
         "package": "@google-cloud/storage",
         "severity": "MODERATE",
         "via": "retry-request, teeny-request",
+        "fixAvailable": true
+      },
+      {
+        "package": "@grpc/grpc-js",
+        "severity": "HIGH",
+        "via": "@grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages",
         "fixAvailable": true
       },
       {
@@ -67,6 +85,12 @@
         "fixAvailable": true
       },
       {
+        "package": "axios",
+        "severity": "HIGH",
+        "via": "Axios: Prototype pollution gadget in fetch adapter can alter outbound requests, Axios: Prototype-Pollution Gadget in the Default Instance Allows Inherited Object.prototype.method to Override HTTP Method, Axios: ReDoS in fromDataURI data: URL parser freezes the Node event loop (DoS), Axios: ReDoS (O(N²)) in shouldBypassProxy host normalization, reachable via untrusted redirect Location, Axios: Prototype Pollution Gadget in axios toFormData Options, Axios: HTTP/2 adapter bypasses configured DNS lookup and proxy controls, Axios: Denial of Service via Unhandled 'error' Event in HTTP/2 ClientHttp2Session Initialization, Axios: Header Injection via Inherited headers After Minimal Interceptor, Axios: Fetch Adapter Header Injection via Inherited FormData getHeaders, Axios: Node HTTP adapter prototype-pollution gadget allows request socket hijack via inherited createConnection, Axios: CIDR-form NO_PROXY entries are ignored, causing proxy exclusion bypass for internal IP ranges, Axios: maxRedirects: 0 is not enforced by the fetch adapter, allowing redirect-based SSRF",
+        "fixAvailable": true
+      },
+      {
         "package": "baseline-browser-mapping",
         "severity": "MODERATE",
         "via": "baseline-browser-mapping process termination on invalid input causes denial of service",
@@ -94,6 +118,12 @@
         "package": "fflate",
         "severity": "MODERATE",
         "via": "fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives",
+        "fixAvailable": true
+      },
+      {
+        "package": "firebase",
+        "severity": "HIGH",
+        "via": "@firebase/firestore, @firebase/firestore-compat",
         "fixAvailable": true
       },
       {
