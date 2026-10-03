@@ -1,23 +1,29 @@
 {
-  "timestamp": "2026-10-02T20:47:36.277Z",
+  "timestamp": "2026-10-03T05:23:01.766Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1885,
-    "totalIssues": 38,
+    "durationMs": 1929,
+    "totalIssues": 44,
     "critical": 1,
-    "high": 20,
-    "moderate": 16
+    "high": 27,
+    "moderate": 15
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 16,
-      "high": 20,
+      "moderate": 15,
+      "high": 27,
       "critical": 1,
-      "total": 38
+      "total": 44
     },
     "advisories": [
+      {
+        "package": "@fastify/busboy",
+        "severity": "HIGH",
+        "via": "@fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header",
+        "fixAvailable": true
+      },
       {
         "package": "@firebase/firestore",
         "severity": "HIGH",
@@ -43,6 +49,12 @@
         "fixAvailable": true
       },
       {
+        "package": "@ts-morph/common",
+        "severity": "HIGH",
+        "via": "fast-glob",
+        "fixAvailable": true
+      },
+      {
         "package": "@vercel/build-utils",
         "severity": "HIGH",
         "via": "@vercel/python-analysis",
@@ -51,7 +63,7 @@
       {
         "package": "@vercel/node",
         "severity": "HIGH",
-        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, undici",
+        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, ts-morph, undici",
         "fixAvailable": true
       },
       {
@@ -62,8 +74,8 @@
       },
       {
         "package": "@vercel/static-config",
-        "severity": "MODERATE",
-        "via": "ajv",
+        "severity": "HIGH",
+        "via": "ajv, ts-morph",
         "fixAvailable": true
       },
       {
@@ -103,9 +115,21 @@
         "fixAvailable": true
       },
       {
+        "package": "braces",
+        "severity": "HIGH",
+        "via": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+        "fixAvailable": true
+      },
+      {
         "package": "browserslist",
         "severity": "HIGH",
         "via": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
+        "fixAvailable": true
+      },
+      {
+        "package": "fast-glob",
+        "severity": "HIGH",
+        "via": "micromatch",
         "fixAvailable": true
       },
       {
@@ -142,6 +166,12 @@
         "package": "js-yaml",
         "severity": "HIGH",
         "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported, js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
+        "fixAvailable": true
+      },
+      {
+        "package": "micromatch",
+        "severity": "HIGH",
+        "via": "braces",
         "fixAvailable": true
       },
       {
@@ -217,9 +247,15 @@
         "fixAvailable": true
       },
       {
+        "package": "ts-morph",
+        "severity": "HIGH",
+        "via": "@ts-morph/common",
+        "fixAvailable": true
+      },
+      {
         "package": "undici",
         "severity": "HIGH",
-        "via": "Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression, undici vulnerable to Denial of Service via orphaned RetryHandler response body, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to Denial of Service via unrequested WebSocket subprotocol, undici vulnerable to Denial of Service via unbounded decompression of compressed responses, undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches, undici vulnerable to response truncation via oversized chunked responses in the dump interceptor, undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool, undici vulnerable to caching and replay of unsafe HTTP method responses, undici vulnerable to Denial of Service via WebSocketStream unclean close",
+        "via": "@fastify/busboy, Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression, undici vulnerable to Denial of Service via orphaned RetryHandler response body, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to Denial of Service via unrequested WebSocket subprotocol, undici vulnerable to Denial of Service via unbounded decompression of compressed responses, undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches, undici vulnerable to response truncation via oversized chunked responses in the dump interceptor, undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool, undici vulnerable to caching and replay of unsafe HTTP method responses, undici vulnerable to Denial of Service via WebSocketStream unclean close",
         "fixAvailable": true
       },
       {
