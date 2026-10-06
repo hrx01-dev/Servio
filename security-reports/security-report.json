@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-10-06T11:19:20.524Z",
+  "timestamp": "2026-10-06T18:25:21.001Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1829,
+    "durationMs": 1478,
     "totalIssues": 45,
     "critical": 1,
     "high": 28,
@@ -225,7 +225,7 @@
       {
         "package": "sharp",
         "severity": "HIGH",
-        "via": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545",
+        "via": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545, sharp : Vulnerability in librsvg dependency CVE-2026-96889",
         "fixAvailable": true
       },
       {

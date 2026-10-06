@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-10-06T11:19:20.524Z  
+**Timestamp:** 2026-10-06T18:25:21.001Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -54,7 +54,7 @@ Found **45** vulnerabilities in dependencies.
 | `react-router` | **MODERATE** | React Router: Open redirect via backslash in <Link> and useNavigate (CVE-2025-68470 bypass), React Router: Arbitrary Constructor Injection via deserializeErrors() in React Router SSR Hydration | ✅ Yes |
 | `react-router-dom` | **MODERATE** | React Router: Open redirect leading to XSS, react-router | ✅ Yes |
 | `retry-request` | **MODERATE** | teeny-request | ✅ Yes |
-| `sharp` | **HIGH** | sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545 | ✅ Yes |
+| `sharp` | **HIGH** | sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545, sharp : Vulnerability in librsvg dependency CVE-2026-96889 | ✅ Yes |
 | `smol-toml` | **HIGH** | smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents, smol-toml: Quadratic-time parse() from parseKey rescanning to end of document on each key line | ✅ Yes |
 | `source-map-js` | **HIGH** | source-map-js allows event-loop denial of service through indexed source-map section offsets | ✅ Yes |
 | `tar` | **CRITICAL** | node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection | ✅ Yes |
