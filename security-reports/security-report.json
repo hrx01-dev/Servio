@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-10-05T17:11:04.332Z",
+  "timestamp": "2026-10-06T01:19:32.054Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1871,
-    "totalIssues": 44,
+    "durationMs": 1794,
+    "totalIssues": 45,
     "critical": 1,
-    "high": 27,
+    "high": 28,
     "moderate": 15
   },
   "dependencyAudit": {
@@ -13,15 +13,15 @@
       "info": 0,
       "low": 1,
       "moderate": 15,
-      "high": 27,
+      "high": 28,
       "critical": 1,
-      "total": 44
+      "total": 45
     },
     "advisories": [
       {
         "package": "@fastify/busboy",
         "severity": "HIGH",
-        "via": "@fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header",
+        "via": "@fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header, @fastify/busboy vulnerable to CRLF injection via multipart Content-Disposition filename and name",
         "fixAvailable": true
       },
       {
@@ -231,7 +231,13 @@
       {
         "package": "smol-toml",
         "severity": "HIGH",
-        "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents",
+        "via": "smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents, smol-toml: Quadratic-time parse() from parseKey rescanning to end of document on each key line",
+        "fixAvailable": true
+      },
+      {
+        "package": "source-map-js",
+        "severity": "HIGH",
+        "via": "source-map-js allows event-loop denial of service through indexed source-map section offsets",
         "fixAvailable": true
       },
       {
