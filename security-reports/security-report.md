@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-10-05T17:11:04.332Z  
+**Timestamp:** 2026-10-06T01:19:32.054Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 27 | 15 | 1 | 44 |
+| **Dependencies (npm audit)** | 1 | 28 | 15 | 1 | 45 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,11 +16,11 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **44** vulnerabilities in dependencies.
+Found **45** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
-| `@fastify/busboy` | **HIGH** | @fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header | ✅ Yes |
+| `@fastify/busboy` | **HIGH** | @fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header, @fastify/busboy vulnerable to CRLF injection via multipart Content-Disposition filename and name | ✅ Yes |
 | `@firebase/firestore` | **HIGH** | @grpc/grpc-js | ✅ Yes |
 | `@firebase/firestore-compat` | **HIGH** | @firebase/firestore | ✅ Yes |
 | `@google-cloud/storage` | **MODERATE** | retry-request, teeny-request | ✅ Yes |
@@ -55,7 +55,8 @@ Found **44** vulnerabilities in dependencies.
 | `react-router-dom` | **MODERATE** | React Router: Open redirect leading to XSS, react-router | ✅ Yes |
 | `retry-request` | **MODERATE** | teeny-request | ✅ Yes |
 | `sharp` | **HIGH** | sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545 | ✅ Yes |
-| `smol-toml` | **HIGH** | smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents | ✅ Yes |
+| `smol-toml` | **HIGH** | smol-toml: Denial of Service via TOML documents containing thousands of consecutive commented lines, smol-toml: Denial of Service via malformed TOML documents, smol-toml: Quadratic-time parse() from parseKey rescanning to end of document on each key line | ✅ Yes |
+| `source-map-js` | **HIGH** | source-map-js allows event-loop denial of service through indexed source-map section offsets | ✅ Yes |
 | `tar` | **CRITICAL** | node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection | ✅ Yes |
 | `teeny-request` | **MODERATE** | uuid | ✅ Yes |
 | `ts-morph` | **HIGH** | @ts-morph/common | ✅ Yes |
