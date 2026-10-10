@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-10-10T14:30:11.921Z",
+  "timestamp": "2026-10-10T20:06:20.431Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1498,
+    "durationMs": 1883,
     "totalIssues": 45,
     "critical": 1,
     "high": 28,
