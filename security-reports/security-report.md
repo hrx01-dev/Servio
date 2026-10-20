@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-10-20T13:35:24.856Z  
+**Timestamp:** 2026-10-20T20:00:50.534Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 28 | 15 | 1 | 45 |
+| **Dependencies (npm audit)** | 1 | 29 | 15 | 1 | 46 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,7 +16,7 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **45** vulnerabilities in dependencies.
+Found **46** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
@@ -43,6 +43,7 @@ Found **45** vulnerabilities in dependencies.
 | `fflate` | **MODERATE** | fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives | ✅ Yes |
 | `firebase` | **HIGH** | @firebase/firestore, @firebase/firestore-compat | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
+| `follow-redirects` | **HIGH** | follow-redirects array-form headers bypass cross-origin credential stripping, follow-redirects sensitiveHeaders regex escaping can expose credential headers | ✅ Yes |
 | `gaxios` | **MODERATE** | uuid | ✅ Yes |
 | `js-yaml` | **HIGH** | JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported, js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources | ✅ Yes |
 | `micromatch` | **HIGH** | braces | ✅ Yes |

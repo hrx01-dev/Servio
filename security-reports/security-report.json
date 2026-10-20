@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-10-20T13:35:24.856Z",
+  "timestamp": "2026-10-20T20:00:50.534Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1978,
-    "totalIssues": 45,
+    "durationMs": 1317,
+    "totalIssues": 46,
     "critical": 1,
-    "high": 28,
+    "high": 29,
     "moderate": 15
   },
   "dependencyAudit": {
@@ -13,9 +13,9 @@
       "info": 0,
       "low": 1,
       "moderate": 15,
-      "high": 28,
+      "high": 29,
       "critical": 1,
-      "total": 45
+      "total": 46
     },
     "advisories": [
       {
@@ -154,6 +154,12 @@
         "package": "firebase-admin",
         "severity": "MODERATE",
         "via": "@google-cloud/storage",
+        "fixAvailable": true
+      },
+      {
+        "package": "follow-redirects",
+        "severity": "HIGH",
+        "via": "follow-redirects array-form headers bypass cross-origin credential stripping, follow-redirects sensitiveHeaders regex escaping can expose credential headers",
         "fixAvailable": true
       },
       {
