@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-10-21T13:51:17.122Z",
+  "timestamp": "2026-10-21T20:12:43.006Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1975,
+    "durationMs": 1385,
     "totalIssues": 46,
     "critical": 1,
     "high": 29,
@@ -279,7 +279,7 @@
       {
         "package": "vite",
         "severity": "HIGH",
-        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
         "fixAvailable": true
       },
       {
