@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-10-21T20:12:43.006Z  
+**Timestamp:** 2026-10-21T23:24:19.962Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -31,7 +31,7 @@ Found **46** vulnerabilities in dependencies.
 | `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml | ✅ Yes |
 | `@vercel/static-config` | **HIGH** | ajv, ts-morph | ✅ Yes |
 | `@vitest/coverage-v8` | **MODERATE** | vitest | ✅ Yes |
-| `@vitest/mocker` | **MODERATE** | Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock | ✅ Yes |
+| `@vitest/mocker` | **MODERATE** | Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock, Vitest: Code injection via unauthenticated manual mock registration | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
 | `axios` | **HIGH** | Axios: Prototype pollution gadget in fetch adapter can alter outbound requests, Axios: Prototype-Pollution Gadget in the Default Instance Allows Inherited Object.prototype.method to Override HTTP Method, Axios: ReDoS in fromDataURI data: URL parser freezes the Node event loop (DoS), Axios: ReDoS (O(N²)) in shouldBypassProxy host normalization, reachable via untrusted redirect Location, Axios: Prototype Pollution Gadget in axios toFormData Options, Axios: HTTP/2 adapter bypasses configured DNS lookup and proxy controls, Axios: Denial of Service via Unhandled 'error' Event in HTTP/2 ClientHttp2Session Initialization, Axios: Header Injection via Inherited headers After Minimal Interceptor, Axios: Fetch Adapter Header Injection via Inherited FormData getHeaders, Axios: Node HTTP adapter prototype-pollution gadget allows request socket hijack via inherited createConnection, Axios: CIDR-form NO_PROXY entries are ignored, causing proxy exclusion bypass for internal IP ranges, Axios: maxRedirects: 0 is not enforced by the fetch adapter, allowing redirect-based SSRF | ✅ Yes |
 | `baseline-browser-mapping` | **MODERATE** | baseline-browser-mapping process termination on invalid input causes denial of service | ✅ Yes |
