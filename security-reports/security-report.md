@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-10-23T19:58:37.412Z  
+**Timestamp:** 2026-10-23T23:11:24.225Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 23 | 16 | 1 | 41 |
+| **Dependencies (npm audit)** | 1 | 24 | 16 | 1 | 42 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,7 +16,7 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **41** vulnerabilities in dependencies.
+Found **42** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
@@ -27,7 +27,7 @@ Found **41** vulnerabilities in dependencies.
 | `@grpc/grpc-js` | **HIGH** | @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages | ✅ Yes |
 | `@vercel/build-utils` | **HIGH** | @vercel/python-analysis | ✅ Yes |
 | `@vercel/node` | **HIGH** | @vercel/build-utils, @vercel/static-config, path-to-regexp, undici | ✅ Yes |
-| `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml | ✅ Yes |
+| `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml, zod | ✅ Yes |
 | `@vercel/static-config` | **MODERATE** | ajv | ✅ Yes |
 | `@vitest/coverage-v8` | **MODERATE** | vitest | ✅ Yes |
 | `@vitest/mocker` | **MODERATE** | Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock, Vitest: Code injection via unauthenticated manual mock registration | ✅ Yes |
@@ -60,6 +60,7 @@ Found **41** vulnerabilities in dependencies.
 | `uuid` | **MODERATE** | uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided | ✅ Yes |
 | `vite` | **HIGH** | Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine | ✅ Yes |
 | `vitest` | **MODERATE** | @vitest/coverage-v8, @vitest/mocker, Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock | ✅ Yes |
+| `zod` | **HIGH** | Zod can exhaust memory while validating oversized constrained collections | ✅ Yes |
 
 ## 🔑 2. Secret & Credential Scanning
 
