@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-10-23T19:58:37.412Z",
+  "timestamp": "2026-10-23T23:11:24.225Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1934,
-    "totalIssues": 41,
+    "durationMs": 1844,
+    "totalIssues": 42,
     "critical": 1,
-    "high": 23,
+    "high": 24,
     "moderate": 16
   },
   "dependencyAudit": {
@@ -13,9 +13,9 @@
       "info": 0,
       "low": 1,
       "moderate": 16,
-      "high": 23,
+      "high": 24,
       "critical": 1,
-      "total": 41
+      "total": 42
     },
     "advisories": [
       {
@@ -63,7 +63,7 @@
       {
         "package": "@vercel/python-analysis",
         "severity": "HIGH",
-        "via": "js-yaml, minimatch, smol-toml",
+        "via": "js-yaml, minimatch, smol-toml, zod",
         "fixAvailable": true
       },
       {
@@ -256,6 +256,12 @@
         "package": "vitest",
         "severity": "MODERATE",
         "via": "@vitest/coverage-v8, @vitest/mocker, Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+        "fixAvailable": true
+      },
+      {
+        "package": "zod",
+        "severity": "HIGH",
+        "via": "Zod can exhaust memory while validating oversized constrained collections",
         "fixAvailable": true
       }
     ],
