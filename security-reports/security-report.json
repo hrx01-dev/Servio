@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-10-23T13:29:53.609Z",
+  "timestamp": "2026-10-23T19:58:37.412Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1543,
-    "totalIssues": 46,
+    "durationMs": 1934,
+    "totalIssues": 41,
     "critical": 1,
-    "high": 29,
-    "moderate": 15
+    "high": 23,
+    "moderate": 16
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 15,
-      "high": 29,
+      "moderate": 16,
+      "high": 23,
       "critical": 1,
-      "total": 46
+      "total": 41
     },
     "advisories": [
       {
@@ -49,12 +49,6 @@
         "fixAvailable": true
       },
       {
-        "package": "@ts-morph/common",
-        "severity": "HIGH",
-        "via": "fast-glob",
-        "fixAvailable": true
-      },
-      {
         "package": "@vercel/build-utils",
         "severity": "HIGH",
         "via": "@vercel/python-analysis",
@@ -63,7 +57,7 @@
       {
         "package": "@vercel/node",
         "severity": "HIGH",
-        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, ts-morph, undici",
+        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, undici",
         "fixAvailable": true
       },
       {
@@ -74,8 +68,8 @@
       },
       {
         "package": "@vercel/static-config",
-        "severity": "HIGH",
-        "via": "ajv, ts-morph",
+        "severity": "MODERATE",
+        "via": "ajv",
         "fixAvailable": true
       },
       {
@@ -115,21 +109,9 @@
         "fixAvailable": true
       },
       {
-        "package": "braces",
-        "severity": "HIGH",
-        "via": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
-        "fixAvailable": true
-      },
-      {
         "package": "browserslist",
         "severity": "HIGH",
         "via": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
-        "fixAvailable": true
-      },
-      {
-        "package": "fast-glob",
-        "severity": "HIGH",
-        "via": "micromatch",
         "fixAvailable": true
       },
       {
@@ -172,12 +154,6 @@
         "package": "js-yaml",
         "severity": "HIGH",
         "via": "JS-YAML: Quadratic-complexity DoS in merge key handling via repeated aliases, js-yaml: YAML merge-key chains can force quadratic CPU consumption, JS-YAML: Quadratic CPU consumption in !!omap resolution (3.x and 4.x) — CVE-2026-59870 fix not backported, js-yaml: maxTotalMergeKeys does not limit CPU use for empty merge sources",
-        "fixAvailable": true
-      },
-      {
-        "package": "micromatch",
-        "severity": "HIGH",
-        "via": "braces",
         "fixAvailable": true
       },
       {
@@ -256,12 +232,6 @@
         "package": "teeny-request",
         "severity": "MODERATE",
         "via": "uuid",
-        "fixAvailable": true
-      },
-      {
-        "package": "ts-morph",
-        "severity": "HIGH",
-        "via": "@ts-morph/common",
         "fixAvailable": true
       },
       {
