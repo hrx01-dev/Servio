@@ -1,23 +1,41 @@
 {
-  "timestamp": "2026-10-26T04:52:33.811Z",
+  "timestamp": "2026-11-02T14:57:30.288Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1270,
-    "totalIssues": 42,
+    "durationMs": 3251,
+    "totalIssues": 59,
     "critical": 1,
     "high": 24,
-    "moderate": 16
+    "moderate": 33
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 16,
+      "moderate": 33,
       "high": 24,
       "critical": 1,
-      "total": 42
+      "total": 59
     },
     "advisories": [
+      {
+        "package": "@eslint-community/eslint-utils",
+        "severity": "MODERATE",
+        "via": "eslint",
+        "fixAvailable": true
+      },
+      {
+        "package": "@eslint/config-array",
+        "severity": "MODERATE",
+        "via": "minimatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "@eslint/eslintrc",
+        "severity": "MODERATE",
+        "via": "minimatch",
+        "fixAvailable": true
+      },
       {
         "package": "@fastify/busboy",
         "severity": "HIGH",
@@ -49,15 +67,57 @@
         "fixAvailable": true
       },
       {
+        "package": "@ts-morph/common",
+        "severity": "MODERATE",
+        "via": "minimatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "@typescript-eslint/eslint-plugin",
+        "severity": "MODERATE",
+        "via": "@typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils, eslint",
+        "fixAvailable": true
+      },
+      {
+        "package": "@typescript-eslint/parser",
+        "severity": "MODERATE",
+        "via": "@typescript-eslint/typescript-estree, eslint",
+        "fixAvailable": true
+      },
+      {
+        "package": "@typescript-eslint/type-utils",
+        "severity": "MODERATE",
+        "via": "@typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint",
+        "fixAvailable": true
+      },
+      {
+        "package": "@typescript-eslint/typescript-estree",
+        "severity": "MODERATE",
+        "via": "minimatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "@typescript-eslint/utils",
+        "severity": "MODERATE",
+        "via": "@eslint-community/eslint-utils, @typescript-eslint/typescript-estree, eslint",
+        "fixAvailable": true
+      },
+      {
         "package": "@vercel/build-utils",
         "severity": "HIGH",
         "via": "@vercel/python-analysis",
         "fixAvailable": true
       },
       {
+        "package": "@vercel/nft",
+        "severity": "MODERATE",
+        "via": "glob",
+        "fixAvailable": true
+      },
+      {
         "package": "@vercel/node",
         "severity": "HIGH",
-        "via": "@vercel/build-utils, @vercel/static-config, path-to-regexp, undici",
+        "via": "@vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, ts-morph, undici",
         "fixAvailable": true
       },
       {
@@ -69,7 +129,7 @@
       {
         "package": "@vercel/static-config",
         "severity": "MODERATE",
-        "via": "ajv",
+        "via": "ajv, ts-morph",
         "fixAvailable": true
       },
       {
@@ -115,6 +175,18 @@
         "fixAvailable": true
       },
       {
+        "package": "eslint",
+        "severity": "MODERATE",
+        "via": "@eslint-community/eslint-utils, @eslint/config-array, @eslint/eslintrc, minimatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "eslint-plugin-react-refresh",
+        "severity": "MODERATE",
+        "via": "eslint",
+        "fixAvailable": false
+      },
+      {
         "package": "fast-xml-parser",
         "severity": "HIGH",
         "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits",
@@ -141,13 +213,25 @@
       {
         "package": "follow-redirects",
         "severity": "HIGH",
-        "via": "follow-redirects array-form headers bypass cross-origin credential stripping, follow-redirects sensitiveHeaders regex escaping can expose credential headers",
+        "via": "follow-redirects array-form headers bypass cross-origin credential stripping, follow-redirects sensitiveHeaders regex escaping can expose credential headers, follow-redirects: Cross-realm sensitiveHeaders arrays are discarded and custom credentials can follow redirects",
         "fixAvailable": true
       },
       {
         "package": "gaxios",
         "severity": "MODERATE",
         "via": "uuid",
+        "fixAvailable": true
+      },
+      {
+        "package": "glob",
+        "severity": "MODERATE",
+        "via": "Glob: AbortSignal cancellation bypass allows post-timeout filesystem traversal, minimatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "google-gax",
+        "severity": "MODERATE",
+        "via": "rimraf",
         "fixAvailable": true
       },
       {
@@ -159,7 +243,7 @@
       {
         "package": "minimatch",
         "severity": "HIGH",
-        "via": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions",
+        "via": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions, minimatch has potential denial of service via globparts amplification",
         "fixAvailable": true
       },
       {
@@ -205,6 +289,12 @@
         "fixAvailable": true
       },
       {
+        "package": "rimraf",
+        "severity": "MODERATE",
+        "via": "glob",
+        "fixAvailable": true
+      },
+      {
         "package": "sharp",
         "severity": "HIGH",
         "via": "sharp: Vulnerabilities in libheif: GHSA-g89c-p67h-r497 and GHSA-2jg2-4ch7-h545, sharp : Vulnerability in librsvg dependency CVE-2026-96889",
@@ -235,9 +325,21 @@
         "fixAvailable": true
       },
       {
+        "package": "ts-morph",
+        "severity": "MODERATE",
+        "via": "@ts-morph/common",
+        "fixAvailable": true
+      },
+      {
+        "package": "typescript-eslint",
+        "severity": "MODERATE",
+        "via": "@typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint",
+        "fixAvailable": true
+      },
+      {
         "package": "undici",
         "severity": "HIGH",
-        "via": "@fastify/busboy, Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression, undici vulnerable to Denial of Service via orphaned RetryHandler response body, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to Denial of Service via unrequested WebSocket subprotocol, undici vulnerable to Denial of Service via unbounded decompression of compressed responses, undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches, undici vulnerable to response truncation via oversized chunked responses in the dump interceptor, undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool, undici vulnerable to caching and replay of unsafe HTTP method responses, undici vulnerable to Denial of Service via WebSocketStream unclean close, undici vulnerable to Denial of Service via unbounded memory in the EventSource parser, undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens, undici vulnerable to Denial of Service via unhandled error on excessive content-encodings",
+        "via": "@fastify/busboy, Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici WebSocket client vulnerable to denial of service via fragment count bypass, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression, undici vulnerable to Denial of Service via orphaned RetryHandler response body, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to Denial of Service via unrequested WebSocket subprotocol, undici vulnerable to Denial of Service via unbounded decompression of compressed responses, undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches, undici vulnerable to response truncation via oversized chunked responses in the dump interceptor, undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool, undici vulnerable to caching and replay of unsafe HTTP method responses, undici vulnerable to Denial of Service via WebSocketStream unclean close, undici vulnerable to Denial of Service via unbounded memory in the EventSource parser, undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens, undici vulnerable to Denial of Service via unhandled error on excessive content-encodings, undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects, undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent, undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent, undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation, undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation, undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering, undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering, undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor",
         "fixAvailable": true
       },
       {
@@ -249,7 +351,7 @@
       {
         "package": "vite",
         "severity": "HIGH",
-        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, vite: `server.fs.deny` bypass on Windows alternate paths, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine, vite: `server.fs.deny` bypass on Windows alternate paths",
         "fixAvailable": true
       },
       {
