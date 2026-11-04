@@ -1,13 +1,13 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-11-04T12:13:21.683Z  
+**Timestamp:** 2026-11-04T19:49:53.965Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
 
 | Category | Critical | High | Moderate | Low | Total |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Dependencies (npm audit)** | 1 | 24 | 33 | 1 | 59 |
+| **Dependencies (npm audit)** | 1 | 24 | 26 | 1 | 52 |
 | **Secret Scanning** | 0 | 0 | 0 | 0 | 0 |
 | **Static Code Analysis (SAST)** | 0 | 0 | 0 | 7 | 7 |
 | **Configuration Checks** | 0 | 0 | 0 | 0 | 0 |
@@ -16,29 +16,25 @@
 
 ## 📦 1. Dependency Vulnerabilities
 
-Found **59** vulnerabilities in dependencies.
+Found **52** vulnerabilities in dependencies.
 
 | Package | Severity | Via / Advisory | Fix Available |
 | :--- | :---: | :--- | :---: |
-| `@eslint-community/eslint-utils` | **MODERATE** | eslint | ✅ Yes |
-| `@eslint/config-array` | **MODERATE** | minimatch | ✅ Yes |
-| `@eslint/eslintrc` | **MODERATE** | minimatch | ✅ Yes |
 | `@fastify/busboy` | **HIGH** | @fastify/busboy vulnerable to Denial of Service via oversized multipart boundary, @fastify/busboy vulnerable to Denial of Service via prototype-named multipart part header, @fastify/busboy vulnerable to CRLF injection via multipart Content-Disposition filename and name | ✅ Yes |
 | `@firebase/firestore` | **HIGH** | @grpc/grpc-js | ✅ Yes |
 | `@firebase/firestore-compat` | **HIGH** | @firebase/firestore | ✅ Yes |
 | `@google-cloud/storage` | **MODERATE** | retry-request, teeny-request | ✅ Yes |
 | `@grpc/grpc-js` | **HIGH** | @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages | ✅ Yes |
-| `@ts-morph/common` | **MODERATE** | minimatch | ✅ Yes |
-| `@typescript-eslint/eslint-plugin` | **MODERATE** | @typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils, eslint | ✅ Yes |
-| `@typescript-eslint/parser` | **MODERATE** | @typescript-eslint/typescript-estree, eslint | ✅ Yes |
-| `@typescript-eslint/type-utils` | **MODERATE** | @typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint | ✅ Yes |
+| `@typescript-eslint/eslint-plugin` | **MODERATE** | @typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils | ✅ Yes |
+| `@typescript-eslint/parser` | **MODERATE** | @typescript-eslint/typescript-estree | ✅ Yes |
+| `@typescript-eslint/type-utils` | **MODERATE** | @typescript-eslint/typescript-estree, @typescript-eslint/utils | ✅ Yes |
 | `@typescript-eslint/typescript-estree` | **MODERATE** | minimatch | ✅ Yes |
-| `@typescript-eslint/utils` | **MODERATE** | @eslint-community/eslint-utils, @typescript-eslint/typescript-estree, eslint | ✅ Yes |
+| `@typescript-eslint/utils` | **MODERATE** | @typescript-eslint/typescript-estree | ✅ Yes |
 | `@vercel/build-utils` | **HIGH** | @vercel/python-analysis | ✅ Yes |
 | `@vercel/nft` | **MODERATE** | glob | ✅ Yes |
-| `@vercel/node` | **HIGH** | @vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, ts-morph, undici | ✅ Yes |
+| `@vercel/node` | **HIGH** | @vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, undici | ✅ Yes |
 | `@vercel/python-analysis` | **HIGH** | js-yaml, minimatch, smol-toml, zod | ✅ Yes |
-| `@vercel/static-config` | **MODERATE** | ajv, ts-morph | ✅ Yes |
+| `@vercel/static-config` | **MODERATE** | ajv | ✅ Yes |
 | `@vitest/coverage-v8` | **MODERATE** | vitest | ✅ Yes |
 | `@vitest/mocker` | **MODERATE** | Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock, Vitest: Code injection via unauthenticated manual mock registration | ✅ Yes |
 | `ajv` | **MODERATE** | ajv has ReDoS when using `$data` option | ✅ Yes |
@@ -46,8 +42,6 @@ Found **59** vulnerabilities in dependencies.
 | `baseline-browser-mapping` | **MODERATE** | baseline-browser-mapping process termination on invalid input causes denial of service | ✅ Yes |
 | `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion | ✅ Yes |
 | `browserslist` | **HIGH** | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats) | ✅ Yes |
-| `eslint` | **MODERATE** | @eslint-community/eslint-utils, @eslint/config-array, @eslint/eslintrc, minimatch | ✅ Yes |
-| `eslint-plugin-react-refresh` | **MODERATE** | eslint | ❌ No |
 | `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
 | `fflate` | **MODERATE** | fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives | ✅ Yes |
 | `firebase` | **HIGH** | @firebase/firestore, @firebase/firestore-compat | ✅ Yes |
@@ -71,8 +65,7 @@ Found **59** vulnerabilities in dependencies.
 | `source-map-js` | **HIGH** | source-map-js allows event-loop denial of service through indexed source-map section offsets | ✅ Yes |
 | `tar` | **CRITICAL** | node-tar: Process crash via PAX numeric path type confusion, node-tar: Decompression/parse DoS via unlimited input, node-tar: Negative tar entry size causes infinite loop in archive replace, node-tar: Uncaught Exception DoS via NUL byte in PAX path/linkpath records, node-tar: Uncontrolled recursion in mapHas/filesFilter allows uncatchable stack-overflow DoS via crafted long-path tar with member selection | ✅ Yes |
 | `teeny-request` | **MODERATE** | uuid | ✅ Yes |
-| `ts-morph` | **MODERATE** | @ts-morph/common | ✅ Yes |
-| `typescript-eslint` | **MODERATE** | @typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint | ✅ Yes |
+| `typescript-eslint` | **MODERATE** | @typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils | ✅ Yes |
 | `undici` | **HIGH** | @fastify/busboy, Use of Insufficiently Random Values in undici, Undici has an unbounded decompression chain in HTTP responses on Node.js Fetch API via Content-Encoding leads to resource exhaustion, undici Denial of Service attack via bad certificate data, Undici has an HTTP Request/Response Smuggling issue, Undici has Unbounded Memory Consumption in WebSocket permessage-deflate Decompression, Undici has Unhandled Exception in WebSocket Client Due to Invalid server_max_window_bits Validation, Undici has CRLF Injection in undici via `upgrade` option, undici vulnerable to HTTP header injection via Set-Cookie percent-decoding, undici vulnerable to Set-Cookie SameSite attribute downgrade via permissive substring matching, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to downstream response desynchronization via retry interceptor, undici vulnerable to cross-user information disclosure and parse-time crash via degenerate private cache directives, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to CRLF Injection via blob-like body 'type' property, undici vulnerable to cross-user information disclosure via whitespace around equals in Cache-Control directives, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to cookie attribute injection via unsanitized domain and unparsed setCookie fields, undici vulnerable to HTTP response queue poisoning via keep-alive socket reuse, undici vulnerable to Denial of Service via unhandled error in WebSocket permessage-deflate decompression, undici vulnerable to Denial of Service via orphaned RetryHandler response body, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to downstream response splitting via retry interceptor, undici vulnerable to Denial of Service via unrequested WebSocket subprotocol, undici vulnerable to Denial of Service via unbounded decompression of compressed responses, undici vulnerable to cross-user cookie disclosure via Set-Cookie caching in shared caches, undici vulnerable to response truncation via oversized chunked responses in the dump interceptor, undici vulnerable to TLS certificate validation bypass via dropped connect options in BalancedPool, undici vulnerable to caching and replay of unsafe HTTP method responses, undici vulnerable to Denial of Service via WebSocketStream unclean close, undici vulnerable to Denial of Service via unbounded memory in the EventSource parser, undici vulnerable to Subresource Integrity bypass via non-lowercase algorithm tokens, undici vulnerable to Denial of Service via unhandled error on excessive content-encodings, undici vulnerable to cache poisoning and cross-user disclosure via cross-origin redirects, undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent, undici vulnerable to TLS certificate validation bypass via dropped tls options in Agent, undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation, undici vulnerable to Denial of Service via TLS 1.2 certificate-changing renegotiation, undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering, undici WebSocket client vulnerable to Denial of Service via unbounded automatic PONG buffering, undici vulnerable to Denial of Service via unhandled exception in the decompress interceptor, undici WebSocket client vulnerable to denial of service via fragment count bypass | ✅ Yes |
 | `uuid` | **MODERATE** | uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided | ✅ Yes |
 | `vite` | **HIGH** | Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine, vite: `server.fs.deny` bypass on Windows alternate paths | ✅ Yes |
