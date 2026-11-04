@@ -1,41 +1,23 @@
 {
-  "timestamp": "2026-11-04T12:13:21.683Z",
+  "timestamp": "2026-11-04T19:49:53.965Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 3420,
-    "totalIssues": 59,
+    "durationMs": 4859,
+    "totalIssues": 52,
     "critical": 1,
     "high": 24,
-    "moderate": 33
+    "moderate": 26
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 33,
+      "moderate": 26,
       "high": 24,
       "critical": 1,
-      "total": 59
+      "total": 52
     },
     "advisories": [
-      {
-        "package": "@eslint-community/eslint-utils",
-        "severity": "MODERATE",
-        "via": "eslint",
-        "fixAvailable": true
-      },
-      {
-        "package": "@eslint/config-array",
-        "severity": "MODERATE",
-        "via": "minimatch",
-        "fixAvailable": true
-      },
-      {
-        "package": "@eslint/eslintrc",
-        "severity": "MODERATE",
-        "via": "minimatch",
-        "fixAvailable": true
-      },
       {
         "package": "@fastify/busboy",
         "severity": "HIGH",
@@ -67,27 +49,21 @@
         "fixAvailable": true
       },
       {
-        "package": "@ts-morph/common",
-        "severity": "MODERATE",
-        "via": "minimatch",
-        "fixAvailable": true
-      },
-      {
         "package": "@typescript-eslint/eslint-plugin",
         "severity": "MODERATE",
-        "via": "@typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils, eslint",
+        "via": "@typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils",
         "fixAvailable": true
       },
       {
         "package": "@typescript-eslint/parser",
         "severity": "MODERATE",
-        "via": "@typescript-eslint/typescript-estree, eslint",
+        "via": "@typescript-eslint/typescript-estree",
         "fixAvailable": true
       },
       {
         "package": "@typescript-eslint/type-utils",
         "severity": "MODERATE",
-        "via": "@typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint",
+        "via": "@typescript-eslint/typescript-estree, @typescript-eslint/utils",
         "fixAvailable": true
       },
       {
@@ -99,7 +75,7 @@
       {
         "package": "@typescript-eslint/utils",
         "severity": "MODERATE",
-        "via": "@eslint-community/eslint-utils, @typescript-eslint/typescript-estree, eslint",
+        "via": "@typescript-eslint/typescript-estree",
         "fixAvailable": true
       },
       {
@@ -117,7 +93,7 @@
       {
         "package": "@vercel/node",
         "severity": "HIGH",
-        "via": "@vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, ts-morph, undici",
+        "via": "@vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, undici",
         "fixAvailable": true
       },
       {
@@ -129,7 +105,7 @@
       {
         "package": "@vercel/static-config",
         "severity": "MODERATE",
-        "via": "ajv, ts-morph",
+        "via": "ajv",
         "fixAvailable": true
       },
       {
@@ -173,18 +149,6 @@
         "severity": "HIGH",
         "via": "Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats)",
         "fixAvailable": true
-      },
-      {
-        "package": "eslint",
-        "severity": "MODERATE",
-        "via": "@eslint-community/eslint-utils, @eslint/config-array, @eslint/eslintrc, minimatch",
-        "fixAvailable": true
-      },
-      {
-        "package": "eslint-plugin-react-refresh",
-        "severity": "MODERATE",
-        "via": "eslint",
-        "fixAvailable": false
       },
       {
         "package": "fast-xml-parser",
@@ -325,15 +289,9 @@
         "fixAvailable": true
       },
       {
-        "package": "ts-morph",
-        "severity": "MODERATE",
-        "via": "@ts-morph/common",
-        "fixAvailable": true
-      },
-      {
         "package": "typescript-eslint",
         "severity": "MODERATE",
-        "via": "@typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils, eslint",
+        "via": "@typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils",
         "fixAvailable": true
       },
       {
