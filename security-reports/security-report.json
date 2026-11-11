@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-11-10T21:50:36.405Z",
+  "timestamp": "2026-11-11T06:31:44.332Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 2864,
+    "durationMs": 4761,
     "totalIssues": 52,
     "critical": 1,
     "high": 24,
@@ -153,7 +153,7 @@
       {
         "package": "fast-xml-parser",
         "severity": "HIGH",
-        "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits",
+        "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits, fast-xml-parser: Quadratic CPU consumption scanning unterminated stop-node tags",
         "fixAvailable": true
       },
       {
