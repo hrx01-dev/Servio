@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-11-10T21:50:36.405Z  
+**Timestamp:** 2026-11-11T06:31:44.332Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -42,7 +42,7 @@ Found **52** vulnerabilities in dependencies.
 | `baseline-browser-mapping` | **MODERATE** | baseline-browser-mapping process termination on invalid input causes denial of service | ✅ Yes |
 | `brace-expansion` | **HIGH** | brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via exponential-time expansion of consecutive non-expanding {} groups, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded expansion length causing an out-of-memory process crash, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: DoS via unbounded intermediate arrays, bypassing the CVE-2026-14257 mitigation, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion, brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion | ✅ Yes |
 | `browserslist` | **HIGH** | Browserslist: Unbounded memory growth (no cache eviction) via distinct query results, leading to eventual OOM, Browserslist: Uncaught crash / prototype write via untrusted browserslist-stats.json custom stats (normalizeStats) | ✅ Yes |
-| `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits | ✅ Yes |
+| `fast-xml-parser` | **HIGH** | fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits, fast-xml-parser: Quadratic CPU consumption scanning unterminated stop-node tags | ✅ Yes |
 | `fflate` | **MODERATE** | fflate unzipSync can enter an infinite loop when parsing malformed ZIP64 archives | ✅ Yes |
 | `firebase` | **HIGH** | @firebase/firestore, @firebase/firestore-compat | ✅ Yes |
 | `firebase-admin` | **MODERATE** | @google-cloud/storage | ✅ Yes |
