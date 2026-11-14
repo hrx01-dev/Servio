@@ -252,71 +252,76 @@ export default async function handler(
           .json({ error: "Could not verify the payment with Razorpay" });
       }
 
-      // Record successful payment in Firestore
+      // Record successful payment in a Firestore transaction. The replay check
+      // and the array update must be atomic: concurrent requests for the same
+      // captured payment otherwise both read the old array and both append it.
       const db = getFirestore();
       const normalizedEmail = clientEmail.trim().toLowerCase();
       const billingRef = db.collection("projectBilling").doc(normalizedEmail);
 
-      const billingDoc = await billingRef.get();
-      if (!billingDoc.exists) {
-        return res
-          .status(404)
-          .json({ error: "Billing record not found for this client" });
-      }
-
-      const data = billingDoc.data();
-      let payments: Record<string, unknown>[] = data?.payments || [];
-
-      // Replay protection: reject if this payment ID was already recorded so a
-      // captured payment can't be submitted twice to inflate the paid balance.
-      const alreadyRecorded = payments.some(
-        (p) => p.reference === razorpay_payment_id || p.id === razorpay_payment_id
-      );
-      if (alreadyRecorded) {
-        return res
-          .status(409)
-          .json({ error: "This payment has already been recorded" });
-      }
-
-      if (pendingPaymentId) {
-        // Update the existing pending payment with the authenticated amount, so
-        // the completion path is as authoritative as the ad-hoc append path.
-        let matchedPendingPayment = false;
-        payments = payments.map((p) => {
-          if (p.id === pendingPaymentId) {
-            matchedPendingPayment = true;
-            return {
-              ...p,
-              amount: authenticatedAmount,
-              status: "completed",
-              method: "Razorpay",
-              reference: razorpay_payment_id,
-              date: new Date().toISOString(), // Optional: update date to completion date
-            };
-          }
-          return p;
-        });
-        if (!matchedPendingPayment) {
-          return res.status(404).json({ error: "Pending payment not found" });
+      const outcome = await db.runTransaction(async (transaction) => {
+        const billingDoc = await transaction.get(billingRef);
+        if (!billingDoc.exists) {
+          return { status: 404 as const, error: "Billing record not found for this client" };
         }
-      } else {
-        // Append a new payment
-        const newPayment = {
-          id: razorpay_payment_id, // Use razorpay payment id for new ad-hoc payments
-          amount: authenticatedAmount,
-          method: "Razorpay",
-          reference: razorpay_payment_id,
-          status: "completed",
-          date: new Date().toISOString(),
-        };
-        payments.push(newPayment);
-      }
 
-      // Update the document with the modified array
-      await billingRef.update({
-        payments: payments,
-        updatedAt: FieldValue.serverTimestamp(),
+        const data = billingDoc.data();
+        let payments: Record<string, unknown>[] = Array.isArray(data?.payments)
+          ? [...data.payments]
+          : [];
+
+        // Firestore retries a conflicting transaction against the latest
+        // document version, so a racing request sees the ID written by the
+        // winner and returns 409 instead of appending a duplicate.
+        const alreadyRecorded = payments.some(
+          (payment) =>
+            payment.reference === razorpay_payment_id || payment.id === razorpay_payment_id
+        );
+        if (alreadyRecorded) {
+          return { status: 409 as const, error: "This payment has already been recorded" };
+        }
+
+        if (pendingPaymentId) {
+          // Update the existing pending payment with the authenticated amount.
+          let matchedPendingPayment = false;
+          payments = payments.map((payment) => {
+            if (payment.id === pendingPaymentId) {
+              matchedPendingPayment = true;
+              return {
+                ...payment,
+                amount: authenticatedAmount,
+                status: "completed",
+                method: "Razorpay",
+                reference: razorpay_payment_id,
+                date: new Date().toISOString(),
+              };
+            }
+            return payment;
+          });
+          if (!matchedPendingPayment) {
+            return { status: 404 as const, error: "Pending payment not found" };
+          }
+        } else {
+          payments.push({
+            id: razorpay_payment_id,
+            amount: authenticatedAmount,
+            method: "Razorpay",
+            reference: razorpay_payment_id,
+            status: "completed",
+            date: new Date().toISOString(),
+          });
+        }
+
+        transaction.update(billingRef, {
+          payments,
+          updatedAt: FieldValue.serverTimestamp(),
+        });
+        return { status: 200 as const };
       });
+
+      if (outcome.status !== 200) {
+        return res.status(outcome.status).json({ error: outcome.error });
+      }
 
       return res.status(200).json({ success: true });
     }
