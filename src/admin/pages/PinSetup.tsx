@@ -167,9 +167,7 @@ export function PinSetup() {
     setBusy(true);
 
     try {
-      if (DEV_MOCK_ENABLED) {
-        console.log("[PinSetup] DEV_MOCK_ENABLED: skipping PIN hash and Firestore write.");
-      } else {
+      if (!DEV_MOCK_ENABLED) {
         // 1. Hash the PIN in the Web Worker (non-blocking, runs at 600k iterations).
         const cred = await createPinCredential(pin);
 
