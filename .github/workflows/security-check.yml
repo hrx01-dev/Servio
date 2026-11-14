@@ -26,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -55,7 +55,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Create Pull Request with Security Audit Report
-        if: always()
+        if: always() && github.event_name != 'pull_request'
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
@@ -63,6 +63,7 @@ jobs:
           committer: Jayam Srivastava <jayamsrivastava99@gmail.com>
           commit-message: "docs: update automated security audit report [skip ci]"
           branch: automated/security-reports
+          base: main
           title: "docs: Automated Security Audit Report Update"
           body: |
             This automated Pull Request updates the repository security audit reports in `security-reports/`.
