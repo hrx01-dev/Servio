@@ -1,6 +1,6 @@
 # 🛡️ Repository Security Audit Report
 
-**Timestamp:** 2026-11-16T06:37:27.755Z  
+**Timestamp:** 2026-11-16T18:37:46.865Z  
 **Overall Status:** ❌ **FAIL**  
 
 ## 📊 Executive Summary
@@ -25,7 +25,7 @@ Found **52** vulnerabilities in dependencies.
 | `@firebase/firestore-compat` | **HIGH** | @firebase/firestore | ✅ Yes |
 | `@google-cloud/storage` | **MODERATE** | retry-request, teeny-request | ✅ Yes |
 | `@grpc/grpc-js` | **HIGH** | @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: In certain configurations, getAuthContext can return unauthorized certificates as though they were authorized, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages, @grpc/grpc-js: The server transmits some error messages thrown by method handlers to the client in status messages | ✅ Yes |
-| `@typescript-eslint/eslint-plugin` | **MODERATE** | @typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils | ✅ Yes |
+| `@typescript-eslint/eslint-plugin` | **MODERATE** | @typescript-eslint/type-utils, @typescript-eslint/utils | ✅ Yes |
 | `@typescript-eslint/parser` | **MODERATE** | @typescript-eslint/typescript-estree | ✅ Yes |
 | `@typescript-eslint/type-utils` | **MODERATE** | @typescript-eslint/typescript-estree, @typescript-eslint/utils | ✅ Yes |
 | `@typescript-eslint/typescript-estree` | **MODERATE** | minimatch | ✅ Yes |
