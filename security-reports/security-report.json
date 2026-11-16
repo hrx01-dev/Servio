@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-11-16T06:37:27.755Z",
+  "timestamp": "2026-11-16T18:37:46.865Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 4025,
+    "durationMs": 2217,
     "totalIssues": 52,
     "critical": 1,
     "high": 24,
@@ -51,7 +51,7 @@
       {
         "package": "@typescript-eslint/eslint-plugin",
         "severity": "MODERATE",
-        "via": "@typescript-eslint/parser, @typescript-eslint/type-utils, @typescript-eslint/utils",
+        "via": "@typescript-eslint/type-utils, @typescript-eslint/utils",
         "fixAvailable": true
       },
       {
