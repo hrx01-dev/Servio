@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-11-17T13:31:08.476Z",
+  "timestamp": "2026-11-17T23:33:05.422Z",
   "summary": {
     "status": "FAIL",
-    "durationMs": 1850,
-    "totalIssues": 52,
+    "durationMs": 2883,
+    "totalIssues": 60,
     "critical": 1,
-    "high": 24,
-    "moderate": 26
+    "high": 36,
+    "moderate": 22
   },
   "dependencyAudit": {
     "vulnerabilities": {
       "info": 0,
       "low": 1,
-      "moderate": 26,
-      "high": 24,
+      "moderate": 22,
+      "high": 36,
       "critical": 1,
-      "total": 52
+      "total": 60
     },
     "advisories": [
       {
@@ -49,6 +49,18 @@
         "fixAvailable": true
       },
       {
+        "package": "@rollup/pluginutils",
+        "severity": "HIGH",
+        "via": "picomatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "@ts-morph/common",
+        "severity": "HIGH",
+        "via": "fast-glob",
+        "fixAvailable": true
+      },
+      {
         "package": "@typescript-eslint/eslint-plugin",
         "severity": "MODERATE",
         "via": "@typescript-eslint/type-utils, @typescript-eslint/utils",
@@ -68,8 +80,8 @@
       },
       {
         "package": "@typescript-eslint/typescript-estree",
-        "severity": "MODERATE",
-        "via": "minimatch",
+        "severity": "HIGH",
+        "via": "minimatch, tinyglobby",
         "fixAvailable": true
       },
       {
@@ -86,14 +98,14 @@
       },
       {
         "package": "@vercel/nft",
-        "severity": "MODERATE",
-        "via": "glob",
+        "severity": "HIGH",
+        "via": "@rollup/pluginutils, glob, picomatch",
         "fixAvailable": true
       },
       {
         "package": "@vercel/node",
         "severity": "HIGH",
-        "via": "@vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, undici",
+        "via": "@vercel/build-utils, @vercel/nft, @vercel/static-config, path-to-regexp, ts-morph, undici",
         "fixAvailable": true
       },
       {
@@ -104,8 +116,8 @@
       },
       {
         "package": "@vercel/static-config",
-        "severity": "MODERATE",
-        "via": "ajv",
+        "severity": "HIGH",
+        "via": "ajv, ts-morph",
         "fixAvailable": true
       },
       {
@@ -151,9 +163,21 @@
         "fixAvailable": true
       },
       {
+        "package": "fast-glob",
+        "severity": "HIGH",
+        "via": "micromatch",
+        "fixAvailable": true
+      },
+      {
         "package": "fast-xml-parser",
         "severity": "HIGH",
         "via": "fast-xml-parser: Repeated DOCTYPE declarations reset entity expansion limits, fast-xml-parser: Quadratic CPU consumption scanning unterminated stop-node tags",
+        "fixAvailable": true
+      },
+      {
+        "package": "fdir",
+        "severity": "HIGH",
+        "via": "picomatch",
         "fixAvailable": true
       },
       {
@@ -205,6 +229,12 @@
         "fixAvailable": true
       },
       {
+        "package": "micromatch",
+        "severity": "HIGH",
+        "via": "picomatch",
+        "fixAvailable": true
+      },
+      {
         "package": "minimatch",
         "severity": "HIGH",
         "via": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern, minimatch has ReDoS: matchOne() combinatorial backtracking via multiple non-adjacent GLOBSTAR segments, minimatch ReDoS: nested *() extglobs generate catastrophically backtracking regular expressions, minimatch has potential denial of service via globparts amplification",
@@ -220,6 +250,12 @@
         "package": "path-to-regexp",
         "severity": "HIGH",
         "via": "path-to-regexp outputs backtracking regular expressions",
+        "fixAvailable": true
+      },
+      {
+        "package": "picomatch",
+        "severity": "HIGH",
+        "via": "picomatch vulnerable to ReDoS through single-branch repeated extglobs",
         "fixAvailable": true
       },
       {
@@ -289,6 +325,18 @@
         "fixAvailable": true
       },
       {
+        "package": "tinyglobby",
+        "severity": "HIGH",
+        "via": "fdir, picomatch",
+        "fixAvailable": true
+      },
+      {
+        "package": "ts-morph",
+        "severity": "HIGH",
+        "via": "@ts-morph/common",
+        "fixAvailable": true
+      },
+      {
         "package": "typescript-eslint",
         "severity": "MODERATE",
         "via": "@typescript-eslint/eslint-plugin, @typescript-eslint/parser, @typescript-eslint/typescript-estree, @typescript-eslint/utils",
@@ -309,13 +357,13 @@
       {
         "package": "vite",
         "severity": "HIGH",
-        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine, vite: `server.fs.deny` bypass on Windows alternate paths",
+        "via": "Vite middleware may serve files starting with the same name with the public directory, Vite's `server.fs` settings were not applied to HTML files, vite allows server.fs.deny bypass via backslash on Windows, Vite Vulnerable to Path Traversal in Optimized Deps `.map` Handling, Vite Vulnerable to Arbitrary File Read via Vite Dev Server WebSocket, launch-editor: NTLMv2 hash disclosure via UNC path handling on Windows, launch-editor: escapeCmdArgs() omits % escaping on Windows, launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors, launch-editor: `fs.existsSync()` existence check can be bypassed on Windows, Vite: Cross origin script execution through Vite custom middleware, Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine, vite: `server.fs.deny` bypass on Windows alternate paths, fdir, picomatch, tinyglobby",
         "fixAvailable": true
       },
       {
         "package": "vitest",
-        "severity": "MODERATE",
-        "via": "@vitest/coverage-v8, @vitest/mocker, Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+        "severity": "HIGH",
+        "via": "@vitest/coverage-v8, @vitest/mocker, Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock, picomatch, tinyglobby",
         "fixAvailable": true
       },
       {
