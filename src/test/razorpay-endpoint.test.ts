@@ -28,6 +28,38 @@ vi.mock("firebase-admin/firestore", () => {
         },
       }),
     }),
+    runTransaction: async (
+      callback: (tx: {
+        get: (ref: { __path: string }) => Promise<{ exists: boolean; get: (field: string) => unknown }>;
+        set: (ref: { __path: string }, data: Record<string, unknown>) => void;
+      }) => Promise<unknown>,
+    ) => {
+      const tx = {
+        get: async (ref: { __path: string }) => {
+          const data = store.get(ref.__path);
+          return {
+            exists: data !== undefined,
+            get: (field: string) => data?.[field],
+          };
+        },
+        set: (ref: { __path: string }, data: Record<string, unknown>) => {
+          store.set(ref.__path, data);
+        },
+      };
+      return callback(tx);
+    },
+  };
+  return {
+            exists: data !== undefined,
+            data: () => data,
+          };
+        },
+        update: async (updates: Record<string, unknown>) => {
+          const existing = store.get(`${name}/${id}`) || {};
+          store.set(`${name}/${id}`, { ...existing, ...updates });
+        },
+      }),
+    }),
   };
   return {
     getFirestore: () => db,
@@ -55,9 +87,10 @@ function makeReq(
   body: unknown,
   query: Record<string, string> = {},
   method = "POST",
-  origin = "https://servio-0.web.app"
+  origin = "https://servio-0.web.app",
+  ip = "127.0.0.1",
 ) {
-  return { method, headers: { origin }, query, body } as never;
+  return { method, headers: { origin, "x-forwarded-for": ip }, query, body } as never;
 }
 
 function makeRes() {
@@ -102,6 +135,7 @@ beforeEach(() => {
   process.env.RAZORPAY_KEY_ID = "test-id";
   process.env.RAZORPAY_KEY_SECRET = "test-secret";
   process.env.FIREBASE_SERVICE_ACCOUNT = "";
+  process.env.RATE_LIMIT_HASH_SECRET = "test-pepper";
 });
 
 describe("api/razorpay", () => {
@@ -141,6 +175,95 @@ describe("api/razorpay", () => {
       );
       expect(res.statusCode).toBe(400);
       expect(res.payload).toEqual({ error: "Amount is out of range" });
+    });
+
+    it("limits order creation to 10 requests per IP in 15 minutes", async () => {
+      store.set("projectBilling/a@b.com", { totalCost: 1000, payments: [] });
+      mockOrdersCreate.mockResolvedValue({ id: "order_123", amount: 10000, currency: "INR" });
+
+      const statuses: number[] = [];
+      let lastResponse = makeRes();
+      for (let i = 0; i < 11; i += 1) {
+        lastResponse = makeRes();
+        await handler(
+          makeReq(
+            { amount: 100, clientEmail: "a@b.com" },
+            { action: "createOrder" },
+            "POST",
+            "https://servio-0.web.app",
+            "8.8.8.8",
+          ),
+          lastResponse as never,
+        );
+        statuses.push(lastResponse.statusCode);
+      }
+
+      expect(statuses).toEqual([...Array(10).fill(200), 429]);
+      expect(mockOrdersCreate).toHaveBeenCalledTimes(10);
+      expect(Number(lastResponse.headers["Retry-After"])).toBeGreaterThan(0);
+
+      const ipHash = crypto.createHmac("sha256", "test-pepper").update("8.8.8.8").digest("hex");
+      expect(store.has("razorpayCreateOrderRateLimit/" + ipHash)).toBe(true);
+      expect(store.has("razorpayCreateOrderRateLimit/8.8.8.8")).toBe(false);
+    });
+
+    it("keeps create-order rate limits independent per IP", async () => {
+      store.set("projectBilling/a@b.com", { totalCost: 1000, payments: [] });
+      mockOrdersCreate.mockResolvedValue({ id: "order_123", amount: 10000, currency: "INR" });
+
+      for (let i = 0; i < 10; i += 1) {
+        await handler(
+          makeReq(
+            { amount: 100, clientEmail: "a@b.com" },
+            { action: "createOrder" },
+            "POST",
+            "https://servio-0.web.app",
+            "1.1.1.1",
+          ),
+          makeRes() as never,
+        );
+      }
+
+      const blocked = makeRes();
+      await handler(
+        makeReq(
+          { amount: 100, clientEmail: "a@b.com" },
+          { action: "createOrder" },
+          "POST",
+          "https://servio-0.web.app",
+          "1.1.1.1",
+        ),
+        blocked as never,
+      );
+      expect(blocked.statusCode).toBe(429);
+
+      const otherIp = makeRes();
+      await handler(
+        makeReq(
+          { amount: 100, clientEmail: "a@b.com" },
+          { action: "createOrder" },
+          "POST",
+          "https://servio-0.web.app",
+          "2.2.2.2",
+        ),
+        otherIp as never,
+      );
+      expect(otherIp.statusCode).toBe(200);
+    });
+
+    it("fails closed when the rate-limit hash secret is missing", async () => {
+      store.set("projectBilling/a@b.com", { totalCost: 1000, payments: [] });
+      delete process.env.RATE_LIMIT_HASH_SECRET;
+
+      const res = makeRes();
+      await handler(
+        makeReq({ amount: 100, clientEmail: "a@b.com" }, { action: "createOrder" }),
+        res as never,
+      );
+
+      expect(res.statusCode).toBe(500);
+      expect(res.payload).toEqual({ error: "Rate limiting is not configured on the server." });
+      expect(mockOrdersCreate).not.toHaveBeenCalled();
     });
 
     it("creates an order successfully", async () => {
