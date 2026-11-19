@@ -34,6 +34,51 @@ function initAdmin(): boolean {
   }
 }
 
+const CREATE_ORDER_RATE_LIMIT = { maxRequests: 10, windowMs: 15 * 60 * 1000 };
+const CREATE_ORDER_RATE_LIMIT_COLLECTION = "razorpayCreateOrderRateLimit";
+
+function callerIp(req: VercelRequest): string {
+  const forwarded = req.headers["x-forwarded-for"];
+  const raw = Array.isArray(forwarded) ? forwarded[0] : (forwarded ?? "");
+  return raw.split(",")[0].trim() || "unknown";
+}
+
+// Use a keyed hash so the limiter never persists raw client IP addresses.
+// Firestore transactions make the sliding window atomic across Vercel instances.
+async function checkCreateOrderRateLimit(
+  ip: string,
+  secret: string,
+  now: number,
+): Promise<{ allowed: boolean; retryAfterMs: number }> {
+  const db = getFirestore();
+  const ipKey = crypto.createHmac("sha256", secret).update(ip).digest("hex");
+  const ref = db.collection(CREATE_ORDER_RATE_LIMIT_COLLECTION).doc(ipKey);
+
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const stored = snap.exists ? snap.get("timestamps") : undefined;
+    const history: number[] = Array.isArray(stored)
+      ? (stored as unknown[]).filter((timestamp): timestamp is number => typeof timestamp === "number")
+      : [];
+    const recent = history.filter(
+      (timestamp) => timestamp > now - CREATE_ORDER_RATE_LIMIT.windowMs && timestamp <= now,
+    );
+
+    if (recent.length >= CREATE_ORDER_RATE_LIMIT.maxRequests) {
+      const oldest = Math.min(...recent);
+      return {
+        allowed: false,
+        retryAfterMs: Math.max(0, oldest + CREATE_ORDER_RATE_LIMIT.windowMs - now),
+      };
+    }
+
+    tx.set(ref, {
+      timestamps: [...recent, now],
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    return { allowed: true, retryAfterMs: 0 };
+  });
+}
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse
@@ -115,16 +160,43 @@ export default async function handler(
         return res.status(400).json({ error: "Amount is out of range" });
       }
 
-      // Defence-in-depth: validate the requested amount against the Firestore
-      // billing record so a client cannot create an order for an arbitrary
-      // (especially tiny) amount and later record a "fully paid" entry.
+      // The estimate endpoint already uses this durable per-IP limiter. Apply
+      // the same protection to Razorpay order creation before billing reads or
+      // paid gateway calls so an anonymous caller cannot create unlimited orders.
+      const hashSecret = process.env.RATE_LIMIT_HASH_SECRET;
+      if (!hashSecret) {
+        return res
+          .status(500)
+          .json({ error: "Rate limiting is not configured on the server." });
+      }
       if (!initAdmin()) {
         return res
           .status(500)
           .json({ error: "Server is not configured correctly. Please try again later." });
       }
+
+      let verdict: { allowed: boolean; retryAfterMs: number };
+      try {
+        verdict = await checkCreateOrderRateLimit(callerIp(req), hashSecret, Date.now());
+      } catch (err) {
+        console.error("Razorpay create-order rate-limit check failed:", err);
+        return res
+          .status(500)
+          .json({ error: "Could not process your request right now. Please try again." });
+      }
+      if (!verdict.allowed) {
+        res.setHeader("Retry-After", String(Math.ceil(verdict.retryAfterMs / 1000)));
+        return res.status(429).json({
+          error: "Too many payment-order requests. Please try again in a few minutes.",
+          retryAfterMs: verdict.retryAfterMs,
+        });
+      }
+
+      // Defence-in-depth: validate the requested amount against the Firestore
+      // billing record so a client cannot create an order for an arbitrary
+      // (especially tiny) amount and later record a "fully paid" entry.
       const db = getFirestore();
-      const normalizedEmail = clientEmail.trim().toLowerCase();
+            const normalizedEmail = clientEmail.trim().toLowerCase();
       const billingDoc = await db
         .collection("projectBilling")
         .doc(normalizedEmail)
