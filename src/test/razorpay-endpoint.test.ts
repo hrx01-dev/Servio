@@ -50,18 +50,6 @@ vi.mock("firebase-admin/firestore", () => {
     },
   };
   return {
-            exists: data !== undefined,
-            data: () => data,
-          };
-        },
-        update: async (updates: Record<string, unknown>) => {
-          const existing = store.get(`${name}/${id}`) || {};
-          store.set(`${name}/${id}`, { ...existing, ...updates });
-        },
-      }),
-    }),
-  };
-  return {
     getFirestore: () => db,
     FieldValue: { serverTimestamp: () => "__ts__" },
   };
