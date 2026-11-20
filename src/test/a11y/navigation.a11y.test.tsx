@@ -75,5 +75,4 @@ describe('accessibility: navigation', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'false')
     expect(toggle).toHaveFocus()
   })
-
 })
