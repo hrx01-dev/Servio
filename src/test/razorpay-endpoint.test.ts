@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 
 // Mock firebase-admin
 const store = new Map<string, Record<string, unknown>>();
-const adminState = vi.hoisted(() => ({ appsInitialized: true }));
+const adminState = vi.hoisted(() => ({
+  appsInitialized: true,
+  transactionTail: Promise.resolve(),
+}));
 
 vi.mock("firebase-admin/app", () => ({
   getApps: () => (adminState.appsInitialized ? [{}] : []),
@@ -28,6 +31,38 @@ vi.mock("firebase-admin/firestore", () => {
         },
       }),
     }),
+    runTransaction: async <T>(
+      callback: (transaction: {
+        get: (ref: { __path: string }) => Promise<{
+          exists: boolean;
+          data: () => Record<string, unknown> | undefined;
+        }>;
+        update: (ref: { __path: string }, updates: Record<string, unknown>) => void;
+      }) => Promise<T>,
+    ): Promise<T> => {
+      // Serialize mock transactions so concurrent requests observe the
+      // committed document version, matching Firestore's conflict retry.
+      const previous = adminState.transactionTail;
+      let release!: () => void;
+      adminState.transactionTail = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      await previous;
+      try {
+        return await callback({
+          get: async (ref) => {
+            const data = store.get(ref.__path);
+            return { exists: data !== undefined, data: () => data };
+          },
+          update: (ref, updates) => {
+            const existing = store.get(ref.__path) || {};
+            store.set(ref.__path, { ...existing, ...updates });
+          },
+        });
+      } finally {
+        release();
+      }
+    },
   };
   return {
     getFirestore: () => db,
@@ -95,6 +130,7 @@ function makeRes() {
 }
 
 beforeEach(() => {
+  adminState.transactionTail = Promise.resolve();
   store.clear();
   mockOrdersCreate.mockClear();
   mockPaymentsFetch.mockClear();
@@ -273,6 +309,28 @@ describe("api/razorpay", () => {
       await handler(makeReq(validVerifyBody, { action: "verifyPayment" }), res as never);
       expect(res.statusCode).toBe(409);
       expect(res.payload).toEqual({ error: "This payment has already been recorded" });
+    });
+
+    it("records a captured payment only once when identical verifications race", async () => {
+      mockPaymentsFetch.mockResolvedValue({
+        order_id: "order_123",
+        status: "captured",
+        amount: 10000,
+      });
+      const first = makeRes();
+      const second = makeRes();
+
+      await Promise.all([
+        handler(makeReq(validVerifyBody, { action: "verifyPayment" }), first as never),
+        handler(makeReq(validVerifyBody, { action: "verifyPayment" }), second as never),
+      ]);
+
+      expect([first.statusCode, second.statusCode].sort()).toEqual([200, 409]);
+      const data = store.get("projectBilling/test@example.com") as {
+        payments: Array<Record<string, unknown>>;
+      };
+      expect(data.payments).toHaveLength(1);
+      expect(data.payments[0].reference).toBe("pay_123");
     });
   });
 });
