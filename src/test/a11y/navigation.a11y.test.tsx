@@ -25,4 +25,54 @@ describe('accessibility: navigation', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'true')
     expect(await axeCheck(container)).toHaveNoViolations()
   })
+
+  it('returns focus to the menu trigger after choosing a mobile navigation item', () => {
+    renderWithProviders(<Navbar />)
+    const toggle = screen.getByRole('button', { name: 'Open menu' })
+    fireEvent.click(toggle)
+
+    const menu = document.getElementById('mobile-menu')
+    expect(menu).not.toBeNull()
+    const firstItem = menu!.querySelector<HTMLButtonElement>('button')
+    expect(firstItem).not.toBeNull()
+
+    firstItem!.focus()
+    fireEvent.click(firstItem!)
+    expect(toggle).toHaveFocus()
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('wraps keyboard focus at both ends of the open mobile menu', () => {
+    renderWithProviders(<Navbar />)
+    const toggle = screen.getByRole('button', { name: 'Open menu' })
+    fireEvent.click(toggle)
+
+    const menu = document.getElementById('mobile-menu')
+    expect(menu).not.toBeNull()
+    const focusable = Array.from(
+      menu!.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+    )
+    expect(focusable.length).toBeGreaterThan(1)
+
+    const first = focusable[0]
+    const last = focusable[focusable.length - 1]
+
+    last.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+    expect(first).toHaveFocus()
+
+    first.focus()
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
+    expect(last).toHaveFocus()
+  })
+
+  it('closes the mobile menu and restores focus on Escape', () => {
+    renderWithProviders(<Navbar />)
+    const toggle = screen.getByRole('button', { name: 'Open menu' })
+    fireEvent.click(toggle)
+    fireEvent.keyDown(document, { key: 'Escape' })
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(toggle).toHaveFocus()
+  })
 })

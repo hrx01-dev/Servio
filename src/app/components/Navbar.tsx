@@ -179,7 +179,9 @@ export function Navbar() {
   };
 
   const scrollToSection = (id: string) => {
-    setIsMobileMenuOpen(false);
+    // Restore keyboard focus before the mobile panel unmounts. Desktop links
+    // share this handler, so do not move focus when the mobile panel is closed.
+    if (isMobileMenuOpen) closeMobileMenu();
     scrollToSectionFromAnyRoute(id, navigate, location.pathname);
   };
 
