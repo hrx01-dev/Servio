@@ -114,11 +114,11 @@ export class RateLimitError extends Error {
 
 // ── submitQuote ───────────────────────────────────────────────────────────────
 
-export async function submitQuote(form: QuoteFormData): Promise<void> {
+export async function submitQuote(form: QuoteFormData, honeypot = ""): Promise<void> {
   const res = await fetch("/api/quote", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(form),
+    body: JSON.stringify({ ...form, referral_source: honeypot }),
   });
 
   if (res.status === 429) {
