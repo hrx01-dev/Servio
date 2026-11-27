@@ -99,11 +99,12 @@ describe("submitQuote", () => {
     vi.mocked(fetch).mockResolvedValue(
       new Response(JSON.stringify({ success: true }), { status: 200 }),
     );
-    await submitQuote(validForm);
+    await submitQuote(validForm, "bot-filled");
     const call = vi.mocked(fetch).mock.calls[0];
     const body = JSON.parse(call[1]?.body as string) as Record<string, unknown>;
     expect(body.name).toBe("  Sarah Chen  ");
     expect(body.email).toBe(" sarah@company.com ");
+    expect(body.referral_source).toBe("bot-filled");
   });
 
   it("throws RateLimitError on 429 with retryAfterMs from the response", async () => {
