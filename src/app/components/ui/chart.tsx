@@ -78,6 +78,10 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  // SECURITY: This style tag emits generated CSS, not user-provided markup.
+  // Its selector id and ChartConfig keys/colors are interpolated into raw CSS/HTML,
+  // so keep them application-authored and trusted. There are currently no app
+  // call sites for this component; never populate these values from user input.
   return (
     <style
       dangerouslySetInnerHTML={{
