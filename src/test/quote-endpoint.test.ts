@@ -112,6 +112,24 @@ describe("POST /api/quote — valid submission", () => {
     expect(added.mail).toHaveLength(1);
     expect((added.messages[0] as { email: string }).email).toBe("sarah@company.com");
   });
+
+  it("silently accepts a filled honeypot without persisting or emailing the lead", async () => {
+    const res = makeRes();
+    await handler(makeReq({ ...validForm, referral_source: "automated submission" }), res as never);
+    expect(res.statusCode).toBe(200);
+    expect(res.payload).toEqual({ success: true });
+    expect(added.messages).toHaveLength(0);
+    expect(added.mail).toHaveLength(0);
+    expect(store.size).toBe(0);
+  });
+
+  it("treats a non-string honeypot value as filled", async () => {
+    const res = makeRes();
+    await handler(makeReq({ ...validForm, referral_source: { filled: true } }), res as never);
+    expect(res.statusCode).toBe(200);
+    expect(added.messages).toHaveLength(0);
+    expect(added.mail).toHaveLength(0);
+  });
 });
 
 // ── Rate limiting (the issue #239 fix) ────────────────────────────────────────

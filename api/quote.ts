@@ -99,6 +99,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // 1. Parse body — coerce every field to string so validateFields sees clean input.
   const body = req.body ?? {};
+
+  // Enforce the honeypot at the API boundary too: direct callers can bypass
+  // the browser-side trap. Return the normal success shape without persisting
+  // or emailing a submission, so automated submitters learn nothing.
+  const honeypot = body.referral_source;
+  const honeypotFilled =
+    typeof honeypot === "string"
+      ? honeypot.trim().length > 0
+      : honeypot !== undefined && honeypot !== null;
+  if (honeypotFilled) {
+    return res.status(200).json({ success: true });
+  }
+
   const form: QuoteFormData = {
     name:        typeof body.name        === "string" ? body.name        : "",
     email:       typeof body.email       === "string" ? body.email       : "",

@@ -127,7 +127,7 @@ export function QuoteForm() {
     try {
       // submitQuote now POSTs to /api/quote (no Firestore SDK in this module),
       // so it no longer needs the #234 deferred import to stay out of the bundle.
-      await submitQuote(form);
+      await submitQuote(form, honeypotRef.current?.value ?? "");
       markClean();
       setSubmitted(true);
     } catch (err) {
